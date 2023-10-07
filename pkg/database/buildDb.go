@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
+func BuildDb() {
 // Load in .env file 
   err := godotenv.Load()
   if err != nil {
