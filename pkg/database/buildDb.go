@@ -10,23 +10,22 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func BuildDb() {
+func BuildDb() *pgxpool.Pool {
 // Load in .env file 
-  err := godotenv.Load()
+  err := godotenv.Load("../.env")
   if err != nil {
       log.Fatal("Error loading .env file")
   } 
 
 //Set up database connection
-  	Dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+  	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
-	defer Dbpool.Close()
 
 // Ping the database by executing a trivial query
-	err = Dbpool.Ping(context.Background())
+	err = dbpool.Ping(context.Background())
 	if err != nil {
 		log.Fatalf("Unable to ping the database: %v\n", err)
 		os.Exit(1)
@@ -35,17 +34,19 @@ func BuildDb() {
 	fmt.Println("Successfully connected to the database!")
 
 // Read sql file 
-  sqlContent, err := os.ReadFile("/Users/chrishildebrand/projects/micro-reddit/micro-reddit-db-creation.sql")
+  sqlContent, err := os.ReadFile("../pkg/database/micro-reddit-db-creation.sql")
   if err != nil {
     log.Fatalf("Error reading .sql file %v", err)
-
+  }
 
 // Execute the SQL statement 
-  _, err = Dbpool.Exec(context.Background(), string(sqlContent))
+  _, err = dbpool.Exec(context.Background(), string(sqlContent))
   if err != nil {
     log.Fatalf("Error executing SQL: %v",err)
   }
 
   fmt.Println("SQL executed successfully!")
-}
+
+
+return dbpool
 }

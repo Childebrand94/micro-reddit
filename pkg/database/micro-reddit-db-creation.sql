@@ -17,19 +17,20 @@ CREATE TABLE IF NOT EXISTS users (
 -- Posts Table
 CREATE TABLE IF NOT EXISTS posts (
     id bigserial PRIMARY KEY,
-    user_id bigint NOT NULL,
+    author_id bigserial NOT NULL,
     url text NOT NULL,
+    title text,
     created_at timestamp with time zone NOT NULL default NOW(),
     updated_at timestamp with time zone NOT NULL default NOW(),
-    CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id)
+    CONSTRAINT fk_author_id FOREIGN KEY(author_id) REFERENCES users(id)
 );
 
 -- Comments Table
 CREATE TABLE IF NOT EXISTS comments (
     id bigserial PRIMARY KEY,
-    post_id bigint NOT NULL,
-    author_id bigint NOT NULL,
-    parent_id bigint,
+    post_id bigserial NOT NULL,
+    author_id bigserial NOT NULL,
+    parent_id bigserial,
     message text NOT NULL,
     created_at timestamp with time zone NOT NULL default NOW(),
     CONSTRAINT fk_post_id FOREIGN KEY(post_id) REFERENCES posts(id),
@@ -40,8 +41,8 @@ CREATE TABLE IF NOT EXISTS comments (
 -- Post Votes Table
 CREATE TABLE IF NOT EXISTS post_votes (
     id bigserial PRIMARY KEY,
-    post_id bigint NOT NULL,
-    user_id bigint NOT NULL,
+    post_id bigserial NOT NULL,
+    user_id bigserial NOT NULL,
     up_vote boolean NOT NULL,
     CONSTRAINT fk_post_id FOREIGN KEY(post_id) REFERENCES posts(id),
     CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id)
@@ -50,8 +51,8 @@ CREATE TABLE IF NOT EXISTS post_votes (
 -- Comment Votes Table
 CREATE TABLE IF NOT EXISTS comment_vote (
     id bigserial PRIMARY KEY,
-    user_id bigint NOT NULL,
-    comment_id bigint NOT NULL,
+    user_id bigserial NOT NULL,
+    comment_id bigserial NOT NULL,
     up_vote boolean NOT NULL,
     CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id),
     CONSTRAINT fk_comment_id FOREIGN KEY(comment_id) REFERENCES comments(id)
