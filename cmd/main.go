@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Childebrand94/micro-reddit/app/application"
+	"github.com/Childebrand94/micro-reddit/cmd/application"
 	db "github.com/Childebrand94/micro-reddit/pkg/database"
 	m "github.com/Childebrand94/micro-reddit/pkg/mock"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
