@@ -5,7 +5,6 @@ import (
 )
 
 var User1 = m.User{
-	ID : 1,
 	First_name: "Chris",
 	Last_name: "Hildebrand",
 	Email: "hildebrandc94@gmail.com",

@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/Childebrand94/micro-reddit/app/application"
 	db "github.com/Childebrand94/micro-reddit/pkg/database"
 	m "github.com/Childebrand94/micro-reddit/pkg/mock"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
@@ -13,14 +15,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// type App struct{
-//   Pool *pgxpool.Pool
-// }
-//
-
 
 func main () {
-  // Connect and build Database
 // Load in .env file 
   err := godotenv.Load(".env")
   if err != nil {
@@ -34,37 +30,18 @@ func main () {
 		os.Exit(1)
 	}
 	defer pool.Close()
- 
-	err = db.AddUser(pool, m.User1.First_name, m.User1.Last_name, m.User1.Email)
-	if err != nil {
-		log.Fatalf("Failed to execute AddUser: %v", err)
-	}
-	
-	err = db.AddPostByUser(pool, m.User1.ID, m.Post1.URL, m.Post1.Title) 
-	if err != nil{
-		log.Fatalf("Failed to execute AddPostByUser: %v", err)
-	}
-	
-	var post *models.Post
-	
-	post ,err = db.GetPostById(pool, m.Post1.ID)
-	if err != nil{
-		log.Fatalf("Failed to execute GetPost: %v", err)
-	}
-	
-    fmt.Println("Author ID:", post.Author_ID)
-    fmt.Println("Title:", post.Title)
-    fmt.Println("URL:", post.URL)
 
-	// Starting Server 
-	// fmt.Println("Starting Server....")
-	// r := chi.NewRouter()
-	// r.Get("/", getAllPosts)
-	// r.Post("/user", createNewUser)
 
-	
-	//  log.Fatal(http.ListenAndServe(":8010", r))
+// Starting Server 
+	fmt.Println("Starting Server....")
+	app := application.New(pool)
+	err = app.Start()
+	if err != nil && err != http.ErrServerClosed {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
+	
+
 
 // // helper function form article 
 // func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -88,4 +65,27 @@ func main () {
 //   respondWithJSON(w, http.StatusCreated, map[string]string{"message": "Successfully created"})
 // }
 //
+
+func databaseTest(pool *pgxpool.Pool) {
+	err := db.AddUser(pool, m.User1.First_name, m.User1.Last_name, m.User1.Email)
+	if err != nil {
+		fmt.Printf("Failed to execute AddUser: %v", err)
+	}
+	
+	err = db.AddPostByUser(pool, m.User1.ID, m.Post1.URL, m.Post1.Title) 
+	if err != nil{
+		fmt.Printf("Failed to execute AddPostByUser: %v", err)
+	}
+	
+	var post *models.Post
+	
+	post ,err = db.GetPostById(pool, m.Post1.ID)
+	if err != nil{
+		fmt.Printf("Failed to execute GetPost: %v", err)
+	}
+	
+    fmt.Println("Author ID:", post.Author_ID)
+    fmt.Println("Title:", post.Title)
+    fmt.Println("URL:", post.URL)
+}
 

@@ -1,0 +1,36 @@
+package application
+
+import (
+	"net/http"
+
+	"github.com/Childebrand94/micro-reddit/pkg/handler"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+)
+
+
+func (a *App)loadRoutes() {
+  router := chi.NewRouter()
+
+  router.Use(middleware.Logger)
+
+  router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+    w.WriteHeader(http.StatusOK)
+  })
+
+  router.Route("/posts", a.loadPostRoutes)
+    
+  a.router = router
+}
+
+func (a *App) loadPostRoutes(router chi.Router) {
+  postHandler := &handler.Post{
+    DB: a.DB, 
+  }
+
+  router.Post("/", postHandler.Create)
+  router.Get("/", postHandler.List)
+  router.Get("/{id}", postHandler.GetByID)
+  router.Put("/{id}", postHandler.UpdateByID)
+  router.Delete("/{id}", postHandler.DeleteByID)
+}
