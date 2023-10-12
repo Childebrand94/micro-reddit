@@ -43,28 +43,6 @@ func main () {
 	
 
 
-// // helper function form article 
-// func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-// 	response, _ := json.Marshal(payload)
-//
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(code)
-// 	w.Write(response)
-// }
-//
-// Post method to create a new user
-// func createNewUser(w http.ResponseWriter, r *http.Request, pool pgxpool.Pool){
-//   var user models.User
-//   json.NewDecoder(r.Body).Decode(&user)
-//
-//   err:= db.AddUser(pool, user.First_name, user.Last_name, user.Email)
-//   if err != nil {
-//     log.Fatalf("Failed to execute AddUser: %v", err)
-// }
-//
-//   respondWithJSON(w, http.StatusCreated, map[string]string{"message": "Successfully created"})
-// }
-//
 
 func databaseTest(pool *pgxpool.Pool) {
 	err := db.AddUser(pool, m.User1.First_name, m.User1.Last_name, m.User1.Email)

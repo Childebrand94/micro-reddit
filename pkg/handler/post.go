@@ -1,4 +1,4 @@
-package handler
+ package handler
 
 import (
 	"fmt"
@@ -12,7 +12,8 @@ type Post struct{
 }
 
 func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
-  fmt.Println("Create a post")
+  
+
 }
 
 func (p *Post) List(w http.ResponseWriter, r *http.Request) {

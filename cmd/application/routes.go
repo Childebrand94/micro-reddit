@@ -19,6 +19,7 @@ func (a *App)loadRoutes() {
   })
 
   router.Route("/posts", a.loadPostRoutes)
+  router.Route("/users", a.loadUserRoutes)
     
   a.router = router
 }
@@ -33,4 +34,16 @@ func (a *App) loadPostRoutes(router chi.Router) {
   router.Get("/{id}", postHandler.GetByID)
   router.Put("/{id}", postHandler.UpdateByID)
   router.Delete("/{id}", postHandler.DeleteByID)
+}
+
+func (a *App) loadUserRoutes(router chi.Router) {
+  userHandler := &handler.User{
+    DB: a.DB,
+  }
+
+  router.Post("/",userHandler.Create)
+  router.Get("/", userHandler.List)
+  router.Get("/{id}", userHandler.GetByID)
+  router.Put("/{id}", userHandler.UpdateByID)
+  router.Delete("/{id}", userHandler.DeleteByID)
 }
