@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -8,28 +9,28 @@ import (
 )
 
 type App struct {
-  router http.Handler
-  DB *pgxpool.Pool
+	router http.Handler
+	DB     *pgxpool.Pool
 }
 
 func New(pool *pgxpool.Pool) *App {
-  app := &App{
-		  DB: pool,
+	app := &App{
+		DB: pool,
 	}
-  app.loadRoutes()
+	app.loadRoutes()
 
-  return app
+	return app
 }
 
-func (a *App) Start() error {
-  server := &http.Server{
-    Addr : ":3000",
-    Handler: a.router,
-  }
+func (a *App) Start(ctx context.Context) error {
+	    server := &http.Server{
+		Addr:    ":3000",
+		Handler: a.router,
+	}
 
-  err := server.ListenAndServe()
-  if err != nil {
-    return fmt.Errorf("failed to start server: %w", err)
-  }
-  return nil 
+	err := server.ListenAndServe()
+	if err != nil {
+		return fmt.Errorf("failed to start server: %w", err)
+	}
+	return nil
 }

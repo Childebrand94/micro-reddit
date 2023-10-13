@@ -6,13 +6,12 @@ import (
 
 var User1 = m.User{
 	First_name: "Chris",
-	Last_name: "Hildebrand",
-	Email: "hildebrandc94@gmail.com",
+	Last_name:  "Hildebrand",
+	Email:      "hildebrandc94@gmail.com",
 }
 
 var Post1 = m.Post{
 	Author_ID: 1,
-	URL: "www.amazing_example.com",
-	Title: "My first amazing post",
-
+	URL:       "www.amazing_example.com",
+	Title:     "My first amazing post",
 }
