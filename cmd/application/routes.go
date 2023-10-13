@@ -15,12 +15,13 @@ func (a *App)loadRoutes() {
   router.Use(middleware.Logger)
 
   router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte("Welcome to Reddit"))
     w.WriteHeader(http.StatusOK)
   })
 
   router.Route("/posts", a.loadPostRoutes)
   router.Route("/users", a.loadUserRoutes)
-    
+  
   a.router = router
 }
 

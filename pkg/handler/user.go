@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-  "encoding/json"
-  
-  "github.com/Childebrand94/micro-reddit/pkg/database"
+
+	"github.com/Childebrand94/micro-reddit/pkg/database"
+	"github.com/Childebrand94/micro-reddit/pkg/models"
 	"github.com/jackc/pgx/v5/pgxpool"
-  "github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
 type User struct{
