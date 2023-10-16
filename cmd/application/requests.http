@@ -1,0 +1,48 @@
+// Create a comment 
+POST http://localhost:3000/posts/5/comments HTTP/1.1
+content-type: application/json
+
+{
+    "authorID": 1,
+    "message": "What a great post"
+}
+
+###
+//Create a comment on a comment 
+POST http://localhost:3000/posts/5/comments HTTP/1.1
+content-type: application/json
+
+{
+    "authorID": 1,
+    "parentID": 8,
+    "message": "What a great comment"
+}
+
+###
+
+//Create a post 
+POST http://localhost:3000/posts HTTP/1.1
+content-type: application/json
+
+{
+    "url": "www.test.com"
+}
+
+###
+// Create a user
+POST http://localhost:3000/users HTTP/1.1
+content-type: application/json
+
+{
+    "first_name": "Chris",
+    "last_name": "Hildebrand",
+    "username": "childebrand",
+    "email": "childebrand94@gmail.com"
+
+}
+
+###
+GET http://localhost:3000/users HTTP/1.1
+
+###
+GET http://localhost:3000/posts HTTP/1.1
