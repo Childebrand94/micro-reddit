@@ -12,6 +12,5 @@ var User1 = m.User{
 
 var Post1 = m.Post{
 	Author_ID: 1,
-	URL:       "www.amazing_example.com",
-	Title:     "My first amazing post",
+	URL:       "www.amazing_example.com",	
 }

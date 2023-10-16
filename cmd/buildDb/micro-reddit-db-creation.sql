@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     id bigserial PRIMARY KEY,
     first_name text NOT NULL,
     last_name text NOT NULL,
+    username text NOT NULL UNIQUE,go
     email text NOT NULL UNIQUE,
     registered_at timestamp with time zone NOT NULL default NOW()
 );
@@ -19,7 +20,6 @@ CREATE TABLE IF NOT EXISTS posts (
     id bigserial PRIMARY KEY,
     author_id bigserial NOT NULL,
     url text NOT NULL,
-    title text,
     created_at timestamp with time zone NOT NULL default NOW(),
     updated_at timestamp with time zone NOT NULL default NOW(),
     CONSTRAINT fk_author_id FOREIGN KEY(author_id) REFERENCES users(id)

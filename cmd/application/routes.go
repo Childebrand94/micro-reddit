@@ -28,12 +28,16 @@ func (a *App) loadPostRoutes(router chi.Router) {
 	postHandler := &handler.Post{
 		DB: a.DB,
 	}
+	commentHandler := &handler.Comment{
+		DB: a.DB,
+	}
 
 	router.Post("/", postHandler.Create)
 	router.Get("/", postHandler.List)
 	router.Get("/{id}", postHandler.GetByID)
 	router.Put("/{id}", postHandler.UpdateByID)
 	router.Delete("/{id}", postHandler.DeleteByID)
+	router.Post("/{id}/comments", commentHandler.Create)
 }
 
 func (a *App) loadUserRoutes(router chi.Router) {

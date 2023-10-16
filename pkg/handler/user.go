@@ -24,10 +24,9 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
 		return
 	}
-	// Close request body to free up resources
 	defer r.Body.Close()
 
-	err = database.AddUser(u.DB, payload.First_name, payload.Last_name, payload.Email)
+	err = database.AddUser(u.DB, payload.First_name, payload.Last_name, payload.Username, payload.Email)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
@@ -51,7 +50,7 @@ func (u *User) List(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(users)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
-		return 
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -62,22 +61,22 @@ func (u *User) List(w http.ResponseWriter, r *http.Request) {
 
 func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-	id , err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		models.SendError(w, http.StatusBadRequest, "Invalid user ID",err)
+		models.SendError(w, http.StatusBadRequest, "Invalid user ID", err)
 		return
 	}
 
 	user, err := database.GetUserByID(u.DB, id)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Unable to fetch user form database",err)
+		models.SendError(w, http.StatusInternalServerError, "Unable to fetch user form database", err)
 		return
 	}
 
 	data, err := json.Marshal(user)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to process user data",err)
-		return 
+		models.SendError(w, http.StatusInternalServerError, "Failed to process user data", err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -92,7 +91,6 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 // 		models.SendError(w, http.StatusBadRequest, "Invalid user ID")
 // 		return
 // 	}
-
 
 // }
 

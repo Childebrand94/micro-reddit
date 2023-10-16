@@ -21,16 +21,16 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 	// decode request send error code if error
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		models.SendError(w, http.StatusInternalServerError, "Failed to decode request", err)
 		return
 	}
 	// hard code id until we have sessions
-	id := 1
+	id := 2
 
 	// call database function to insert post into tables
-	err = database.AddPostByUser(p.DB, int64(id), payload.Title, payload.URL)
+	err = database.AddPostByUser(p.DB, int64(id), payload.URL)
 	if err != nil {
-		fmt.Printf("Failed to add user to database %v", err)
+		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 	}
 
 	// Send success response
@@ -42,7 +42,20 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) List(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("List all posts")
+	posts, err := database.GetAllPosts(p.DB)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to fetch posts from database", err)
+		return
+	}
+
+	data, err := json.Marshal(posts)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to marsha data", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
