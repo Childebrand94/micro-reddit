@@ -70,15 +70,23 @@ func GetAllPosts(pool *pgxpool.Pool) (map[int64]models.PostWithComments, error) 
 
 		//Check if post is already present in postDataWithComments
 		//If present append the comments to Comments slice
-		if postDataWithComments, exists := combinedMap[post.ID]; exists {
-			postDataWithComments.Comments = append(postDataWithComments.Comments, comment)
-			combinedMap[post.ID] = postDataWithComments
 
+		if postDataWithComments, exists := combinedMap[post.ID]; exists {
+			if comment.ID.Valid {
+				println(comment.ID.Valid)
+				postDataWithComments.Comments = append(postDataWithComments.Comments, comment)
+				combinedMap[post.ID] = postDataWithComments
+			}
 			// If no post was present create a new key in combined map and reference this post
 		} else {
 			combinedMap[post.ID] = models.PostWithComments{
 				PostData: post,
-				Comments: []models.Comment{comment},
+				Comments: func() []models.Comment {
+					if comment.ID.Valid {
+						return []models.Comment{comment}
+					}
+					return []models.Comment{}
+				}(),
 			}
 		}
 	}

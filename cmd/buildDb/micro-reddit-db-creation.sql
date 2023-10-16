@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     id bigserial PRIMARY KEY,
     first_name text NOT NULL,
     last_name text NOT NULL,
-    username text NOT NULL UNIQUE,go
+    username text NOT NULL UNIQUE,
     email text NOT NULL UNIQUE,
     registered_at timestamp with time zone NOT NULL default NOW()
 );
