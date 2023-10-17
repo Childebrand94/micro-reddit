@@ -77,4 +77,4 @@ GET http://localhost:3000/posts/1/comments
 
 ###
 // get a post by id with comments
-GET http://localhost:3000/posts/3
+GET http://localhost:3000/posts/1

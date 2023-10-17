@@ -11,6 +11,7 @@ import (
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
+	"github.com/Childebrand94/micro-reddit/pkg/utils"
 )
 
 type Post struct {
@@ -55,25 +56,7 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-
-	type postWithComments struct {
-		models.Post
-		Comments []models.Comment `json:"Comments"`
-	}
-
-	var result []postWithComments
-
-	for _, post := range allPosts {
-		pwc := postWithComments{
-			Post: post,
-		}
-		for _, comment := range allComments {
-			if comment.Post_ID == post.ID {
-				pwc.Comments = append(pwc.Comments, comment)
-			}
-		}
-		result = append(result, pwc)
-	}
+	result := utils.CombinedPostComments(allPosts, allComments)
 
 	data, err := json.Marshal(result)
 	if err != nil {
@@ -88,17 +71,17 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 	strID := chi.URLParam(r, "id")
 	post_id, err := strconv.Atoi(strID)
-	println(post_id)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Failed to get id from URL", err)
 	}
 
-	post, err := database.GetPostById(p.DB, int64(post_id))
+	posts, comments, err := database.GetPostById(p.DB, int64(post_id))
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
 	}
 
-	data, err := json.Marshal(post)
+	result := utils.CombinedPostComments(posts, comments)
+	data, err := json.Marshal(result[0])
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)
 	}

@@ -18,17 +18,36 @@ func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
 	return err
 }
 
-func GetPostById(pool *pgxpool.Pool, post_id int64) (*models.Post, error) {
-	var post models.Post
+func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Comment, error) {
+	var posts []models.Post
+	var p models.Post
+	var comments []models.Comment
 
-	query := "SELECT * FROM posts WHERE id = $1"
+	queryPosts := "SELECT * FROM posts WHERE id = $1"
+	queryComments := "SELECT * FROM comments WHERE post_id = $1"
 
-	row := pool.QueryRow(context.TODO(), query, post_id)
-
-	if err := row.Scan(&post.ID, &post.Author_ID, &post.URL, &post.CreatedAt, &post.UpdatedAt); err != nil {
-		return nil, err
+	row := pool.QueryRow(context.TODO(), queryPosts, post_id)
+	if err := row.Scan(&p.ID, &p.Author_ID, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
+		return nil, nil, err
 	}
-	return &post, nil
+
+	posts = append(posts, p)
+
+	rows, err := pool.Query(context.TODO(), queryComments, post_id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for rows.Next() {
+		var c models.Comment
+		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at); err != nil {
+			return nil, nil, err
+		}
+		comments = append(comments, c)
+	}
+	defer rows.Close()
+
+	return posts, comments, nil
 }
 
 func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
