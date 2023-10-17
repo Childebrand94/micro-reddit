@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/Childebrand94/micro-reddit/pkg/database"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Post struct {
@@ -42,13 +43,37 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) List(w http.ResponseWriter, r *http.Request) {
-	posts, err := database.GetAllPosts(p.DB)
+	allComments, allPosts, err := database.GetAllPosts(p.DB)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to fetch posts from database", err)
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to fetch posts from database",
+			err,
+		)
 		return
 	}
 
-	data, err := json.Marshal(posts)
+	type postWithComments struct {
+		models.Post
+		Comments []models.Comment `json:"Comments"`
+	}
+
+	var result []postWithComments
+
+	for _, post := range allPosts {
+		pwc := postWithComments{
+			Post: post,
+		}
+		for _, comment := range allComments {
+			if comment.Post_ID == post.ID {
+				pwc.Comments = append(pwc.Comments, comment)
+			}
+		}
+		result = append(result, pwc)
+	}
+
+	data, err := json.Marshal(result)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marsha data", err)
 	}

@@ -3,19 +3,20 @@ package database
 import (
 	"context"
 
-	"github.com/Childebrand94/micro-reddit/pkg/models"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
-func AddComment(pool *pgxpool.Pool, postID, authorID, parentID pgtype.Int8, message pgtype.Text) error {
+func AddComment(pool *pgxpool.Pool, postID, authorID int64, parentID pgtype.Int8, message string) error {
 	_, err := pool.Exec(context.TODO(),
 		`Insert INTO comments (post_id, author_id, parent_id, message)
 					Values($1, $2, $3, $4)`, postID, authorID, parentID, message)
 	return err
 }
 
-func ListComments(pool *pgxpool.Pool, postID pgtype.Int8) ([]models.Comment, error) {
+func ListComments(pool *pgxpool.Pool, postID int64) ([]models.Comment, error) {
 	query := `SELECT * FROM comments WHERE post_id = $1`
 	rows, err := pool.Query(context.TODO(), query, postID)
 	if err != nil {

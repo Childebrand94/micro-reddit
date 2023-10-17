@@ -3,12 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
-	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Comment struct {
@@ -16,9 +17,8 @@ type Comment struct {
 }
 
 func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
-	var post_id pgtype.Int8
 	idStr := chi.URLParam(r, "id")
-	err := post_id.Scan(idStr)
+	post_id, err := strconv.Atoi(idStr)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Invalid ID", err)
 		return
@@ -31,9 +31,14 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = database.AddComment(c.DB, post_id, payload.Author_ID, payload.Parent_ID, payload.Message)
+	err = database.AddComment(c.DB, int64(post_id), payload.Author_ID, payload.Parent_ID, payload.Message)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to add comments to database", err)
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to add comments to database",
+			err,
+		)
 		return
 	}
 
@@ -42,21 +47,24 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Comment created successfully",
 	})
-
 }
 
 func (c *Comment) List(w http.ResponseWriter, r *http.Request) {
-	var post_id pgtype.Int8
 	idStr := chi.URLParam(r, "id")
-	err := post_id.Scan(idStr)
+	post_id, err := strconv.Atoi(idStr)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
 
-	comments, err := database.ListComments(c.DB, post_id)
+	comments, err := database.ListComments(c.DB, int64(post_id))
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get comments form database", err)
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to get comments form database",
+			err,
+		)
 		return
 	}
 	data, err := json.Marshal(comments)

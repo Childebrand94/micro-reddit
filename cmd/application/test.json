@@ -1,0 +1,36 @@
+[
+    {
+      "id": 1,
+      "authorID": 2,
+      "url": "www.test.com",
+      "createdAt": "2023-10-16T13:11:34.455107-04:00",
+      "updatedAt": "2023-10-16T13:11:34.455107-04:00",
+      "Comments": [
+        {
+          "ID": 4,
+          "postID": 1,
+          "authorID": 1,
+          "parentID": null,
+          "message": "What a great post",
+          "created_at": "2023-10-16T13:15:18.587366-04:00"
+        },
+        {
+          "ID": 6,
+          "postID": 1,
+          "authorID": 1,
+          "parentID": 4,
+          "message": "What a great comment",
+          "created_at": "2023-10-16T13:15:48.125446-04:00"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "authorID": 2,
+      "url": "www.post2.com",
+      "createdAt": "2023-10-16T13:17:34.741867-04:00",
+      "updatedAt": "2023-10-16T13:17:34.741867-04:00",
+      "Comments": []
+    }
+  
+]
