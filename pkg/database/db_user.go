@@ -3,12 +3,20 @@ package database
 import (
 	"context"
 
-	m "github.com/Childebrand94/micro-reddit/pkg/models"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	m "github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
 func AddUser(pool *pgxpool.Pool, fName, lName, username, email string) error {
-	_, err := pool.Exec(context.TODO(), "INSERT INTO users (first_name, last_name, username, email) VALUES ($1, $2, $3, $4)", fName, lName, username, email)
+	_, err := pool.Exec(
+		context.TODO(),
+		"INSERT INTO users (first_name, last_name, username, email) VALUES ($1, $2, $3, $4)",
+		fName,
+		lName,
+		username,
+		email,
+	)
 
 	return err
 }
@@ -37,7 +45,14 @@ func GetUserByID(pool *pgxpool.Pool, id int) (*m.User, error) {
 	row := pool.QueryRow(context.TODO(), query, id)
 
 	var user m.User
-	err := row.Scan(&user.ID, &user.First_name, &user.Last_name, &user.Username, &user.Email, &user.DateJoined)
+	err := row.Scan(
+		&user.ID,
+		&user.First_name,
+		&user.Last_name,
+		&user.Username,
+		&user.Email,
+		&user.DateJoined,
+	)
 	if err != nil {
 		return nil, err
 	}

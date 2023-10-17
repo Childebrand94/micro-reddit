@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
@@ -75,7 +77,7 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.Marshal(result)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to marsha data", err)
+		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -84,7 +86,26 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Get post by ID")
+	strID := chi.URLParam(r, "id")
+	post_id, err := strconv.Atoi(strID)
+	println(post_id)
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "Failed to get id from URL", err)
+	}
+
+	post, err := database.GetPostById(p.DB, int64(post_id))
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
+	}
+
+	data, err := json.Marshal(post)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func (p *Post) UpdateByID(w http.ResponseWriter, r *http.Request) {

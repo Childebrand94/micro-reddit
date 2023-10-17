@@ -20,9 +20,12 @@ func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
 
 func GetPostById(pool *pgxpool.Pool, post_id int64) (*models.Post, error) {
 	var post models.Post
-	err := pool.QueryRow(context.Background(), "SELECT author_id, url FROM posts").
-		Scan(&post.Author_ID, &post.URL)
-	if err != nil {
+
+	query := "SELECT * FROM posts WHERE id = $1"
+
+	row := pool.QueryRow(context.TODO(), query, post_id)
+
+	if err := row.Scan(&post.ID, &post.Author_ID, &post.URL, &post.CreatedAt, &post.UpdatedAt); err != nil {
 		return nil, err
 	}
 	return &post, nil
