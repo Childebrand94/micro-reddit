@@ -5,6 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/Childebrand94/micro-reddit/pkg/models"
 	m "github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
@@ -59,7 +60,16 @@ func GetUserByID(pool *pgxpool.Pool, id int) (*m.User, error) {
 	return &user, nil
 }
 
-// func UpdateUserByID(pool *pgxpool.Pool, id int) (*m.User, error) {
-// query := "UPDATE users SET name=$1 WHERE id=$2"
-// row := pool.QueryRow(context.TODO(),query,id)
-// }
+func UpdateUserByID(pool *pgxpool.Pool, updateUser models.User, id int64) error {
+	query := `Update users SET first_name=$1, last_name=$2, username=$3, email=$4 WHERE id=$5`
+	_, err := pool.Exec(
+		context.TODO(),
+		query,
+		updateUser.First_name,
+		updateUser.Last_name,
+		updateUser.Username,
+		updateUser.Email,
+		id,
+	)
+	return err
+}

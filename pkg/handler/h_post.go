@@ -56,7 +56,6 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-
 	result := utils.CombinedPostComments(allPosts, allComments)
 
 	data, err := json.Marshal(result)
@@ -113,12 +112,8 @@ func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
 	}
-	// Send success response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Vote created successfully",
-	})
+
+	utils.SendSuccessfulResp(w, "Vote had been created")
 }
 
 func (p *Post) UpdateByID(w http.ResponseWriter, r *http.Request) {
