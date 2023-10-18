@@ -56,6 +56,7 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+
 	result := utils.CombinedPostComments(allPosts, allComments)
 
 	data, err := json.Marshal(result)
@@ -89,6 +90,35 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
+	user_id := 2
+	strID := chi.URLParam(r, "id")
+	post_id, err := strconv.Atoi(strID)
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "Failed to get id from URL", err)
+	}
+	strVote := chi.URLParam(r, "vote")
+
+	var upVote bool
+
+	if strVote == "up-vote" {
+		upVote = true
+	} else {
+		upVote = false
+	}
+
+	err = database.AddPostVotes(p.DB, int64(user_id), int64(post_id), upVote)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
+	}
+	// Send success response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Vote created successfully",
+	})
 }
 
 func (p *Post) UpdateByID(w http.ResponseWriter, r *http.Request) {

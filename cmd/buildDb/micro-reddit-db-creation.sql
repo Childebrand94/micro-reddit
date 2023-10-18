@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS post_votes (
     post_id bigserial NOT NULL,
     user_id bigserial NOT NULL,
     up_vote boolean NOT NULL,
+    UNIQUE (post_id, user_id),
     CONSTRAINT fk_post_id FOREIGN KEY(post_id) REFERENCES posts(id),
     CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id)
 );

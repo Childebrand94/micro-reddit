@@ -6,6 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/models"
+	"github.com/Childebrand94/micro-reddit/pkg/utils"
 )
 
 func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
@@ -31,6 +32,11 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 		return nil, nil, err
 	}
 
+	totalVotes, err := utils.GetVoteTotal(pool, p.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+	p.Vote = totalVotes
 	posts = append(posts, p)
 
 	rows, err := pool.Query(context.TODO(), queryComments, post_id)
@@ -52,7 +58,6 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 
 func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 	queryForPosts := `SELECT * FROM posts;`
-
 	queryForComments := `SELECT * FROM comments;`
 
 	postRows, err := pool.Query(context.TODO(), queryForPosts)
@@ -77,6 +82,10 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 			&post.UpdatedAt); err != nil {
 			return nil, nil, err
 		}
+		post.Vote, err = utils.GetVoteTotal(pool, post.ID)
+		if err != nil {
+			return nil, nil, err
+		}
 		allPosts = append(allPosts, post)
 	}
 
@@ -84,7 +93,6 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
 	defer commentRows.Close()
 
 	var allComments []models.Comment
@@ -105,4 +113,10 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 		allComments = append(allComments, comment)
 	}
 	return allComments, allPosts, nil
+}
+
+func AddPostVotes(pool *pgxpool.Pool, user_id, post_id int64, up_vote bool) error {
+	query := "INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
+	_, err := pool.Exec(context.TODO(), query, user_id, post_id, up_vote)
+	return err
 }

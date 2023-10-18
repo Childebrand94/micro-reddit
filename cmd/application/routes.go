@@ -3,9 +3,10 @@ package application
 import (
 	"net/http"
 
-	"github.com/Childebrand94/micro-reddit/pkg/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/Childebrand94/micro-reddit/pkg/handler"
 )
 
 func (a *App) loadRoutes() {
@@ -35,6 +36,7 @@ func (a *App) loadPostRoutes(router chi.Router) {
 	router.Post("/", postHandler.Create)
 	router.Get("/", postHandler.List)
 	router.Get("/{id}", postHandler.GetByID)
+	router.Put("/{id}/{vote}", postHandler.PostVotes)
 	router.Put("/{id}", postHandler.UpdateByID)
 	router.Delete("/{id}", postHandler.DeleteByID)
 	router.Post("/{id}/comments", commentHandler.Create)
