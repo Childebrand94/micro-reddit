@@ -41,6 +41,7 @@ func (a *App) loadPostRoutes(router chi.Router) {
 	router.Delete("/{id}", postHandler.DeleteByID)
 	router.Post("/{id}/comments", commentHandler.Create)
 	router.Get("/{id}/comments", commentHandler.List)
+	router.Put("/{post_id}/comments/{comment_id}/{vote}", commentHandler.CommentVotes)
 }
 
 func (a *App) loadUserRoutes(router chi.Router) {

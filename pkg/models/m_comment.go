@@ -12,5 +12,6 @@ type Comment struct {
 	Author_ID  int64       `db:"author_id"  json:"authorID"`
 	Parent_ID  pgtype.Int8 `db:"parent_id"  json:"parentID"`
 	Message    string      `db:"message"    json:"message"`
-	Created_at time.Time   `db:"created_at" json:"created_at"`
+	Vote       pgtype.Int8 `                json:"upVotes"`
+	Created_at time.Time   `db:"created_at" json:"createdAt"`
 }

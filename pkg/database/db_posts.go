@@ -11,7 +11,7 @@ import (
 
 func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
 	_, err := pool.Exec(
-		context.Background(),
+		context.TODO(),
 		`INSERT INTO posts (author_id, url) VALUES ($1, $2)`,
 		author_id,
 		url,
@@ -32,7 +32,7 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 		return nil, nil, err
 	}
 
-	totalVotes, err := utils.GetVoteTotal(pool, p.ID)
+	totalVotes, err := utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -71,22 +71,22 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 
 	for postRows.Next() {
 		// Create structs to scan data too
-		var post models.Post
+		var p models.Post
 
 		// Scan data from DB to structs
 		if err := postRows.Scan(
-			&post.ID,
-			&post.Author_ID,
-			&post.URL,
-			&post.CreatedAt,
-			&post.UpdatedAt); err != nil {
+			&p.ID,
+			&p.Author_ID,
+			&p.URL,
+			&p.CreatedAt,
+			&p.UpdatedAt); err != nil {
 			return nil, nil, err
 		}
-		post.Vote, err = utils.GetVoteTotal(pool, post.ID)
+		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 		if err != nil {
 			return nil, nil, err
 		}
-		allPosts = append(allPosts, post)
+		allPosts = append(allPosts, p)
 	}
 
 	commentRows, err := pool.Query(context.TODO(), queryForComments)
@@ -98,19 +98,25 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 	var allComments []models.Comment
 
 	for commentRows.Next() {
-		var comment models.Comment
+		var c models.Comment
 
 		if err := commentRows.Scan(
-			&comment.ID,
-			&comment.Post_ID,
-			&comment.Author_ID,
-			&comment.Parent_ID,
-			&comment.Message,
-			&comment.Created_at,
+			&c.ID,
+			&c.Post_ID,
+			&c.Author_ID,
+			&c.Parent_ID,
+			&c.Message,
+			&c.Created_at,
 		); err != nil {
 			return nil, nil, err
 		}
-		allComments = append(allComments, comment)
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		if err != nil {
+			return nil, nil, err
+		}
+		c.Vote = totalVotes
+
+		allComments = append(allComments, c)
 	}
 	return allComments, allPosts, nil
 }
