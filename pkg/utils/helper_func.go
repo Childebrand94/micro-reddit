@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -44,6 +43,5 @@ func GetVoteTotal(pool *pgxpool.Pool, postID int64) (pgtype.Int8, error) {
 		return zeroValue, err
 	}
 
-	fmt.Println(totalVotes)
 	return totalVotes, nil
 }
