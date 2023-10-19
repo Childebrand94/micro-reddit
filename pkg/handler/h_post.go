@@ -29,20 +29,17 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// hard code id until we have sessions
-	id := 2
+	id := 1000
 
 	// call database function to insert post into tables
 	err = database.AddPostByUser(p.DB, int64(id), payload.URL)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
+		return
 	}
 
 	// Send success response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Post created successfully",
-	})
+	utils.SendSuccessfulResp(w, "Successfully created a Post")
 }
 
 func (p *Post) List(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +58,7 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(result)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -70,20 +68,19 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 
 func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 	strID := chi.URLParam(r, "id")
-	post_id, err := strconv.Atoi(strID)
-	if err != nil {
-		models.SendError(w, http.StatusBadRequest, "Failed to get id from URL", err)
-	}
+	post_id := utils.ConvertID(strID, w)
 
 	posts, comments, err := database.GetPostById(p.DB, int64(post_id))
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
+		return
 	}
 
 	result := utils.CombinedPostComments(posts, comments)
 	data, err := json.Marshal(result[0])
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -104,13 +101,16 @@ func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
 
 	if strVote == "up-vote" {
 		upVote = true
-	} else {
+	} else if strVote == "down-vote" {
 		upVote = false
+	} else {
+		models.SendError(w, http.StatusBadRequest, "Bad URL", nil)
 	}
 
 	err = database.AddPostVotes(p.DB, int64(user_id), int64(post_id), upVote)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
+		return
 	}
 
 	utils.SendSuccessfulResp(w, "Vote had been created")

@@ -49,6 +49,12 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at); err != nil {
 			return nil, nil, err
 		}
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		if err != nil {
+			return nil, nil, err
+		}
+		c.Vote = totalVotes
+
 		comments = append(comments, c)
 	}
 	defer rows.Close()
