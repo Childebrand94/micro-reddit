@@ -40,6 +40,8 @@ func main() {
 	populateDatabaseWithPosts(dbpool)
 	addVotesPosts(dbpool)
 	populateDatabaseWithComments(dbpool)
+	populateCommentsWithComments(dbpool)
+	fmt.Println("Successfully populated database.")
 }
 
 func populateDatabaseWithUsers(pool *pgxpool.Pool) {
@@ -72,6 +74,7 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 	if err != nil {
 		log.Fatalf("Failed to add users to database: %v", err)
 	}
+	// fmt.Printf("Users: %v", users)
 }
 
 func populateDatabaseWithPosts(pool *pgxpool.Pool) {
@@ -92,7 +95,7 @@ func populateDatabaseWithPosts(pool *pgxpool.Pool) {
 	batch := &pgx.Batch{}
 
 	for _, p := range posts {
-		batch.Queue("INSERT INTO posts (authour_id, url) VALUES ($1, $2)", p.Author_ID, p.URL)
+		batch.Queue("INSERT INTO posts (author_id, url) VALUES ($1, $2)", p.Author_ID, p.URL)
 	}
 
 	br := pool.SendBatch(context.TODO(), batch)
@@ -138,7 +141,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 
 	for _, v := range votes {
 		batch.Queue(
-			"INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3",
+			"INSERT INTO post_votes (user_id, post_id, up_vote) VALUES ($1, $2, $3)",
 			v.User_id,
 			v.Post_id,
 			v.Up_vote,
@@ -148,7 +151,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 	br := pool.SendBatch(context.TODO(), batch)
 	_, err = br.Exec()
 	if err != nil {
-		log.Fatalf("Failed to votes to database: %v", err)
+		log.Fatalf("Failed to add votes to database: %v", err)
 	}
 }
 
@@ -161,16 +164,22 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
+	// query := "ALTER TABLE comments ALTER COLUMN parent_id DROP NOT NULL;"
 
+	// _, err = pool.Exec(context.TODO(), query)
+	// if err != nil {
+	// 	log.Fatalf("Faild to remove constraint %v", err)
+	// }
+	//
 	var comments []models.Comment
 	// comments on posts
 	for i, p := range posts {
 		var c models.Comment
 
 		c.Post_ID = p.ID
-		c.Author_ID = users[i].ID
-		pgtype.NullAssignTo(c.Parent_ID)
-		c.Message = fmt.Sprintf("What a great post %s", users[i].First_name)
+		c.Author_ID = users[i%len(users)].ID
+		// pgtype.NullAssignTo(c.Parent_ID)
+		c.Message = fmt.Sprintf("What a great post %s", users[i%len(users)].First_name)
 
 		comments = append(comments, c)
 	}
@@ -179,10 +188,9 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 
 	for _, c := range comments {
 		batch.Queue(
-			"INSERT INTO comments (post_id, authour_id, parent_id, message) VALUES ($1, $2, $3, $4)",
+			"INSERT INTO comments (post_id, author_id, message) VALUES ($1, $2, $3)",
 			c.Post_ID,
 			c.Author_ID,
-			c.Parent_ID,
 			c.Message,
 		)
 	}
@@ -206,14 +214,13 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 
 	for i, pc := range comments {
 		var c models.Comment
-		var pgIDInt pgtype.Int8
-		pgIDInt.Int64 = pc.ID
+		var pgID pgtype.Int8
+		pgID.Int64Value()
 
 		c.Post_ID = pc.Post_ID
 		c.Author_ID = users[(i+1)%len(users)].ID
-		c.Parent_ID = pgIDInt
-		c.Message = fmt.Sprintf("What a great comments %s", users[(i+1)%len(users)].First_name)
-
+		c.Parent_ID = pgID
+		c.Message = fmt.Sprintf("What a great comment %s", users[(i+1)%len(users)].First_name)
 		comments = append(comments, c)
 	}
 
@@ -221,7 +228,7 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 
 	for _, c := range comments {
 		batch.Queue(
-			"INSERT INTO comments (post_id, authour_id, parent_id, message) VALUES ($1, $2, $3, $4)",
+			"INSERT INTO comments (post_id, author_id, parent_id, message) VALUES ($1, $2, $3, $4)",
 			c.Post_ID,
 			c.Author_ID,
 			c.Parent_ID,
@@ -239,3 +246,7 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 func randomBool() bool {
 	return rand.Intn(2) == 1
 }
+
+// func Int8(s int64) pgtype.Int8 {
+// 	return pgtype.Int8{Int: s, Status: pgtype.Present}
+// }
