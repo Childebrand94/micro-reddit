@@ -57,12 +57,31 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 }
 
 func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
+	allPosts, err := GetPostsHelper(pool)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	allComments, err := GetCommentsHelper(pool)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return allComments, allPosts, nil
+}
+
+func AddPostVotes(pool *pgxpool.Pool, user_id, post_id int64, up_vote bool) error {
+	query := "INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
+	_, err := pool.Exec(context.TODO(), query, user_id, post_id, up_vote)
+	return err
+}
+
+func GetPostsHelper(pool *pgxpool.Pool) ([]models.Post, error) {
 	queryForPosts := `SELECT * FROM posts;`
-	queryForComments := `SELECT * FROM comments;`
 
 	postRows, err := pool.Query(context.TODO(), queryForPosts)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	defer postRows.Close()
@@ -80,18 +99,24 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 			&p.URL,
 			&p.CreatedAt,
 			&p.UpdatedAt); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		allPosts = append(allPosts, p)
 	}
 
+	return allPosts, nil
+}
+
+func GetCommentsHelper(pool *pgxpool.Pool) ([]models.Comment, error) {
+	queryForComments := `SELECT * FROM comments;`
+
 	commentRows, err := pool.Query(context.TODO(), queryForComments)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	defer commentRows.Close()
 
@@ -108,21 +133,16 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 			&c.Message,
 			&c.Created_at,
 		); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		c.Vote = totalVotes
 
 		allComments = append(allComments, c)
 	}
-	return allComments, allPosts, nil
-}
 
-func AddPostVotes(pool *pgxpool.Pool, user_id, post_id int64, up_vote bool) error {
-	query := "INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
-	_, err := pool.Exec(context.TODO(), query, user_id, post_id, up_vote)
-	return err
+	return allComments, nil
 }
