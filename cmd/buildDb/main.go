@@ -17,7 +17,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	//Set up database connection
+	// Set up database connection
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
@@ -46,5 +46,4 @@ func main() {
 	}
 
 	fmt.Println("SQL executed successfully!")
-
 }
