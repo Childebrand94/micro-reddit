@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/models"
@@ -13,7 +13,7 @@ import (
 func AddComment(
 	pool *pgxpool.Pool,
 	postID, authorID int64,
-	parentID pgtype.Int8,
+	parentID sql.NullInt64,
 	message string,
 ) error {
 	_, err := pool.Exec(context.TODO(),

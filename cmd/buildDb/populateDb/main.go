@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"math/rand"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 
@@ -164,21 +164,14 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
-	// query := "ALTER TABLE comments ALTER COLUMN parent_id DROP NOT NULL;"
 
-	// _, err = pool.Exec(context.TODO(), query)
-	// if err != nil {
-	// 	log.Fatalf("Faild to remove constraint %v", err)
-	// }
-	//
 	var comments []models.Comment
-	// comments on posts
+
 	for i, p := range posts {
 		var c models.Comment
 
 		c.Post_ID = p.ID
 		c.Author_ID = users[i%len(users)].ID
-		// pgtype.NullAssignTo(c.Parent_ID)
 		c.Message = fmt.Sprintf("What a great post %s", users[i%len(users)].First_name)
 
 		comments = append(comments, c)
@@ -214,12 +207,14 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 
 	for i, pc := range comments {
 		var c models.Comment
-		var pgID pgtype.Int8
-		pgID.Int64Value()
+		id := sql.NullInt64{
+			Int64: pc.ID,
+			Valid: true,
+		}
 
 		c.Post_ID = pc.Post_ID
 		c.Author_ID = users[(i+1)%len(users)].ID
-		c.Parent_ID = pgID
+		c.Parent_ID = id
 		c.Message = fmt.Sprintf("What a great comment %s", users[(i+1)%len(users)].First_name)
 		comments = append(comments, c)
 	}
