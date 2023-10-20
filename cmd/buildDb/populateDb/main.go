@@ -36,11 +36,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	// populateDatabaseWithUsers(dbpool)
-	// populateDatabaseWithPosts(dbpool)
-	// addVotesPosts(dbpool)
-	// populateDatabaseWithComments(dbpool)
-	// populateCommentsWithComments(dbpool)
+	populateDatabaseWithUsers(dbpool)
+	populateDatabaseWithPosts(dbpool)
+	addVotesPosts(dbpool)
+	populateDatabaseWithComments(dbpool)
+	populateCommentsWithComments(dbpool)
 	populateCommentsWithVotes(dbpool)
 	fmt.Println("Successfully populated database.")
 }
