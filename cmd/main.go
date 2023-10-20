@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 
-	"github.com/Childebrand94/micro-reddit/cmd/application"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+
+	"github.com/Childebrand94/micro-reddit/cmd/application"
 )
 
 func main() {
@@ -26,34 +28,14 @@ func main() {
 		os.Exit(1)
 	}
 	defer pool.Close()
+	// Implementing graceful shutdown by creating a context that is listening for sigint.
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
 
 	// Starting Server
-	fmt.Println("Starting Server....")
 	app := application.New(pool)
-	err = app.Start(context.TODO())
+	err = app.Start(ctx)
 	if err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
-
-// func databaseTest(pool *pgxpool.Pool) {
-// 	err := db.AddUser(pool, m.User1.First_name, m.User1.Last_name, m.User1.Email)
-// 	if err != nil {
-// 		fmt.Printf("Failed to execute AddUser: %v", err)
-// 	}
-
-// 	err = db.AddPostByUser(pool, m.User1.ID, m.Post1.URL)
-// 	if err != nil {
-// 		fmt.Printf("Failed to execute AddPostByUser: %v", err)
-// 	}
-
-// 	var post *models.Post
-
-// 	post, err = db.GetPostById(pool, m.Post1.ID)
-// 	if err != nil {
-// 		fmt.Printf("Failed to execute GetPost: %v", err)
-// 	}
-
-// 	fmt.Println("Author ID:", post.Author_ID)
-// 	fmt.Println("URL:", post.URL)
-// }

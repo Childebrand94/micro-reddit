@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -23,14 +24,41 @@ func New(pool *pgxpool.Pool) *App {
 }
 
 func (a *App) Start(ctx context.Context) error {
-	    server := &http.Server{
+	server := &http.Server{
 		Addr:    ":3000",
 		Handler: a.router,
 	}
-
-	err := server.ListenAndServe()
+	err := a.DB.Ping(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to start server: %w", err)
+		return fmt.Errorf("Failed to connect to PostgreSQL: %w", err)
 	}
-	return nil
+
+	defer func() {
+		a.DB.Close()
+		fmt.Println("Closed PostgreSQL connection", err)
+	}()
+
+	fmt.Println("Starting server...")
+
+	// creating channel
+	ch := make(chan error, 1)
+
+	go func() {
+		err = server.ListenAndServe()
+		if err != nil {
+			ch <- fmt.Errorf("Failed to start server: %w", err)
+		}
+		close(ch)
+	}()
+
+	// setting up receiver for channel
+	select {
+	case err = <-ch:
+		return err
+	case <-ctx.Done():
+		timeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+
+		return server.Shutdown(timeout)
+	}
 }

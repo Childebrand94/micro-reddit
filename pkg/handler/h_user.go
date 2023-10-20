@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,6 +20,9 @@ type User struct {
 }
 
 func (u *User) Create(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
 	var payload models.User
 	// Decode the request body to get user details
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -27,28 +32,19 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	err = database.AddUser(
-		u.DB,
-		payload.First_name,
-		payload.Last_name,
-		payload.Username,
-		payload.Email,
-	)
+	err = database.AddUser(ctx, u.DB, payload)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
 	}
 
-	// Send a success response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "User created successfully",
-	})
+	utils.SendSuccessfulResp(w, "Successfully created a user")
 }
 
 func (u *User) List(w http.ResponseWriter, r *http.Request) {
-	users, err := database.GetAllUsers(u.DB)
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+	users, err := database.GetAllUsers(ctx, u.DB)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed get users form database", err)
 		return
@@ -66,6 +62,8 @@ func (u *User) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -73,7 +71,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := database.GetUserByID(u.DB, id)
+	user, err := database.GetUserByID(ctx, u.DB, id)
 	if err != nil {
 		models.SendError(
 			w,
@@ -95,6 +93,9 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
 	idStr := chi.URLParam(r, "id")
 	id := utils.ConvertID(idStr, w)
 	var updateUser models.User
@@ -104,7 +105,7 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Bad Request", err)
 		return
 	}
-	err = database.UpdateUserByID(u.DB, updateUser, int64(id))
+	err = database.UpdateUserByID(ctx, u.DB, updateUser, int64(id))
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Faild to update database", err)
 		return
@@ -112,8 +113,3 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendSuccessfulResp(w, "User was successfully updated")
 }
-
-//
-// func (u *User) DeleteByID(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("Delete an order by ID")
-// }
