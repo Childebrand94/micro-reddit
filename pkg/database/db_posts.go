@@ -9,9 +9,9 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/utils"
 )
 
-func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
+func AddPostByUser(ctx context.Context, pool *pgxpool.Pool, author_id int64, url string) error {
 	_, err := pool.Exec(
-		context.TODO(),
+		ctx,
 		`INSERT INTO posts (author_id, url) VALUES ($1, $2)`,
 		author_id,
 		url,
@@ -19,7 +19,11 @@ func AddPostByUser(pool *pgxpool.Pool, author_id int64, url string) error {
 	return err
 }
 
-func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Comment, error) {
+func GetPostById(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	post_id int64,
+) ([]models.Post, []models.Comment, error) {
 	var posts []models.Post
 	var p models.Post
 	var comments []models.Comment
@@ -27,7 +31,7 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 	queryPosts := "SELECT * FROM posts WHERE id = $1"
 	queryComments := "SELECT * FROM comments WHERE post_id = $1"
 
-	row := pool.QueryRow(context.TODO(), queryPosts, post_id)
+	row := pool.QueryRow(ctx, queryPosts, post_id)
 	if err := row.Scan(&p.ID, &p.Author_ID, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
 		return nil, nil, err
 	}
@@ -62,13 +66,13 @@ func GetPostById(pool *pgxpool.Pool, post_id int64) ([]models.Post, []models.Com
 	return posts, comments, nil
 }
 
-func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
-	allPosts, err := GetPostsHelper(pool)
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
+	allPosts, err := GetPostsHelper(ctx, pool)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	allComments, err := GetCommentsHelper(pool)
+	allComments, err := GetCommentsHelper(ctx, pool)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,16 +80,21 @@ func GetAllPosts(pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
 	return allComments, allPosts, nil
 }
 
-func AddPostVotes(pool *pgxpool.Pool, user_id, post_id int64, up_vote bool) error {
+func AddPostVotes(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	user_id, post_id int64,
+	up_vote bool,
+) error {
 	query := "INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
-	_, err := pool.Exec(context.TODO(), query, user_id, post_id, up_vote)
+	_, err := pool.Exec(ctx, query, user_id, post_id, up_vote)
 	return err
 }
 
-func GetPostsHelper(pool *pgxpool.Pool) ([]models.Post, error) {
+func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Post, error) {
 	queryForPosts := `SELECT * FROM posts;`
 
-	postRows, err := pool.Query(context.TODO(), queryForPosts)
+	postRows, err := pool.Query(ctx, queryForPosts)
 	if err != nil {
 		return nil, err
 	}
@@ -117,10 +126,10 @@ func GetPostsHelper(pool *pgxpool.Pool) ([]models.Post, error) {
 	return allPosts, nil
 }
 
-func GetCommentsHelper(pool *pgxpool.Pool) ([]models.Comment, error) {
+func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Comment, error) {
 	queryForComments := `SELECT * FROM comments;`
 
-	commentRows, err := pool.Query(context.TODO(), queryForComments)
+	commentRows, err := pool.Query(ctx, queryForComments)
 	if err != nil {
 		return nil, err
 	}

@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,6 +23,8 @@ type Post struct {
 func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 	// use a model to decode the request into a struct
 	var payload models.Post
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
 
 	// decode request send error code if error
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -29,10 +33,10 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// hard code id until we have sessions
-	id := 1000
+	id := 10
 
 	// call database function to insert post into tables
-	err = database.AddPostByUser(p.DB, int64(id), payload.URL)
+	err = database.AddPostByUser(ctx, p.DB, int64(id), payload.URL)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
@@ -43,7 +47,10 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) List(w http.ResponseWriter, r *http.Request) {
-	allComments, allPosts, err := database.GetAllPosts(p.DB)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
+	allComments, allPosts, err := database.GetAllPosts(ctx, p.DB)
 	if err != nil {
 		models.SendError(
 			w,
@@ -67,10 +74,13 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
 	strID := chi.URLParam(r, "id")
 	post_id := utils.ConvertID(strID, w)
 
-	posts, comments, err := database.GetPostById(p.DB, int64(post_id))
+	posts, comments, err := database.GetPostById(ctx, p.DB, int64(post_id))
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
 		return
@@ -89,6 +99,9 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
 	user_id := 2
 	strID := chi.URLParam(r, "id")
 	post_id, err := strconv.Atoi(strID)
@@ -107,7 +120,7 @@ func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Bad URL", nil)
 	}
 
-	err = database.AddPostVotes(p.DB, int64(user_id), int64(post_id), upVote)
+	err = database.AddPostVotes(ctx, p.DB, int64(user_id), int64(post_id), upVote)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
 		return
