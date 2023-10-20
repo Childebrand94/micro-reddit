@@ -36,11 +36,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	populateDatabaseWithUsers(dbpool)
-	populateDatabaseWithPosts(dbpool)
-	addVotesPosts(dbpool)
-	populateDatabaseWithComments(dbpool)
-	populateCommentsWithComments(dbpool)
+	// populateDatabaseWithUsers(dbpool)
+	// populateDatabaseWithPosts(dbpool)
+	// addVotesPosts(dbpool)
+	// populateDatabaseWithComments(dbpool)
+	// populateCommentsWithComments(dbpool)
+	populateCommentsWithVotes(dbpool)
 	fmt.Println("Successfully populated database.")
 }
 
@@ -242,6 +243,53 @@ func randomBool() bool {
 	return rand.Intn(2) == 1
 }
 
-// func Int8(s int64) pgtype.Int8 {
-// 	return pgtype.Int8{Int: s, Status: pgtype.Present}
-// }
+func populateCommentsWithVotes(pool *pgxpool.Pool) {
+	comments, err := database.GetCommentsHelper(pool)
+	if err != nil {
+		log.Fatalf("Failed to get users from database: %v", err)
+	}
+
+	users, err := database.GetAllUsers(pool)
+	if err != nil {
+		log.Fatalf("Failed to get users from database: %v", err)
+	}
+	type vote struct {
+		User_id    int64
+		Comment_id int64
+		Up_vote    bool
+	}
+
+	var votes []vote
+
+	for _, p := range comments {
+		for _, u := range users {
+			var v vote
+
+			v.User_id = u.ID
+			v.Comment_id = p.ID
+			v.Up_vote = randomBool()
+
+			votes = append(votes, v)
+		}
+	}
+	for _, v := range votes {
+		database.AddPostVotes(pool, v.User_id, v.Comment_id, v.Up_vote)
+	}
+
+	batch := &pgx.Batch{}
+
+	for _, v := range votes {
+		batch.Queue(
+			"INSERT INTO comment_vote (user_id, comment_id, up_vote) VALUES ($1, $2, $3)",
+			v.User_id,
+			v.Comment_id,
+			v.Up_vote,
+		)
+	}
+
+	br := pool.SendBatch(context.TODO(), batch)
+	_, err = br.Exec()
+	if err != nil {
+		log.Fatalf("Failed to add votes to database: %v", err)
+	}
+}
