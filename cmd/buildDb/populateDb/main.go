@@ -79,7 +79,10 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 }
 
 func populateDatabaseWithPosts(pool *pgxpool.Pool) {
-	users, err := database.GetAllUsers(pool)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	users, err := database.GetAllUsers(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
@@ -107,11 +110,14 @@ func populateDatabaseWithPosts(pool *pgxpool.Pool) {
 }
 
 func addVotesPosts(pool *pgxpool.Pool) {
-	posts, err := database.GetPostsHelper(pool)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	posts, err := database.GetPostsHelper(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get posts from database: %v", err)
 	}
-	users, err := database.GetAllUsers(pool)
+	users, err := database.GetAllUsers(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
@@ -135,7 +141,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 		}
 	}
 	for _, v := range votes {
-		database.AddPostVotes(pool, v.User_id, v.Post_id, v.Up_vote)
+		database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
 	}
 
 	batch := &pgx.Batch{}
@@ -149,7 +155,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 		)
 	}
 
-	br := pool.SendBatch(context.TODO(), batch)
+	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add votes to database: %v", err)
@@ -157,11 +163,14 @@ func addVotesPosts(pool *pgxpool.Pool) {
 }
 
 func populateDatabaseWithComments(pool *pgxpool.Pool) {
-	posts, err := database.GetPostsHelper(pool)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	posts, err := database.GetPostsHelper(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get posts from database: %v", err)
 	}
-	users, err := database.GetAllUsers(pool)
+	users, err := database.GetAllUsers(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
@@ -189,7 +198,7 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 		)
 	}
 
-	br := pool.SendBatch(context.TODO(), batch)
+	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add comments to database: %v", err)
@@ -197,11 +206,14 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 }
 
 func populateCommentsWithComments(pool *pgxpool.Pool) {
-	users, err := database.GetAllUsers(pool)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	users, err := database.GetAllUsers(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
-	comments, err := database.GetCommentsHelper(pool)
+	comments, err := database.GetCommentsHelper(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get comments from database: %v", err)
 	}
@@ -232,11 +244,12 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 		)
 	}
 
-	br := pool.SendBatch(context.TODO(), batch)
+	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add comments to database: %v", err)
 	}
+	fmt.Println("Successfully added comments to comments.")
 }
 
 func randomBool() bool {
@@ -244,12 +257,15 @@ func randomBool() bool {
 }
 
 func populateCommentsWithVotes(pool *pgxpool.Pool) {
-	comments, err := database.GetCommentsHelper(pool)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	comments, err := database.GetCommentsHelper(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
 
-	users, err := database.GetAllUsers(pool)
+	users, err := database.GetAllUsers(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
@@ -273,7 +289,7 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 		}
 	}
 	for _, v := range votes {
-		database.AddPostVotes(pool, v.User_id, v.Comment_id, v.Up_vote)
+		database.AddPostVotes(ctx, pool, v.User_id, v.Comment_id, v.Up_vote)
 	}
 
 	batch := &pgx.Batch{}
@@ -287,7 +303,7 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 		)
 	}
 
-	br := pool.SendBatch(context.TODO(), batch)
+	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add votes to database: %v", err)

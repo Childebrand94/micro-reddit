@@ -11,20 +11,21 @@ import (
 )
 
 func AddComment(
+	ctx context.Context,
 	pool *pgxpool.Pool,
 	postID, authorID int64,
 	parentID sql.NullInt64,
 	message string,
 ) error {
-	_, err := pool.Exec(context.TODO(),
+	_, err := pool.Exec(ctx,
 		`Insert INTO comments (post_id, author_id, parent_id, message)
 					Values($1, $2, $3, $4)`, postID, authorID, parentID, message)
 	return err
 }
 
-func ListComments(pool *pgxpool.Pool, postID int64) ([]models.Comment, error) {
+func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]models.Comment, error) {
 	query := `SELECT * FROM comments WHERE post_id = $1`
-	rows, err := pool.Query(context.TODO(), query, postID)
+	rows, err := pool.Query(ctx, query, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +48,13 @@ func ListComments(pool *pgxpool.Pool, postID int64) ([]models.Comment, error) {
 	return comments, nil
 }
 
-func AddCommentVotes(pool *pgxpool.Pool, user_id, comment_id int64, up_vote bool) error {
+func AddCommentVotes(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	user_id, comment_id int64,
+	up_vote bool,
+) error {
 	query := "INSERT INTO comment_vote (user_id, comment_id, up_vote) VALUES ($1, $2, $3)"
-	_, err := pool.Exec(context.TODO(), query, user_id, comment_id, up_vote)
+	_, err := pool.Exec(ctx, query, user_id, comment_id, up_vote)
 	return err
 }

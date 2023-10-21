@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
@@ -18,25 +22,43 @@ type Comment struct {
 }
 
 func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
 	idStr := chi.URLParam(r, "id")
 	post_id, err := strconv.Atoi(idStr)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
-	var payload models.Comment
+	type comment struct {
+		ID         int64       `db:"id"         json:"ID"`
+		Post_ID    int64       `db:"post_id"    json:"postID"`
+		Author_ID  int64       `db:"author_id"  json:"authorID"`
+		Parent_ID  int64       `db:"parent_id"  json:"parentID"`
+		Message    string      `db:"message"    json:"message"`
+		Vote       pgtype.Int8 `                json:"upVotes"`
+		Created_at time.Time   `db:"created_at" json:"createdAt"`
+	}
+
+	var payload comment
+	parent_id := sql.NullInt64{
+		Int64: payload.Parent_ID,
+		Valid: true,
+	}
 
 	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
+		models.SendError(w, http.StatusInternalServerError, "Failed to decode payload", err)
 		return
 	}
 
 	err = database.AddComment(
+		ctx,
 		c.DB,
 		int64(post_id),
 		payload.Author_ID,
-		payload.Parent_ID,
+		parent_id,
 		payload.Message,
 	)
 	if err != nil {
@@ -53,10 +75,13 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Comment) List(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
 	idStr := chi.URLParam(r, "id")
 	post_id := utils.ConvertID(idStr, w)
 
-	comments, err := database.ListComments(c.DB, int64(post_id))
+	comments, err := database.ListComments(ctx, c.DB, int64(post_id))
 	if err != nil {
 		models.SendError(
 			w,
@@ -78,6 +103,9 @@ func (c *Comment) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Comment) CommentVotes(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+
 	commentID_str := chi.URLParam(r, "comment_id")
 	vote_param := chi.URLParam(r, "vote")
 
@@ -93,7 +121,7 @@ func (c *Comment) CommentVotes(w http.ResponseWriter, r *http.Request) {
 		vote = false
 	}
 
-	err := database.AddCommentVotes(c.DB, int64(user_id), int64(comment_id), vote)
+	err := database.AddCommentVotes(ctx, c.DB, int64(user_id), int64(comment_id), vote)
 	if err != nil {
 		models.SendError(
 			w,
