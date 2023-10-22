@@ -1,9 +1,10 @@
+import NavBar from "../components/NavBar";
+
 const Home = () => {
   return (
     <div>
-        <h1 className="text-xl font-bold ">Welcome to the start of Micro-Reddit</h1>
-    
+      <NavBar />
     </div>
-  )
-}
-export default Home
+  );
+};
+export default Home;
