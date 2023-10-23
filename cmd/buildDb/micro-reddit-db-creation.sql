@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS posts (
     id bigserial PRIMARY KEY,
     author_id bigint NOT NULL,
+    title text NOT NULL,
     url text NOT NULL,
     created_at timestamp with time zone NOT NULL default NOW(),
     updated_at timestamp with time zone NOT NULL default NOW(),

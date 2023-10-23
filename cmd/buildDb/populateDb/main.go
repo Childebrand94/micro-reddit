@@ -93,13 +93,19 @@ func populateDatabaseWithPosts(pool *pgxpool.Pool) {
 
 		p.Author_ID = u.ID
 		p.URL = faker.URL()
+		p.Title = faker.Sentence(nb_words=6)
 
 		posts = append(posts, p)
 	}
 	batch := &pgx.Batch{}
 
 	for _, p := range posts {
-		batch.Queue("INSERT INTO posts (author_id, url) VALUES ($1, $2)", p.Author_ID, p.URL)
+		batch.Queue(
+			"INSERT INTO posts (author_id, title, url) VALUES ($1, $2, $3)",
+			p.Author_ID,
+			p.Title,
+			p.URL,
+		)
 	}
 
 	br := pool.SendBatch(context.TODO(), batch)

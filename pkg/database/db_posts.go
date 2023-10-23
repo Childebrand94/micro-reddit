@@ -9,11 +9,17 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/utils"
 )
 
-func AddPostByUser(ctx context.Context, pool *pgxpool.Pool, author_id int64, url string) error {
+func AddPostByUser(
+	ctx context.Context,
+	pool *pgxpool.Pool,
+	author_id int64,
+	url, title string,
+) error {
 	_, err := pool.Exec(
 		ctx,
-		`INSERT INTO posts (author_id, url) VALUES ($1, $2)`,
+		`INSERT INTO posts (author_id, url, title) VALUES ($1, $2, $3)`,
 		author_id,
+		title,
 		url,
 	)
 	return err
@@ -32,7 +38,7 @@ func GetPostById(
 	queryComments := "SELECT * FROM comments WHERE post_id = $1"
 
 	row := pool.QueryRow(ctx, queryPosts, post_id)
-	if err := row.Scan(&p.ID, &p.Author_ID, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
+	if err := row.Scan(&p.ID, &p.Title, &p.Author_ID, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
 		return nil, nil, err
 	}
 
@@ -111,6 +117,7 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Post, err
 		if err := postRows.Scan(
 			&p.ID,
 			&p.Author_ID,
+			&p.Title,
 			&p.URL,
 			&p.CreatedAt,
 			&p.UpdatedAt); err != nil {

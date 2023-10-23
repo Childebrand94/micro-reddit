@@ -36,7 +36,7 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 	id := 10
 
 	// call database function to insert post into tables
-	err = database.AddPostByUser(ctx, p.DB, int64(id), payload.URL)
+	err = database.AddPostByUser(ctx, p.DB, int64(id), payload.URL, payload.Title)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
