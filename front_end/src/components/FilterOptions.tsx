@@ -1,33 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const FilterOptions = () => {
-  const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  const [displayText, setDisplayText] = useState("HOT");
+type filter = "hot" | "top" | "new";
+
+const FilterOptions: React.FC = (): JSX.Element => {
+  const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+  const [activeFilter, setActiveFilter] = useState<filter>("hot");
 
   const handleDropDown = () => {
     setIsDropDownOpen(!isDropDownOpen);
   };
 
-  const handleLinkClick = (text: string) => {
+  const handleLinkClick = (text: filter): void => {
     handleDropDown();
-    setDisplayText(text);
+    setActiveFilter(text);
   };
 
-  const options = [
-    {
-      title: "TOP",
-      path: "posts?sort=top",
-    },
-    {
-      title: "NEW",
-      path: "posts?sort=new",
-    },
-    {
-      title: "HOT",
-      path: "posts?sort=hot",
-    },
-  ];
+  const options: filter[] = ["hot", "top", "new"];
 
   return (
     <div className="flex flex-col">
@@ -36,15 +25,15 @@ const FilterOptions = () => {
           className="text-xl p-1"
           onClick={() => setIsDropDownOpen(!isDropDownOpen)}
         >
-          {displayText}
+          {activeFilter.toUpperCase()}
         </button>
       </div>
       {isDropDownOpen && (
         <div className="flex flex-col text-xl">
-          {options.map((x) => {
+          {options.map((x, i) => {
             return (
-              <Link onClick={() => handleLinkClick(x.title)} to={"/"}>
-                {x.title}
+              <Link key={i} onClick={() => handleLinkClick(x)} to={"/"}>
+                {x.toUpperCase()}
               </Link>
             );
           })}

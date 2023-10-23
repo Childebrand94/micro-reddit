@@ -6,11 +6,12 @@ type PostProps = {
 
 const Post: React.FC<PostProps> = ({ post }) => {
   return (
-    <div>
+    <div className="my-2">
       <h1>{post.url}</h1>
-      <h3>{post.upVotes}</h3>
-      <h3>{post.createdAt}</h3>
-      <h3>{post.authorId}</h3>
+      <div className="flex">
+        <h3>{post.authorId}</h3>
+        <h3>{post.upVotes}</h3>
+      </div>
     </div>
   );
 };

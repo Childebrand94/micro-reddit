@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 // import { useLocation } from "react-router-dom";
 import { Post as PostType } from "../utils/type";
 import Post from "./Post";
@@ -9,7 +10,7 @@ const PostList = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://www.localhost:3000/posts", {
+      const response = await fetch("/api/posts", {
         method: "GET",
       });
       if (!response.ok) {
@@ -29,7 +30,7 @@ const PostList = () => {
   return (
     <div>
       {posts.map((post) => {
-        return <Post post={post} />;
+        return <Post post={post} key={post.id} />;
       })}
     </div>
   );

@@ -1,4 +1,4 @@
-export interface Comment {
+export type Comment = {
   id: number;
   postId: number;
   authorId: number;
@@ -6,9 +6,9 @@ export interface Comment {
   message: string;
   upVotes: number;
   createdAt: string;
-}
+};
 
-export interface Post {
+export type Post = {
   id: number;
   authorId: number;
   url: string;
@@ -16,13 +16,13 @@ export interface Post {
   updatedAt: string;
   upVotes: number;
   comments: Comment[];
-}
+};
 
-export interface User {
+export type User = {
   id: number;
   firstName: string;
   lastName: string;
   userName: string;
   email: string;
   dateJoined: string;
-}
+};
