@@ -31,7 +31,7 @@ const FilterOptions = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-center text-center w-14 rounded-xl bg-gray-400">
+      <div className="flex justify-center text-center w-14 rounded-xl bg-blue-400">
         <button
           className="text-xl p-1"
           onClick={() => setIsDropDownOpen(!isDropDownOpen)}

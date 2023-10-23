@@ -10,7 +10,7 @@ const NavSearch = () => {
   return (
     <div>
       <input
-        className="h-5/6 mx-4"
+        className="h-5/6 mx-4 w-1/2 rounded-xl p-2"
         type="text"
         placeholder="Search here"
         onChange={handleChange}

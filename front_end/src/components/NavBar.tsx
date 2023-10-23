@@ -4,15 +4,15 @@ import NavSearch from "./NavSearch";
 
 const NavBar = () => {
   return (
-    <nav className="w-full h-9 bg-gray-100 flex ">
-      <div>
-        <a href="/">
-          <img src="../assets/logo-reddit.svg" />
-        </a>
-      </div>
+    <nav className="max-w-full h-9 bg-blue-100 flex ">
+      <img
+        className="m-1"
+        src="../../public/assets/logo-reddit.svg"
+        alt="Reddit Logo"
+      />
       <FilterOptions />
 
-      <div className="flex">
+      <div className="flex items-end">
         <NavSearch />
         <NavProfile />
       </div>

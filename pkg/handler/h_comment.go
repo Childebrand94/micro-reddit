@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
@@ -31,21 +30,14 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Invalid ID", err)
 		return
 	}
-	type comment struct {
-		ID         int64       `db:"id"         json:"ID"`
-		Post_ID    int64       `db:"post_id"    json:"postID"`
-		Author_ID  int64       `db:"author_id"  json:"authorID"`
-		Parent_ID  int64       `db:"parent_id"  json:"parentID"`
-		Message    string      `db:"message"    json:"message"`
-		Vote       pgtype.Int8 `                json:"upVotes"`
-		Created_at time.Time   `db:"created_at" json:"createdAt"`
-	}
 
-	var payload comment
-	parent_id := sql.NullInt64{
-		Int64: payload.Parent_ID,
-		Valid: true,
-	}
+	var payload models.Comment
+
+	//    var payload models.Comment
+	// parent_id := sql.NullInt64{
+	// 	Int64: payload.Parent_ID,
+	// 	Valid: true,
+	// }
 
 	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
@@ -58,7 +50,7 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		c.DB,
 		int64(post_id),
 		payload.Author_ID,
-		parent_id,
+		sql.NullInt64(payload.Parent_ID),
 		payload.Message,
 	)
 	if err != nil {

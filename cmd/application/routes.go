@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"github.com/Childebrand94/micro-reddit/pkg/handler"
 )
@@ -12,7 +13,17 @@ import (
 func (a *App) loadRoutes() {
 	router := chi.NewRouter()
 
+	// Setup middleware
+	cors := cors.New(cors.Options{
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
+
 	router.Use(middleware.Logger)
+	router.Use(cors.Handler)
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to Reddit"))
