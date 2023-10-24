@@ -15,7 +15,15 @@ type Post struct {
 	UpdatedAt time.Time   `db:"updated_at" json:"updatedAt"`
 	Vote      pgtype.Int8 `                json:"upVotes"`
 }
-type PostWithComments struct {
+
+type PostResponse struct {
 	Post
+	Author   Author
 	Comments []Comment
+}
+
+type Author struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	UserName  string `json:"userName"`
 }

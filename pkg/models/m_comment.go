@@ -16,3 +16,8 @@ type Comment struct {
 	Vote       pgtype.Int8 `                json:"upVotes"`
 	Created_at time.Time   `db:"created_at" json:"createdAt"`
 }
+
+type CommentResp struct {
+	Comment
+	Author Author
+}

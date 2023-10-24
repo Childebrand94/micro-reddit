@@ -44,8 +44,8 @@ export const Post: React.FC<PostProps> = ({ post, index }) => {
         </button>
         <button>
           <img
-            className="h-6"
-            src="../../public/assets/arrow-down.png"
+            className="h-6 rotate-180"
+            src="../../public/assets/arrow-up.png"
             alt="Down Arrow"
           />
         </button>

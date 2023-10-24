@@ -82,7 +82,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(user)
+	data, err := json.Marshal(user[0])
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to process user data", err)
 		return

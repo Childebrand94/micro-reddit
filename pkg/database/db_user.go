@@ -40,9 +40,10 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 	return users, nil
 }
 
-func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.User, error) {
+func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User, error) {
 	query := "SELECT * FROM users WHERE id = $1"
 	row := pool.QueryRow(ctx, query, id)
+	var users []models.User
 
 	var user models.User
 	err := row.Scan(
@@ -56,7 +57,9 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.User,
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	users = append(users, user)
+
+	return users, nil
 }
 
 func UpdateUserByID(

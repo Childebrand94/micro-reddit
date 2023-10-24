@@ -60,9 +60,19 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	result := utils.CombinedPostComments(allPosts, allComments)
+	allUsers, err := database.GetAllUsers(ctx, p.DB)
+	if err != nil {
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to fetch posts from database",
+			err,
+		)
+		return
+	}
+	resp := utils.ConstructPostResponses(allPosts, allComments, allUsers)
 
-	data, err := json.Marshal(result)
+	data, err := json.Marshal(resp)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
 		return
@@ -82,11 +92,17 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	posts, comments, err := database.GetPostById(ctx, p.DB, int64(post_id))
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
+		models.SendError(w, http.StatusInternalServerError, "Failed to get post data from database", err)
 		return
 	}
 
-	result := utils.CombinedPostComments(posts, comments)
+	user, err := database.GetUserByID(ctx, p.DB, post_id)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to get user data from database", err)
+		return
+	}
+
+	result := utils.ConstructPostResponses(posts, comments, user)
 	data, err := json.Marshal(result[0])
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)

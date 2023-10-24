@@ -14,22 +14,26 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
-func CombinedPostComments(
-	allPosts []models.Post,
-	allComments []models.Comment,
-) []models.PostWithComments {
-	var result []models.PostWithComments
+func ConstructPostResponses(allPosts []models.Post, allComments []models.Comment, allUsers []models.User) []models.PostResponse {
+	var result []models.PostResponse
 
 	for _, post := range allPosts {
-		pwc := models.PostWithComments{
+		pr := models.PostResponse{
 			Post: post,
 		}
 		for _, comment := range allComments {
 			if comment.Post_ID == post.ID {
-				pwc.Comments = append(pwc.Comments, comment)
+				pr.Comments = append(pr.Comments, comment)
 			}
 		}
-		result = append(result, pwc)
+		for _, user := range allUsers {
+			if post.Author_ID == user.ID {
+				pr.Author.FirstName = user.First_name
+				pr.Author.LastName = user.Last_name
+				pr.Author.UserName = user.Username
+			}
+		}
+		result = append(result, pr)
 	}
 
 	return result
