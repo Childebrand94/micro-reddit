@@ -11,6 +11,7 @@ export type Comment = {
 export type Post = {
   id: number;
   authorId: number;
+  title: string;
   url: string;
   createdAt: string;
   updatedAt: string;
@@ -22,7 +23,9 @@ export type User = {
   id: number;
   firstName: string;
   lastName: string;
-  userName: string;
+  username: string;
   email: string;
   dateJoined: string;
 };
+
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
