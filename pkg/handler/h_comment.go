@@ -33,12 +33,6 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 
 	var payload models.Comment
 
-	//    var payload models.Comment
-	// parent_id := sql.NullInt64{
-	// 	Int64: payload.Parent_ID,
-	// 	Valid: true,
-	// }
-
 	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode payload", err)

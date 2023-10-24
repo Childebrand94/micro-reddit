@@ -29,13 +29,17 @@ func GetPostById(
 	ctx context.Context,
 	pool *pgxpool.Pool,
 	post_id int64,
-) ([]models.Post, []models.Comment, error) {
+) ([]models.Post, []models.CommentResp, error) {
 	var posts []models.Post
 	var p models.Post
-	var comments []models.Comment
+	var comments []models.CommentResp
 
 	queryPosts := "SELECT * FROM posts WHERE id = $1"
-	queryComments := "SELECT * FROM comments WHERE post_id = $1"
+	queryComments := `select c.id, c.post_id, c.author_id, c.parent_id, c.message, c.created_at, u.first_name, u.last_name, u.username 
+						from "comments" c  
+						left join 
+						users u on u.id  = c.author_id 
+						where post_id = $1`
 
 	row := pool.QueryRow(ctx, queryPosts, post_id)
 	if err := row.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
@@ -55,8 +59,8 @@ func GetPostById(
 	}
 
 	for rows.Next() {
-		var c models.Comment
-		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at); err != nil {
+		var c models.CommentResp
+		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
 			return nil, nil, err
 		}
 		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
@@ -72,7 +76,7 @@ func GetPostById(
 	return posts, comments, nil
 }
 
-func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.Comment, []models.Post, error) {
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.CommentResp, []models.Post, error) {
 	allPosts, err := GetPostsHelper(ctx, pool)
 	if err != nil {
 		return nil, nil, err
@@ -133,8 +137,11 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Post, err
 	return allPosts, nil
 }
 
-func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Comment, error) {
-	queryForComments := `SELECT * FROM comments;`
+func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.CommentResp, error) {
+	queryForComments := `select c.id, c.post_id, c.author_id, c.parent_id, c.message, c.created_at, u.first_name, u.last_name, u.username 
+						from "comments" c  
+						left join 
+						users u on u.id  = c.author_id `
 
 	commentRows, err := pool.Query(ctx, queryForComments)
 	if err != nil {
@@ -142,10 +149,10 @@ func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Commen
 	}
 	defer commentRows.Close()
 
-	var allComments []models.Comment
+	var allComments []models.CommentResp
 
 	for commentRows.Next() {
-		var c models.Comment
+		var c models.CommentResp
 
 		if err := commentRows.Scan(
 			&c.ID,
@@ -154,6 +161,9 @@ func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Commen
 			&c.Parent_ID,
 			&c.Message,
 			&c.Created_at,
+			&c.Author.FirstName,
+			&c.Author.LastName,
+			&c.Author.UserName,
 		); err != nil {
 			return nil, err
 		}

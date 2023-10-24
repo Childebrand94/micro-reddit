@@ -19,7 +19,7 @@ type Post struct {
 type PostResponse struct {
 	Post
 	Author   Author
-	Comments []Comment
+	Comments []CommentResp
 }
 
 type Author struct {

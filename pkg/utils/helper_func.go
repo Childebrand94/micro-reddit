@@ -14,7 +14,7 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
-func ConstructPostResponses(allPosts []models.Post, allComments []models.Comment, allUsers []models.User) []models.PostResponse {
+func ConstructPostResponses(allPosts []models.Post, allComments []models.CommentResp, allUsers []models.User) []models.PostResponse {
 	var result []models.PostResponse
 
 	for _, post := range allPosts {
@@ -36,6 +36,25 @@ func ConstructPostResponses(allPosts []models.Post, allComments []models.Comment
 		result = append(result, pr)
 	}
 
+	return result
+}
+
+func AddAuthorComment(allComments []models.Comment, allUsers []models.User) []models.CommentResp {
+	var result []models.CommentResp
+
+	for _, comment := range allComments {
+		cr := models.CommentResp{
+			Comment: comment,
+		}
+		for _, user := range allUsers {
+			if comment.Author_ID == user.ID {
+				cr.Author.FirstName = user.First_name
+				cr.Author.LastName = user.Last_name
+				cr.Author.UserName = user.Username
+			}
+		}
+		result = append(result, cr)
+	}
 	return result
 }
 

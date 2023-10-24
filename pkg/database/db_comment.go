@@ -23,7 +23,7 @@ func AddComment(
 	return err
 }
 
-func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]models.Comment, error) {
+func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]models.CommentResp, error) {
 	query := `SELECT * FROM comments WHERE post_id = $1`
 	rows, err := pool.Query(ctx, query, postID)
 	if err != nil {
@@ -45,7 +45,15 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]mode
 		c.Vote = totalVotes
 		comments = append(comments, c)
 	}
-	return comments, nil
+
+	users, err := GetAllUsers(ctx, pool)
+	if err != nil {
+		return nil, err
+	}
+
+	commentResp := utils.AddAuthorComment(comments, users)
+
+	return commentResp, nil
 }
 
 func AddCommentVotes(
