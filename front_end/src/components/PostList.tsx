@@ -1,29 +1,23 @@
 import { useState, useEffect } from "react";
 
 // import { useLocation } from "react-router-dom";
-import { Post as PostType, User as UserType } from "../utils/type";
+import { Post as PostType } from "../utils/type";
 import Post from "./Post";
 
 const PostList = () => {
   // const location = useLocation();
   const [posts, setPosts] = useState<PostType[]>([]);
-  const [users, setUsers] = useState<UserType[]>([]);
 
   const fetchPosts = async () => {
     try {
-      const [postResponse, userResponse] = await Promise.all([
-        fetch("/api/posts"),
-        fetch("/api/users"),
-      ]);
-
-      if (!postResponse.ok || !userResponse.ok) {
+      const response = await fetch("/api/posts", {
+        method: "GET",
+      });
+      if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const postsData = await postResponse.json();
-      const usersData = await userResponse.json();
-
-      setPosts([...posts, ...postsData]);
-      setUsers([...users, ...usersData]);
+      const data = await response.json();
+      setPosts([...posts, ...data]);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -35,8 +29,8 @@ const PostList = () => {
 
   return (
     <div>
-      {posts.map((post) => {
-        return <Post post={post} key={post.id} />;
+      {posts.map((post, i) => {
+        return <Post index={i + 1} post={post} key={post.id} />;
       })}
     </div>
   );
