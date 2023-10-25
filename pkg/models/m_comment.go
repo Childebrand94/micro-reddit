@@ -18,6 +18,6 @@ type Comment struct {
 }
 
 type CommentResp struct {
-	Author  Author `json:"author"`
-	Comment `json:"comment"`
+    Comment 
+	Author `json:"author"`
 }

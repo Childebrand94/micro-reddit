@@ -18,8 +18,8 @@ type Post struct {
 
 type PostResponse struct {
 	Post
-	Author   Author
-	Comments []CommentResp
+    Author   Author `json:"author"`
+    Comments []CommentResp `json:"comments"`
 }
 
 type Author struct {

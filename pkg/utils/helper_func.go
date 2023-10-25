@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -78,7 +77,6 @@ func ConvertID(s string, w http.ResponseWriter) int {
 	intID, err := strconv.Atoi(s)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Invalid ID", err)
-		os.Exit(1)
 	}
 	return intID
 }

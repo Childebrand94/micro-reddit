@@ -96,7 +96,7 @@ func AddPostVotes(
 	user_id, post_id int64,
 	up_vote bool,
 ) error {
-	query := "INSERT INTO up_vote (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
+	query := "INSERT INTO post_votes (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
 	_, err := pool.Exec(ctx, query, user_id, post_id, up_vote)
 	return err
 }
