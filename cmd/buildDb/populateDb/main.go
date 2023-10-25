@@ -93,7 +93,7 @@ func populateDatabaseWithPosts(pool *pgxpool.Pool) {
 
 		p.Author_ID = u.ID
 		p.URL = faker.URL()
-		p.Title = faker.Sentence(nb_words=6)
+		p.Title = faker.Sentence()
 
 		posts = append(posts, p)
 	}
@@ -225,7 +225,7 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 	}
 
 	for i, pc := range comments {
-		var c models.Comment
+		var c models.CommentResp
 		id := sql.NullInt64{
 			Int64: pc.ID,
 			Valid: true,
