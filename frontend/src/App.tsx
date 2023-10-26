@@ -10,7 +10,10 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/posts/:post_id" element={<CommentView />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route
+                        path="/users/:user_id/comments"
+                        element={<Profile />}
+                    />
                 </Routes>
             </Router>
         </>

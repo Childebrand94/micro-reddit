@@ -21,11 +21,11 @@ const PostList = () => {
     };
     useEffect(() => {
         console.log("Fetching Posts...");
-      
-        fetchPosts()
+
+        fetchPosts();
     }, []);
 
-      console.log(posts)
+    console.log(posts);
     return (
         <div>
             {posts.map((post, i) => {

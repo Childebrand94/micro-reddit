@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 type filter = "hot" | "top" | "new";
 
 const FilterOptions: React.FC = (): JSX.Element => {
-    const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const [activeFilter, setActiveFilter] = useState<filter>("hot");
 
     const handleDropDown = () => {
-        setIsDropDownOpen(!isDropDownOpen);
+        setIsOpen(!isOpen);
     };
 
     const handleLinkClick = (text: filter): void => {
@@ -23,16 +23,15 @@ const FilterOptions: React.FC = (): JSX.Element => {
             <div className="flex justify-center text-center w-14 rounded-xl bg-blue-400">
                 <button
                     className="text-xl p-1"
-                    onClick={() => setIsDropDownOpen(!isDropDownOpen)}
+                    onClick={() => setIsOpen(!isOpen)}
                 >
                     {activeFilter.toUpperCase()}
                 </button>
             </div>
-            {isDropDownOpen && (
+            {isOpen && (
                 <div
-                    className="flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolutetransition-transform ease-out duration-200 transform scale-${isOpen ? '100' : '95'} origin-top ${
-    isOpen ? 'visible opacity-100' : 'invisible opacity-0'
-    }`}"
+        className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute transition-transform ease-out duration-200 transform scale-${isOpen ? '100' : '95'} origin-top ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}
+
                 >
                     {options.map((x, i) => {
                         return (

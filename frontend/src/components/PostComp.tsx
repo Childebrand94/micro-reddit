@@ -2,6 +2,7 @@ import { Post as PostType } from "../utils/type";
 import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { User } from "./User.tsx";
 
 export type PostProps = {
     post: PostType;
@@ -19,14 +20,13 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
             if (!resp.ok) {
                 throw new Error(`HTTP error! Status: ${resp.status}`);
             }
-             
-            const domains: string[] = path.split("/")
-            if(domains[domains.length - 1] === "up-vote"){
-            setPoints((prePoints) => prePoints + 1);
+
+            const domains: string[] = path.split("/");
+            if (domains[domains.length - 1] === "up-vote") {
+                setPoints((prePoints) => prePoints + 1);
             } else {
                 setPoints((prePoints) => prePoints - 1);
             }
-
         } catch (error) {
             console.error("Error during fetch:", error);
             throw error;
@@ -89,9 +89,13 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
                 <div className="flex">
                     <p className="text-xs">
-                        {points ? points : 0} {points === 1 ? "point" : "points"}{" "}
-                        posted {getTimeDif(post.createdAt)} ago by{" "}
-                        {post.author.firstName}
+                        {points ? points : 0}{" "}
+                        {points === 1 ? "point" : "points"} posted{" "}
+                        {getTimeDif(post.createdAt)} ago by{" "}
+                        <User
+                            username={post.author.userName}
+                            id={String(post.authorId)}
+                        />
                         <Link
                             to={`/posts/${post.id}`}
                             className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"

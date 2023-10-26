@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { getTimeDif } from "../utils/helpers.ts";
 import { Comment as CommentType } from "../utils/type.ts";
+import { User } from "./User.tsx";
 
 export type CommentProp = {
     comment: CommentType;
-    index: number | null;
 };
 
-const Comment: React.FC<CommentProp> = ({ comment }) => {
-    console.log(comment);
+const CommentComp: React.FC<CommentProp> = ({ comment }) => {
     const [points, setPoints] = useState(comment.upVotes);
 
     const handleArrowClick = async (path: string) => {
@@ -56,11 +55,13 @@ const Comment: React.FC<CommentProp> = ({ comment }) => {
             <div className="col-start-2">
                 <span className="text-gray-300 text-xs">
                     <h1 className="text-blue-300 text-xs inline">
-                        {comment.author.userName}
+                        <User
+                            username={comment.author.userName}
+                            id={String(comment.authorId)}
+                        />
                     </h1>{" "}
                     <span>
-                        {points} points {getTimeDif(comment.createdAt)}{" "}
-                        ago
+                        {points} points {getTimeDif(comment.createdAt)} ago
                     </span>
                 </span>
                 <p>
@@ -73,4 +74,4 @@ const Comment: React.FC<CommentProp> = ({ comment }) => {
         </div>
     );
 };
-export default Comment;
+export default CommentComp;
