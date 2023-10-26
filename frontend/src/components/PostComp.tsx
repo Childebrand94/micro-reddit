@@ -96,12 +96,13 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                             username={post.author.userName}
                             id={String(post.authorId)}
                         />
-                        <Link
+                    { post.comments === undefined ? <></> 
+                        :  <Link
                             to={`/posts/${post.id}`}
                             className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"
                         >
                             {post.comments.length} comments
-                        </Link>
+                        </Link>}
                     </p>
                 </div>
             </div>

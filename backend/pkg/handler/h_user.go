@@ -71,7 +71,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := database.GetUserByID(ctx, u.DB, id)
+	user, err := database.GetUserWithCPByID(ctx, u.DB, id)
 	if err != nil {
 		models.SendError(
 			w,
@@ -82,7 +82,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(user[0])
+	data, err := json.Marshal(user)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to process user data", err)
 		return
@@ -107,7 +107,7 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 	err = database.UpdateUserByID(ctx, u.DB, updateUser, int64(id))
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Faild to update database", err)
+		models.SendError(w, http.StatusInternalServerError, "Failed to update database", err)
 		return
 	}
 

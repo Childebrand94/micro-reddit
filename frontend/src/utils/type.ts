@@ -34,11 +34,20 @@ export type User = {
     dateJoined: string;
 };
 
-export type VoteContextType = {
-  points: number;
-  setPoints: React.Dispatch<React.SetStateAction<number>>;
-  handleArrowClick: (path: string) => Promise<void>;
+export type UserID = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    dateJoined: string;
+    posts: Post[];
+    comments: Comment[];
 };
-
+export type VoteContextType = {
+    points: number;
+    setPoints: React.Dispatch<React.SetStateAction<number>>;
+    handleArrowClick: (path: string) => Promise<void>;
+};
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";

@@ -1,16 +1,16 @@
 import NavBar from "../components/NavBar";
-import { CommentList } from "../components/CommentList";
+import { PostComp } from "../components/PostComp";
 import { useEffect, useState } from "react";
-import { Comment as CommentType } from "../utils/type";
+import { Post, UserID } from "../utils/type";
 import { useParams } from "react-router-dom";
 
 const Profile = () => {
-    const [commentData, setCommentData] = useState<CommentType[]>([]);
+    const [userData, setUserData] = useState<UserID | null>(null);
     const { user_id } = useParams();
 
     const fetchComments = async () => {
         try {
-            const response = await fetch(`/api/users/${user_id}/comments`, {
+            const response = await fetch(`/api/users/${user_id}`, {
                 method: "GET",
             });
             if (!response.ok) {
@@ -18,7 +18,7 @@ const Profile = () => {
             }
             const data = await response.json();
             console.log(data);
-            setCommentData([...data]);
+            setUserData(data);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -27,13 +27,22 @@ const Profile = () => {
         fetchComments();
     }, []);
 
-    console.log(commentData)
+    
+
     return (
         <div>
             <NavBar />
-            <h1 className="text-blue-300 m-3 font-semibold">UserName</h1>
+            <h1 className="text-blue-700 m-3 font-bold">{userData?.username}</h1>
             <div className="bg-blue-400 w-full h-1"></div>
-            {/* <CommentList /> */}
+            <div>
+                {userData !== null ? (
+                    userData.posts.map((p: Post) => {
+                        return <PostComp key={userData.id} post={p} index={null} />;
+                    })
+                ) : (
+                    <h1>User Not Found</h1>
+                )}
+            </div>
         </div>
     );
 };

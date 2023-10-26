@@ -26,4 +26,9 @@ type Author struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	UserName  string `json:"userName"`
+}	
+
+type PostWithAuthor struct{
+    Post
+    Author Author `json:"author"`
 }

@@ -92,13 +92,23 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	posts, comments, err := database.GetPostById(ctx, p.DB, int64(post_id))
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get post data from database", err)
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to get post data from database",
+			err,
+		)
 		return
 	}
 
 	user, err := database.GetUserByID(ctx, p.DB, post_id)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get user data from database", err)
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Failed to get user data from database",
+			err,
+		)
 		return
 	}
 

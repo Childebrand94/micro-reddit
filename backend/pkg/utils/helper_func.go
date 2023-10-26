@@ -13,7 +13,11 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
-func ConstructPostResponses(allPosts []models.Post, allComments []models.CommentResp, allUsers []models.User) []models.PostResponse {
+func ConstructPostResponses(
+	allPosts []models.Post,
+	allComments []models.CommentResp,
+	allUsers []models.User,
+) []models.PostResponse {
 	var result []models.PostResponse
 
 	for _, post := range allPosts {
@@ -56,6 +60,23 @@ func AddAuthorComment(allComments []models.Comment, allUsers []models.User) []mo
 	}
 	return result
 }
+
+func AddAuthorPosts(allPosts []models.Post, user models.User) []models.PostWithAuthor {
+    var result []models.PostWithAuthor
+
+	for _, post := range allPosts {
+		pr := models.PostWithAuthor{
+			Post: post,
+		}
+				pr.Author.FirstName = user.First_name
+				pr.Author.LastName = user.Last_name
+				pr.Author.UserName = user.Username
+	
+		result = append(result, pr)
+	}
+	return result
+}
+
 
 func GetVoteTotal(pool *pgxpool.Pool, id int64, table, column string) (pgtype.Int8, error) {
 	var totalVotes pgtype.Int8

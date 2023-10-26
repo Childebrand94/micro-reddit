@@ -3,7 +3,7 @@ import NavBar from "../components/NavBar";
 import { PostComp } from "../components/PostComp";
 import { Post as PostType } from "../utils/type";
 import { useParams } from "react-router-dom";
-import CommentComp from "../components/CommentComp.tsx";
+import { CommentList } from "../components/CommentList.tsx";
 
 const CommentView = () => {
     const [postData, setPostData] = useState<PostType | null>(null);
@@ -40,9 +40,11 @@ const CommentView = () => {
                 <h1>Post Not Found</h1>
             )}
             <div className="h-2 bg-blue-100 mt-3"></div>
-            {postData?.comments.map((c) => {
-                return <CommentComp key={c.id} comment={c} />;
-            })}
+            {postData ? (
+                <CommentList comments={postData?.comments} />
+            ) : (
+                <h1>Comments Not Found</h1>
+            )}
         </div>
     );
 };
