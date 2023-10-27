@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
                     ></label>
                     <input
                         type="email"
-                        placeholder="email"
+                        placeholder="Email"
                         id="email"
                         name="email"
                         value={formData.email}
@@ -49,7 +49,7 @@ const LoginForm: React.FC = () => {
                     ></label>
                     <input
                         type="password"
-                        placeholder="password"
+                        placeholder="Password"
                         id="password"
                         name="password"
                         value={formData.password}

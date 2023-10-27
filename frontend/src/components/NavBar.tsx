@@ -9,7 +9,7 @@ const NavBar = () => {
             <div className="mr-2">
                 <Link to="/">
                     <img
-                        className=" w-12"
+                        className="w-12"
                         src="../../public/assets/logo-reddit.svg"
                         alt="Reddit Logo"
                     />

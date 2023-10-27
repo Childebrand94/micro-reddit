@@ -75,7 +75,7 @@ const SignUpForm: React.FC = () => {
                     ></label>
                     <input
                         type="email"
-                        placeholder="email"
+                        placeholder="Email"
                         id="email"
                         name="email"
                         value={formData.email}
@@ -126,7 +126,7 @@ const SignUpForm: React.FC = () => {
                     ></label>
                     <input
                         type="password"
-                        placeholder="Retype password"
+                        placeholder="Password"
                         id="retypePassword"
                         name="retypePassword"
                         value={formData.retypePassword}
