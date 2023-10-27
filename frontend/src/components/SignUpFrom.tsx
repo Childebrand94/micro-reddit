@@ -5,6 +5,7 @@ const SignUpForm: React.FC = () => {
         firstName: "",
         lastName: "",
         email: "",
+        username: "",
         password: "",
         retypePassword: "",
     });
@@ -94,7 +95,7 @@ const SignUpForm: React.FC = () => {
                         placeholder="Username"
                         id="username"
                         name="username"
-                        value={formData.email}
+                        value={formData.username}
                         onChange={handleChange}
                         required
                         className="mt-1 p-2 w-full border rounded-md"

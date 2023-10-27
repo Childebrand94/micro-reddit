@@ -16,7 +16,6 @@ const LoginForm: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // Perform login operation here. For now, just console logging the data.
         console.log(formData);
     };
 
