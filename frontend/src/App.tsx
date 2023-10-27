@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./views/Home";
 import CommentView from "./views/CommentView";
 import Profile from "./views/Profile";
+import { Login } from "./views/Login";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                         path="/users/:user_id/comments"
                         element={<Profile />}
                     />
+                    <Route path="/users" element={<Login />} />
                 </Routes>
             </Router>
         </>

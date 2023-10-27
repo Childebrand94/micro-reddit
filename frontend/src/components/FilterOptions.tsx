@@ -28,25 +28,20 @@ const FilterOptions: React.FC = (): JSX.Element => {
                     {activeFilter.toUpperCase()}
                 </button>
             </div>
-            {isOpen && (
-                <div
-        className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute transition-transform ease-out duration-200 transform scale-${isOpen ? '100' : '95'} origin-top ${isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}
 
-                >
-                    {options.map((x, i) => {
-                        return (
-                            <Link
-                                key={i}
-                                onClick={() => handleLinkClick(x)}
-                                to={"/"}
-                            >
-                                {x.toUpperCase()}
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
+            <div
+                className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute overflow-hidden transition-max-height duration-300 ease-in ${
+                    isOpen ? "max-h-60" : "max-h-0"
+                }`}
+            >
+                {options.map((x, i) => (
+                    <Link key={i} onClick={() => handleLinkClick(x)} to={"/"}>
+                        {x.toUpperCase()}
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 };
+
 export default FilterOptions;
