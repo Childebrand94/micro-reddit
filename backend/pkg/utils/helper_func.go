@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -62,21 +63,20 @@ func AddAuthorComment(allComments []models.Comment, allUsers []models.User) []mo
 }
 
 func AddAuthorPosts(allPosts []models.Post, user models.User) []models.PostWithAuthor {
-    var result []models.PostWithAuthor
+	var result []models.PostWithAuthor
 
 	for _, post := range allPosts {
 		pr := models.PostWithAuthor{
 			Post: post,
 		}
-				pr.Author.FirstName = user.First_name
-				pr.Author.LastName = user.Last_name
-				pr.Author.UserName = user.Username
-	
+		pr.Author.FirstName = user.First_name
+		pr.Author.LastName = user.Last_name
+		pr.Author.UserName = user.Username
+
 		result = append(result, pr)
 	}
 	return result
 }
-
 
 func GetVoteTotal(pool *pgxpool.Pool, id int64, table, column string) (pgtype.Int8, error) {
 	var totalVotes pgtype.Int8
@@ -108,4 +108,20 @@ func SendSuccessfulResp(w http.ResponseWriter, message string) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": message,
 	})
+}
+
+func GenereateSessionToken() string {
+	token := uuid.New().String()
+	return token
+}
+
+func SetSessionToken(w http.ResponseWriter, token string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_toke",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+	})
+
+	SendSuccessfulResp(w, "Session token set")
 }

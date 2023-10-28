@@ -50,4 +50,14 @@ export type VoteContextType = {
     handleArrowClick: (path: string) => Promise<void>;
 };
 
+export type FormDataType = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    username: string;
+    password: string;
+    retypepassword: string;
+};
+export type LoginWindowState = "initial" | "signUp" | "signIn";
+
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";

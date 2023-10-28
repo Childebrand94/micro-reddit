@@ -31,7 +31,7 @@ func main() {
 
 	// Set up database connection
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-	if err != nil {
+	if err != nil { 
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
@@ -55,6 +55,7 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 		u.Last_name = faker.LastName()
 		u.Email = faker.Email()
 		u.Username = faker.Username()
+        
 
 		users = append(users, u)
 	}

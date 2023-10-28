@@ -7,7 +7,7 @@ const NavProfile = () => {
             {loggedIn ? (
                 <Link
                     to={"/users"}
-                    className="bg-blue-400 py-1 px-2 mb-4 rounded-xl text-xl hover:bg-blue-700"
+                    className="bg-blue-400 py-1 px-2 rounded-xl text-xl hover:bg-blue-700"
                 >
                     LogIn
                 </Link>

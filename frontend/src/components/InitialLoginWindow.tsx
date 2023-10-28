@@ -1,5 +1,5 @@
 import React from "react";
-import { LoginWindowState } from "../views/Login";
+import { LoginWindowState } from "../utils/type";
 
 type props = {
     fn: (arg: LoginWindowState) => void;

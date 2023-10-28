@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const SignUpForm: React.FC = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<Record<string, string>>({
         firstName: "",
         lastName: "",
         email: "",
@@ -24,7 +24,6 @@ const SignUpForm: React.FC = () => {
             alert("Passwords do not match!");
             return;
         }
-        // Perform sign-up operation here. For now, just console logging the data.
         console.log(formData);
     };
 

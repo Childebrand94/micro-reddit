@@ -12,11 +12,12 @@ import (
 func AddUser(ctx context.Context, pool *pgxpool.Pool, user models.User) error {
 	_, err := pool.Exec(
 		ctx,
-		"INSERT INTO users (first_name, last_name, username, email) VALUES ($2, $2, $3, $4)",
+		"INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5)",
 		user.First_name,
 		user.Last_name,
 		user.Username,
 		user.Email,
+		user.Password,
 	)
 
 	return err
@@ -93,7 +94,7 @@ func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models
 	}
 	defer rows.Close()
 
-    var allPosts []models.Post
+	var allPosts []models.Post
 
 	for rows.Next() {
 		var post models.Post
@@ -117,8 +118,7 @@ func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models
 		allPosts = append(allPosts, post)
 	}
 
-    resp.Posts = utils.AddAuthorPosts(allPosts, resp.User)
-
+	resp.Posts = utils.AddAuthorPosts(allPosts, resp.User)
 
 	// Fetch Comments
 	rows, err = pool.Query(ctx, commentQuery, id)

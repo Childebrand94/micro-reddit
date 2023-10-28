@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const LoginForm: React.FC = () => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<Record<string, string>>({
         email: "",
         password: "",
     });

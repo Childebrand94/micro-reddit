@@ -20,12 +20,9 @@ const PostList = () => {
         }
     };
     useEffect(() => {
-        console.log("Fetching Posts...");
-
         fetchPosts();
     }, []);
 
-    console.log(posts);
     return (
         <div>
             {posts.map((post, i) => {

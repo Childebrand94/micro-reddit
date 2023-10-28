@@ -3,12 +3,14 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
@@ -32,6 +34,18 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(payload.Password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to process user password", err)
+		return
+	}
+
+	payload.Password = string(hashedPassword)
+	fmt.Print(payload.First_name)
+
 	err = database.AddUser(ctx, u.DB, payload)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
@@ -39,6 +53,43 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendSuccessfulResp(w, "Successfully created a user")
+}
+
+func (u *User) Authenticate(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
+	user, err := database.GetUserByEmail(ctx, u.DB)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Username does no exist", err)
+		return
+	}
+
+	var payload models.User
+	err = json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
+		return
+	}
+
+	hashedPassword := user.password
+	enteredPassord := payload.Password
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(enteredPassord))
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Invalid credentials", err)
+		return
+	}
+
+	sessionId := utils.GenereateSessionToken()
+
+	err = database.CreateSession(ctx, u.DB, sessionId)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to generate session", err)
+		return
+	}
+
+	utils.SetSessionToken(w, sessionId)
 }
 
 func (u *User) List(w http.ResponseWriter, r *http.Request) {

@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS comment_vote CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS posts CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS sessions CASCADE;
+
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -12,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_name text NOT NULL,
     username text NOT NULL UNIQUE,
     email text NOT NULL UNIQUE,
+    password text NOT NULL, 
     registered_at timestamp with time zone NOT NULL default NOW()
 );
 
@@ -59,4 +62,11 @@ CREATE TABLE IF NOT EXISTS comment_vote (
     UNIQUE (comment_id, user_id),
     CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id),
     CONSTRAINT fk_comment_id FOREIGN KEY(comment_id) REFERENCES comments(id)
+);
+
+-- Session Table  
+CREATE TABLE IF NOT EXISTS sessions (
+    session_id UUID PRIMARY KEY,
+    user_id bigint NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id)
 );
