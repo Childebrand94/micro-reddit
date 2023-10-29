@@ -122,6 +122,6 @@ func SetSessionToken(w http.ResponseWriter, token string) {
 		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Now().Add(12 * time.Hour), // Uncomment if you want to set expiration
+		Expires:  time.Now().Add(12 * time.Hour),
 	})
 }

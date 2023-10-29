@@ -26,7 +26,7 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	defer ctxCancel()
 
 	var payload models.User
-	// Decode the request body to get user details
+
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
@@ -53,6 +53,7 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 
 	log.Print("Successfully created user")
 
+	// Crate Session for user
 	user, err := database.GetUserByEmail(ctx, u.DB, payload.Email)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to get user by email", err)
@@ -114,6 +115,34 @@ func (u *User) Authenticate(w http.ResponseWriter, r *http.Request) {
 	utils.SetSessionToken(w, sessionId)
 
 	utils.SendSuccessfulResp(w, "Successfully created session")
+}
+
+func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "No active session found", err)
+		return
+	}
+	sessionId := cookie.Value
+
+	err = database.DeleteSession(ctx, u.DB, sessionId)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to delete session", err)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	})
+
+	utils.SendSuccessfulResp(w, "Successfully logged out")
 }
 
 func (u *User) List(w http.ResponseWriter, r *http.Request) {

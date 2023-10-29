@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/Childebrand94/micro-reddit/pkg/database"
 	"github.com/Childebrand94/micro-reddit/pkg/models"
@@ -31,7 +32,7 @@ func main() {
 
 	// Set up database connection
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-	if err != nil { 
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
@@ -46,6 +47,14 @@ func main() {
 }
 
 func populateDatabaseWithUsers(pool *pgxpool.Pool) {
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte("1234"),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		log.Fatalf("Failed to hash password: %v", err)
+	}
+
 	var users []models.User
 
 	for i := 0; i < 10; i++ {
@@ -53,9 +62,9 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 
 		u.First_name = faker.FirstName()
 		u.Last_name = faker.LastName()
-		u.Email = faker.Email()
 		u.Username = faker.Username()
-        
+		u.Email = faker.Email()
+		u.Password = string(hashedPassword)
 
 		users = append(users, u)
 	}
@@ -63,20 +72,20 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 
 	for _, u := range users {
 		batch.Queue(
-			"INSERT INTO users (first_name, last_name, username, email) VALUES ($1, $2, $3, $4)",
+			"INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5)",
 			u.First_name,
 			u.Last_name,
 			u.Username,
 			u.Email,
+			u.Password,
 		)
 	}
 
 	br := pool.SendBatch(context.TODO(), batch)
-	_, err := br.Exec()
+	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add users to database: %v", err)
 	}
-	// fmt.Printf("Users: %v", users)
 }
 
 func populateDatabaseWithPosts(pool *pgxpool.Pool) {
@@ -109,7 +118,7 @@ func populateDatabaseWithPosts(pool *pgxpool.Pool) {
 		)
 	}
 
-	br := pool.SendBatch(context.TODO(), batch)
+	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
 		log.Fatalf("Failed to add posts to database: %v", err)
@@ -147,9 +156,9 @@ func addVotesPosts(pool *pgxpool.Pool) {
 			votes = append(votes, v)
 		}
 	}
-	for _, v := range votes {
-		database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
-	}
+	// for _, v := range votes {
+	// 	database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
+	// }
 
 	batch := &pgx.Batch{}
 
@@ -165,7 +174,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
-		log.Fatalf("Failed to add votes to database: %v", err)
+		log.Fatalf("Failed to add post votes to database: %v", err)
 	}
 }
 
@@ -313,6 +322,6 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 	br := pool.SendBatch(ctx, batch)
 	_, err = br.Exec()
 	if err != nil {
-		log.Fatalf("Failed to add votes to database: %v", err)
+		log.Fatalf("Failed to add comment votes to database: %v", err)
 	}
 }

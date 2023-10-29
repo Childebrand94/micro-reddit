@@ -18,13 +18,33 @@ const SignUpForm: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (formData.password !== formData.retypePassword) {
             alert("Passwords do not match!");
             return;
         }
-        console.log(formData);
+
+        const url = "/api/users";
+        try {
+            const response = await fetch(url, {
+                method: "Post",
+                headers: {
+                    "Content-Type": "applications/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            console.log(response.body);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log("There was an error submitting the form", error);
+        }
     };
 
     return (

@@ -34,7 +34,7 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 	var users []models.User
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.ID, &u.First_name, &u.Last_name, &u.Username, &u.Email, &u.DateJoined); err != nil {
+		if err := rows.Scan(&u.ID, &u.First_name, &u.Last_name, &u.Username, &u.Email, &u.Password, &u.DateJoined); err != nil {
 			return nil, err
 		}
 		users = append(users, u)
@@ -56,6 +56,7 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User
 		&resp.Last_name,
 		&resp.Username,
 		&resp.Email,
+		&resp.Password,
 		&resp.DateJoined,
 	)
 	if err != nil {
@@ -81,6 +82,7 @@ func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models
 		&resp.User.Last_name,
 		&resp.User.Username,
 		&resp.User.Email,
+		&resp.Password,
 		&resp.User.DateJoined,
 	)
 	if err != nil {
@@ -197,5 +199,11 @@ func CreateSession(ctx context.Context, pool *pgxpool.Pool, sessionId string, us
 	querey := "INSERT INTO sessions (session_id, user_id) VALUES ($1, $2)"
 
 	_, err := pool.Exec(ctx, querey, sessionId, userId)
+	return err
+}
+
+func DeleteSession(ctx context.Context, pool *pgxpool.Pool, sessionId string) error {
+	querey := `DELETE FROM sessions WHERE session_id = $1`
+	_, err := pool.Exec(ctx, querey, sessionId)
 	return err
 }

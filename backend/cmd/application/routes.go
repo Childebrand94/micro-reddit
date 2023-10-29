@@ -62,8 +62,8 @@ func (a *App) loadUserRoutes(router chi.Router) {
 
 	router.Post("/", userHandler.Create)
 	router.Post("/login", userHandler.Authenticate)
+	router.Post("/logout", userHandler.Logout)
 	router.Get("/", userHandler.List)
 	router.Get("/{id}", userHandler.GetByID)
 	router.Put("/{id}", userHandler.UpdateByID)
-	// router.Delete("/{id}", userHandler.DeleteByID)
 }
