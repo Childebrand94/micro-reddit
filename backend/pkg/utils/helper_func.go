@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -117,11 +118,10 @@ func GenereateSessionToken() string {
 
 func SetSessionToken(w http.ResponseWriter, token string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_toke",
+		Name:     "session_token",
 		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
+		Expires:  time.Now().Add(12 * time.Hour), // Uncomment if you want to set expiration
 	})
-
-	SendSuccessfulResp(w, "Session token set")
 }

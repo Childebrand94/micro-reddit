@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -44,7 +44,6 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload.Password = string(hashedPassword)
-	fmt.Print(payload.First_name)
 
 	err = database.AddUser(ctx, u.DB, payload)
 	if err != nil {
@@ -52,30 +51,53 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccessfulResp(w, "Successfully created a user")
+	log.Print("Successfully created user")
+
+	user, err := database.GetUserByEmail(ctx, u.DB, payload.Email)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to get user by email", err)
+		return
+	}
+
+	sessionId := utils.GenereateSessionToken()
+
+	err = database.CreateSession(ctx, u.DB, sessionId, user.ID)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to generate session", err)
+		return
+	}
+
+	utils.SetSessionToken(w, sessionId)
+
+	utils.SendSuccessfulResp(w, "Successfully created a user and session")
 }
 
 func (u *User) Authenticate(w http.ResponseWriter, r *http.Request) {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer ctxCancel()
 
-	user, err := database.GetUserByEmail(ctx, u.DB)
-	if err != nil {
-		models.SendError(w, http.StatusUnauthorized, "Username does no exist", err)
-		return
+	type LoginRequest struct {
+		Email    string
+		Password string
 	}
 
-	var payload models.User
-	err = json.NewDecoder(r.Body).Decode(&payload)
+	var payload LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
 		return
 	}
 
-	hashedPassword := user.password
-	enteredPassord := payload.Password
+	user, err := database.GetUserByEmail(ctx, u.DB, payload.Email)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Email not registered", err)
+		return
+	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(enteredPassord))
+	hashedPassword := user.Password
+	enteredPassword := payload.Password
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(enteredPassword))
 	if err != nil {
 		models.SendError(w, http.StatusUnauthorized, "Invalid credentials", err)
 		return
@@ -83,13 +105,15 @@ func (u *User) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	sessionId := utils.GenereateSessionToken()
 
-	err = database.CreateSession(ctx, u.DB, sessionId)
+	err = database.CreateSession(ctx, u.DB, sessionId, user.ID)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to generate session", err)
 		return
 	}
 
 	utils.SetSessionToken(w, sessionId)
+
+	utils.SendSuccessfulResp(w, "Successfully created session")
 }
 
 func (u *User) List(w http.ResponseWriter, r *http.Request) {

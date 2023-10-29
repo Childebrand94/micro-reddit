@@ -171,3 +171,31 @@ func UpdateUserByID(
 	)
 	return err
 }
+
+func GetUserByEmail(ctx context.Context, pool *pgxpool.Pool, email string) (*models.User, error) {
+	query := `SELECT * FROM users WHERE email = $1`
+
+	var u models.User
+	row := pool.QueryRow(ctx, query, email)
+	err := row.Scan(
+		&u.ID,
+		&u.First_name,
+		&u.Last_name,
+		&u.Username,
+		&u.Email,
+		&u.Password,
+		&u.DateJoined,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func CreateSession(ctx context.Context, pool *pgxpool.Pool, sessionId string, userId int64) error {
+	querey := "INSERT INTO sessions (session_id, user_id) VALUES ($1, $2)"
+
+	_, err := pool.Exec(ctx, querey, sessionId, userId)
+	return err
+}
