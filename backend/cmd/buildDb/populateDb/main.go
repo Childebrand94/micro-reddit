@@ -156,9 +156,9 @@ func addVotesPosts(pool *pgxpool.Pool) {
 			votes = append(votes, v)
 		}
 	}
-	// for _, v := range votes {
-	// 	database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
-	// }
+	for _, v := range votes {
+		database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
+	}
 
 	batch := &pgx.Batch{}
 

@@ -35,7 +35,6 @@ const SignUpForm: React.FC = () => {
                 body: JSON.stringify(formData),
             });
 
-            console.log(response.body);
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }

@@ -14,9 +14,27 @@ const LoginForm: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(formData);
+        const url = "/api/users/login";
+        try {
+            const response = await fetch(url, {
+                method: "Post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network respose was not ok");
+            }
+
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log("There was an error submitting the form", error);
+        }
     };
 
     return (
