@@ -57,7 +57,7 @@ func populateDatabaseWithUsers(pool *pgxpool.Pool) {
 
 	var users []models.User
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 30; i++ {
 		var u models.User
 
 		u.First_name = faker.FirstName()
@@ -155,9 +155,6 @@ func addVotesPosts(pool *pgxpool.Pool) {
 
 			votes = append(votes, v)
 		}
-	}
-	for _, v := range votes {
-		database.AddPostVotes(ctx, pool, v.User_id, v.Post_id, v.Up_vote)
 	}
 
 	batch := &pgx.Batch{}

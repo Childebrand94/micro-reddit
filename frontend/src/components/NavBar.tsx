@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import FilterOptions from "./FilterOptions";
-import NavProfile from "./NavProfile";
 import NavSearch from "./NavSearch";
+import { useAuth } from "../context/UseAuth";
+import { LogoutButton } from "./LogoutButton";
+import LogInButton from "./LogInButton";
 
 const NavBar = () => {
+    const { loggedIn } = useAuth();
     return (
         <nav className="flex justify-between items-center max-w-full h-12 bg-blue-100 px-4">
             <div className="mr-2">
@@ -19,7 +22,7 @@ const NavBar = () => {
 
             <div className="flex items-center">
                 <NavSearch />
-                <NavProfile />
+                {loggedIn ? <LogoutButton /> : <LogInButton />}
             </div>
         </nav>
     );

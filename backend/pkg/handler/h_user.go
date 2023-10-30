@@ -140,6 +140,7 @@ func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
 	})
 
 	utils.SendSuccessfulResp(w, "Successfully logged out")

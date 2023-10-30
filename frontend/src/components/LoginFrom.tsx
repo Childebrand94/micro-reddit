@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useAuth } from "../context/UseAuth";
+import { redirect } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
+    const { setLoggedIn } = useAuth();
+
     const [formData, setFormData] = useState<Record<string, string>>({
         email: "",
         password: "",
@@ -31,9 +35,12 @@ const LoginForm: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log(data);
+            console.log(data.message);
+            window.location.href = "/";
         } catch (error) {
             console.log("There was an error submitting the form", error);
+        } finally {
+            setLoggedIn(true);
         }
     };
 

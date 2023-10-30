@@ -40,7 +40,8 @@ const SignUpForm: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log(data);
+            console.log(data.message);
+            window.location.href = "/";
         } catch (error) {
             console.log("There was an error submitting the form", error);
         }

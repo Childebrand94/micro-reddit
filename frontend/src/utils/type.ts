@@ -44,11 +44,11 @@ export type UserID = {
     posts: Post[];
     comments: Comment[];
 };
-export type VoteContextType = {
-    points: number;
-    setPoints: React.Dispatch<React.SetStateAction<number>>;
-    handleArrowClick: (path: string) => Promise<void>;
-};
+// export type VoteContextType = {
+// points: number;
+// setPoints: React.Dispatch<React.SetStateAction<number>>;
+// handleArrowClick: (path: string) => Promise<void>;
+// };
 
 export type FormDataType = {
     firstname: string;

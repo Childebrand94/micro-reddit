@@ -1,4 +1,9 @@
-import { VoteContextType } from "../utils/type";
 import React from "react";
+export type AuthContextType = {
+    loggedIn: boolean;
+    setLoggedIn: (value: boolean) => void;
+};
 
-export const VoteContext = React.createContext<VoteContextType | undefined>(undefined);
+export const AuthContext = React.createContext<AuthContextType | undefined>(
+    undefined,
+);

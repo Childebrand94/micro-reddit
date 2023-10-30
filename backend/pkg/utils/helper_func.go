@@ -123,5 +123,6 @@ func SetSessionToken(w http.ResponseWriter, token string) {
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Now().Add(12 * time.Hour),
+		SameSite: http.SameSiteNoneMode,
 	})
 }
