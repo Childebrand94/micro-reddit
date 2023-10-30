@@ -53,7 +53,7 @@ func GetPostById(
 	p.Vote = totalVotes
 	posts = append(posts, p)
 
-	rows, err := pool.Query(context.TODO(), queryComments, post_id)
+	rows, err := pool.Query(ctx, queryComments, post_id)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,18 +76,34 @@ func GetPostById(
 	return posts, comments, nil
 }
 
-func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.CommentResp, []models.Post, error) {
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {
 	allPosts, err := GetPostsHelper(ctx, pool)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	allComments, err := GetCommentsHelper(ctx, pool)
-	if err != nil {
-		return nil, nil, err
+	var postResp []models.PostResponse
+
+	for _, post := range allPosts {
+		query := "SELECT * FROM comments WHERE post_id = $1"
+
+		rows, err := pool.Query(ctx, query, post.ID)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var c models.CommentResp
+			if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at); err != nil {
+				return nil, err
+			}
+			post.Comments = append(post.Comments, c)
+		}
+		postResp = append(postResp, post)
 	}
 
-	return allComments, allPosts, nil
+	return postResp, nil
 }
 
 func AddPostVotes(
@@ -101,8 +117,12 @@ func AddPostVotes(
 	return err
 }
 
-func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Post, error) {
-	queryForPosts := `SELECT * FROM posts;`
+func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {
+	queryForPosts := `SELECT p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at, u.first_name,
+                        u.last_name, u.username
+                    FROM posts as p
+                    LEFT JOIN 
+                    users as u ON u.id = p.author_id`
 
 	postRows, err := pool.Query(ctx, queryForPosts)
 	if err != nil {
@@ -111,26 +131,29 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Post, err
 
 	defer postRows.Close()
 
-	var allPosts []models.Post
+	var allPosts []models.PostResponse
 
 	for postRows.Next() {
-		// Create structs to scan data too
-		var p models.Post
 
-		// Scan data from DB to structs
+		var p models.PostResponse
+
 		if err := postRows.Scan(
 			&p.ID,
 			&p.Author_ID,
 			&p.Title,
 			&p.URL,
 			&p.CreatedAt,
-			&p.UpdatedAt); err != nil {
+			&p.UpdatedAt,
+			&p.Author.FirstName,
+			&p.Author.LastName,
+			&p.Author.UserName); err != nil {
 			return nil, err
 		}
 		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 		if err != nil {
 			return nil, err
 		}
+
 		allPosts = append(allPosts, p)
 	}
 

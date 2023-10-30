@@ -50,7 +50,7 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 
-	allComments, allPosts, err := database.GetAllPosts(ctx, p.DB)
+	resp, err := database.GetAllPosts(ctx, p.DB)
 	if err != nil {
 		models.SendError(
 			w,
@@ -60,17 +60,6 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	allUsers, err := database.GetAllUsers(ctx, p.DB)
-	if err != nil {
-		models.SendError(
-			w,
-			http.StatusInternalServerError,
-			"Failed to fetch posts from database",
-			err,
-		)
-		return
-	}
-	resp := utils.ConstructPostResponses(allPosts, allComments, allUsers)
 
 	data, err := json.Marshal(resp)
 	if err != nil {

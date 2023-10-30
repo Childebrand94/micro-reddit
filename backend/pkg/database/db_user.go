@@ -24,7 +24,7 @@ func AddUser(ctx context.Context, pool *pgxpool.Pool, user models.User) error {
 }
 
 func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error) {
-	query := "SELECT * FROM users"
+	query := "SELECT id, first_name, last_name, username, email, registered_at FROM users"
 	rows, err := pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 	var users []models.User
 	for rows.Next() {
 		var u models.User
-		if err := rows.Scan(&u.ID, &u.First_name, &u.Last_name, &u.Username, &u.Email, &u.Password, &u.DateJoined); err != nil {
+		if err := rows.Scan(&u.ID, &u.First_name, &u.Last_name, &u.Username, &u.Email, &u.DateJoined); err != nil {
 			return nil, err
 		}
 		users = append(users, u)
@@ -43,7 +43,7 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 }
 
 func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User, error) {
-	userQuery := "SELECT * FROM users WHERE id = $1"
+	userQuery := "SELECT id, first_name, last_name, username, email FROM users WHERE id = $1"
 
 	var users []models.User
 	var resp models.User
@@ -56,7 +56,6 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User
 		&resp.Last_name,
 		&resp.Username,
 		&resp.Email,
-		&resp.Password,
 		&resp.DateJoined,
 	)
 	if err != nil {
@@ -68,7 +67,7 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User
 }
 
 func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.UserResp, error) {
-	userQuery := "SELECT * FROM users WHERE id = $1"
+	userQuery := "SELECT id, first_name, last_name, username, email FROM users WHERE id = $1"
 	postQuery := "SELECT * FROM posts WHERE author_id = $1"
 	commentQuery := "SELECT * FROM comments WHERE author_id = $1"
 
@@ -82,7 +81,6 @@ func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models
 		&resp.User.Last_name,
 		&resp.User.Username,
 		&resp.User.Email,
-		&resp.Password,
 		&resp.User.DateJoined,
 	)
 	if err != nil {
