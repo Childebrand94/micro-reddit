@@ -206,3 +206,52 @@ func GetAllCommentsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]
 
 	return comments, nil
 }
+
+func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.UserPoints, error) {
+	queryPosts := `
+        SELECT 
+            COALESCE(COUNT(p.id), 0) AS post_count
+        FROM 
+            posts p
+        WHERE 
+            p.author_id = $1;`
+
+	queryPostVotes := `
+        SELECT 
+            COALESCE(SUM(CASE WHEN pv.up_vote = true THEN 1 ELSE 0 END), 0) AS up_vote_count,
+            COALESCE(SUM(CASE WHEN pv.up_vote = false THEN 1 ELSE 0 END), 0) AS down_vote_count
+        FROM 
+            post_votes AS pv 
+        WHERE 
+            pv.user_id = $1;`
+
+	queryCommentVotes := `
+        SELECT 
+            COALESCE(SUM(CASE WHEN cv.up_vote = true THEN 1 ELSE 0 END), 0) AS up_vote_count,
+            COALESCE(SUM(CASE WHEN cv.up_vote = false THEN 1 ELSE 0 END), 0) AS down_vote_count
+        FROM 
+            comment_vote AS cv 
+        WHERE 
+            cv.user_id = $1;`
+
+	var up models.UserPoints
+
+	err := pool.QueryRow(ctx, queryPosts, id).Scan(&up.PostCount)
+	if err != nil {
+		return nil, err
+	}
+
+	err = pool.QueryRow(ctx, queryPostVotes, id).Scan(&up.PostUpVotes, &up.PostDownVotes)
+	if err != nil {
+		return nil, err
+	}
+
+	err = pool.QueryRow(ctx, queryCommentVotes, id).Scan(&up.CommentUpVotes, &up.CommentDownVotes)
+	if err != nil {
+		return nil, err
+	}
+	// Compute total karma (adjust the logic as per your requirements)
+	up.Karma = up.PostCount + up.PostUpVotes - up.PostDownVotes + up.CommentUpVotes - up.CommentDownVotes
+
+	return &up, nil
+}

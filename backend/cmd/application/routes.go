@@ -68,4 +68,5 @@ func (a *App) loadUserRoutes(router chi.Router) {
 	router.Put("/{id}", userHandler.UpdateByID)
 	router.Get("/{id}/posts", userHandler.GetAllPostsByUser)
 	router.Get("/{id}/comments", userHandler.GetAllCommentsByUser)
+	router.Get("/{id}/points", userHandler.GetUserPoints)
 }
