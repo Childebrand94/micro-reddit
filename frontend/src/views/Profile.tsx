@@ -28,8 +28,6 @@ const Profile = () => {
         fetchComments();
     }, []);
 
-    console.log(data);
-
     const handleSubmittedClick = () => {
         setToggleView(!toggleView);
     };
@@ -78,7 +76,9 @@ const Profile = () => {
                     )}
                 </div>
             ) : (
-                <ProfileBasic />
+                <ProfileBasic
+                    username={data ? data[0].author.userName : "Unknown"}
+                />
             )}
         </div>
     );

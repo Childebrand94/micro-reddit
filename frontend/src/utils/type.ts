@@ -34,6 +34,15 @@ export type User = {
     dateJoined: string;
 };
 
+export type UserPoints = {
+    postCount: number;
+    postUpVotes: number;
+    postDownVotes: number;
+    commentUpVotes: number;
+    commentDownVotes: number;
+    karma: number;
+};
+
 export type UserID = {
     id: number;
     firstName: string;
