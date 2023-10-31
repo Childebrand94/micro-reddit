@@ -244,3 +244,34 @@ func (u *User) GetAllPostsByUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
+
+func (u *User) GetAllCommentsByUser(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+	resp, err := database.GetAllCommentsByUser(ctx, u.DB, int64(id))
+	if err != nil {
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Unable to fetch user's posts form database",
+			err,
+		)
+		return
+	}
+	data, err := json.Marshal(resp)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}

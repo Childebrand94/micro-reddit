@@ -158,3 +158,51 @@ func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]mod
 
 	return posts, nil
 }
+
+func GetAllCommentsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]models.CommentResp, error) {
+	query := `
+    SELECT 
+        c.id, 
+        c.post_id, 
+        c.author_id, 
+        c.parent_id, 
+        c.message, 
+        c.created_at, 
+        u.first_name, 
+        u.last_name, 
+        u.username 
+    FROM "comments" AS c  
+    LEFT JOIN users AS u ON u.id = c.author_id
+    WHERE c.author_id = $1`
+
+	rows, err := pool.Query(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.CommentResp
+
+	for rows.Next() {
+		var c models.CommentResp
+
+		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message,
+			&c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
+			return nil, err
+		}
+
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		if err != nil {
+			return nil, err
+		}
+		c.Vote = totalVotes
+
+		comments = append(comments, c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}

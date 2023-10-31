@@ -161,10 +161,18 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostRespo
 }
 
 func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.CommentResp, error) {
-	queryForComments := `select c.id, c.post_id, c.author_id, c.parent_id, c.message, c.created_at, u.first_name, u.last_name, u.username 
-						from "comments" c  
-						left join 
-						users u on u.id  = c.author_id `
+	queryForComments := `SELECT 
+        c.id, 
+        c.post_id, 
+        c.author_id, 
+        c.parent_id, 
+        c.message, 
+        c.created_at, 
+        u.first_name, 
+        u.last_name, 
+        u.username 
+    FROM "comments" AS c  
+    LEFT JOIN users AS u ON u.id = c.author_id`
 
 	commentRows, err := pool.Query(ctx, queryForComments)
 	if err != nil {
