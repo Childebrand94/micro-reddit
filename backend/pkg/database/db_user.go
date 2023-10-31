@@ -9,21 +9,24 @@ import (
 	"github.com/Childebrand94/micro-reddit/pkg/utils"
 )
 
-func AddUser(ctx context.Context, pool *pgxpool.Pool, user models.User) error {
-	_, err := pool.Exec(
+func AddUser(ctx context.Context, pool *pgxpool.Pool, user models.User) (int64, error) {
+	var userID int
+	err := pool.QueryRow(
 		ctx,
-		"INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5)",
+		"INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		user.First_name,
 		user.Last_name,
 		user.Username,
 		user.Email,
 		user.Password,
-	)
-
-	return err
+	).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+	return int64(userID), nil
 }
 
-func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error) {
+func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.UserResp, error) {
 	query := "SELECT id, first_name, last_name, username, email, registered_at FROM users"
 	rows, err := pool.Query(ctx, query)
 	if err != nil {
@@ -31,9 +34,9 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []models.UserResp
 	for rows.Next() {
-		var u models.User
+		var u models.UserResp
 		if err := rows.Scan(&u.ID, &u.First_name, &u.Last_name, &u.Username, &u.Email, &u.DateJoined); err != nil {
 			return nil, err
 		}
@@ -42,11 +45,10 @@ func GetAllUsers(ctx context.Context, pool *pgxpool.Pool) ([]models.User, error)
 	return users, nil
 }
 
-func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User, error) {
-	userQuery := "SELECT id, first_name, last_name, username, email FROM users WHERE id = $1"
+func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.UserResp, error) {
+	userQuery := "SELECT id, first_name, last_name, username, email, registered_at FROM users WHERE id = $1"
 
-	var users []models.User
-	var resp models.User
+	var resp models.UserResp
 
 	// Fetch User
 	row := pool.QueryRow(ctx, userQuery, id)
@@ -60,94 +62,6 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) ([]models.User
 	)
 	if err != nil {
 		return nil, err
-	}
-	users = append(users, resp)
-
-	return users, nil
-}
-
-func GetUserWithCPByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.UserResp, error) {
-	userQuery := "SELECT id, first_name, last_name, username, email FROM users WHERE id = $1"
-	postQuery := "SELECT * FROM posts WHERE author_id = $1"
-	commentQuery := "SELECT * FROM comments WHERE author_id = $1"
-
-	var resp models.UserResp
-
-	// Fetch User
-	row := pool.QueryRow(ctx, userQuery, id)
-	err := row.Scan(
-		&resp.User.ID,
-		&resp.User.First_name,
-		&resp.User.Last_name,
-		&resp.User.Username,
-		&resp.User.Email,
-		&resp.User.DateJoined,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	// Fetch Posts
-	rows, err := pool.Query(ctx, postQuery, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var allPosts []models.Post
-
-	for rows.Next() {
-		var post models.Post
-		err := rows.Scan(
-			&post.ID,
-			&post.Author_ID,
-			&post.Title,
-			&post.URL,
-			&post.CreatedAt,
-			&post.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		totalVotes, err := utils.GetVoteTotal(pool, post.ID, "post_votes", "post_id")
-		if err != nil {
-			return nil, err
-		}
-		post.Vote = totalVotes
-
-		allPosts = append(allPosts, post)
-	}
-
-	resp.Posts = utils.AddAuthorPosts(allPosts, resp.User)
-
-	// Fetch Comments
-	rows, err = pool.Query(ctx, commentQuery, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var comment models.Comment
-		err := rows.Scan(
-			&comment.ID,
-			&comment.Post_ID,
-			&comment.Author_ID,
-			&comment.Parent_ID,
-			&comment.Message,
-			&comment.Created_at,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		totalVotes, err := utils.GetVoteTotal(pool, comment.ID, "comment_vote", "comment_id")
-		if err != nil {
-			return nil, err
-		}
-		comment.Vote = totalVotes
-
-		resp.Comments = append(resp.Comments, comment)
 	}
 
 	return &resp, nil
@@ -204,4 +118,43 @@ func DeleteSession(ctx context.Context, pool *pgxpool.Pool, sessionId string) er
 	querey := `DELETE FROM sessions WHERE session_id = $1`
 	_, err := pool.Exec(ctx, querey, sessionId)
 	return err
+}
+
+func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]models.PostWithAuthor, error) {
+	query := `
+		SELECT 
+			p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at,
+			u.first_name, u.last_name, u.username 
+		FROM posts p
+		LEFT JOIN users u ON p.author_id = u.id
+		WHERE p.author_id = $1
+	`
+
+	rows, err := pool.Query(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.PostWithAuthor
+
+	for rows.Next() {
+		var p models.PostWithAuthor
+		if err := rows.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt, &p.UpdatedAt, &p.Author.FirstName, &p.Author.LastName, &p.Author.UserName); err != nil {
+			return nil, err
+		}
+		totalVotes, err := utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
+		if err != nil {
+			return nil, err
+		}
+		p.Vote = totalVotes
+
+		posts = append(posts, p)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }

@@ -1,18 +1,18 @@
 import NavBar from "../components/NavBar";
 import { PostComp } from "../components/PostComp";
 import { useEffect, useState } from "react";
-import { Post, UserID } from "../utils/type";
+import { Post } from "../utils/type";
 import { useParams } from "react-router-dom";
 import { ProfileBasic } from "../components/ProfileBasic";
 
 const Profile = () => {
-    const [userData, setUserData] = useState<UserID | null>(null);
+    const [data, setUserData] = useState<Post[] | null>(null);
     const { user_id } = useParams();
     const [toggleView, setToggleView] = useState<boolean>(false);
 
     const fetchComments = async () => {
         try {
-            const response = await fetch(`/api/users/${user_id}`, {
+            const response = await fetch(`/api/users/${user_id}/posts`, {
                 method: "GET",
             });
             if (!response.ok) {
@@ -28,6 +28,8 @@ const Profile = () => {
         fetchComments();
     }, []);
 
+    console.log(data);
+
     const handleSubmittedClick = () => {
         setToggleView(!toggleView);
     };
@@ -37,7 +39,7 @@ const Profile = () => {
             <NavBar />
             <div className="border-b-4 border-blue-400 bg-gray-100 w-full my-3 flex">
                 <h1 className="text-blue-700 ml-3 font-bold text-xl tracking-wide">
-                    {userData?.username}
+                    {data ? data[0].author.userName : "Username not found"}
                 </h1>
                 <div className="ml-4">
                     <button
@@ -65,14 +67,10 @@ const Profile = () => {
 
             {toggleView ? (
                 <div>
-                    {userData !== null ? (
-                        userData.posts.map((p: Post) => {
+                    {data !== null ? (
+                        data.map((p: Post) => {
                             return (
-                                <PostComp
-                                    key={userData.id}
-                                    post={p}
-                                    index={null}
-                                />
+                                <PostComp key={p.id} post={p} index={null} />
                             );
                         })
                     ) : (

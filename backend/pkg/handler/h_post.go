@@ -32,11 +32,20 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode request", err)
 		return
 	}
-	// hard code id until we have sessions
-	id := 10
+	cookie := utils.GetSessionCookie(w, r)
+	if cookie == nil {
+		return
+	}
+
+	sessionToken := cookie.Value
+
+	s, err := utils.ValidateSessionToken(ctx, p.DB, sessionToken)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Please login", err)
+	}
 
 	// call database function to insert post into tables
-	err = database.AddPostByUser(ctx, p.DB, int64(id), payload.URL, payload.Title)
+	err = database.AddPostByUser(ctx, p.DB, s.User_id, payload.URL, payload.Title)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
@@ -79,7 +88,7 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 	strID := chi.URLParam(r, "id")
 	post_id := utils.ConvertID(strID, w)
 
-	posts, comments, err := database.GetPostById(ctx, p.DB, int64(post_id))
+	resp, err := database.GetPostById(ctx, p.DB, int64(post_id))
 	if err != nil {
 		models.SendError(
 			w,
@@ -90,19 +99,7 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := database.GetUserByID(ctx, p.DB, post_id)
-	if err != nil {
-		models.SendError(
-			w,
-			http.StatusInternalServerError,
-			"Failed to get user data from database",
-			err,
-		)
-		return
-	}
-
-	result := utils.ConstructPostResponses(posts, comments, user)
-	data, err := json.Marshal(result[0])
+	data, err := json.Marshal(resp)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)
 		return

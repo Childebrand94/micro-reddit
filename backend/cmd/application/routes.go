@@ -66,4 +66,5 @@ func (a *App) loadUserRoutes(router chi.Router) {
 	router.Get("/", userHandler.List)
 	router.Get("/{id}", userHandler.GetByID)
 	router.Put("/{id}", userHandler.UpdateByID)
+	router.Get("/{id}/posts", userHandler.GetAllPostsByUser)
 }

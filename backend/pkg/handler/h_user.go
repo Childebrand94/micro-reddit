@@ -45,7 +45,7 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 
 	payload.Password = string(hashedPassword)
 
-	err = database.AddUser(ctx, u.DB, payload)
+	userId, err := database.AddUser(ctx, u.DB, payload)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
@@ -53,16 +53,10 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 
 	log.Print("Successfully created user")
 
-	// Crate Session for user
-	user, err := database.GetUserByEmail(ctx, u.DB, payload.Email)
-	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get user by email", err)
-		return
-	}
-
+	// Create Session for user
 	sessionId := utils.GenereateSessionToken()
 
-	err = database.CreateSession(ctx, u.DB, sessionId, user.ID)
+	err = database.CreateSession(ctx, u.DB, sessionId, userId)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to generate session", err)
 		return
@@ -169,6 +163,7 @@ func (u *User) List(w http.ResponseWriter, r *http.Request) {
 func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer ctxCancel()
+
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -176,7 +171,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := database.GetUserWithCPByID(ctx, u.DB, id)
+	resp, err := database.GetUserByID(ctx, u.DB, id)
 	if err != nil {
 		models.SendError(
 			w,
@@ -187,7 +182,7 @@ func (u *User) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(user)
+	data, err := json.Marshal(resp)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to process user data", err)
 		return
@@ -217,4 +212,35 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendSuccessfulResp(w, "User was successfully updated")
+}
+
+func (u *User) GetAllPostsByUser(w http.ResponseWriter, r *http.Request) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		models.SendError(w, http.StatusBadRequest, "Invalid user ID", err)
+		return
+	}
+	resp, err := database.GetAllPostsByUser(ctx, u.DB, int64(id))
+	if err != nil {
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Unable to fetch user's posts form database",
+			err,
+		)
+		return
+	}
+	data, err := json.Marshal(resp)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }

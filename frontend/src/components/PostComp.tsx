@@ -32,7 +32,6 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
             throw error;
         }
     };
-
     return (
         <div
             className={`grid ${
@@ -74,7 +73,11 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
             )}
 
-            <div className="h-12 col-start-3 my-2 flex flex-col">
+            <div
+                className={`h-12 ${
+                    index ? "col-start-3 " : ""
+                } my-2 flex flex-col`}
+            >
                 <div className="flex">
                     <Link
                         to={`/posts/${post.id}`}
@@ -96,13 +99,17 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                             username={post.author.userName}
                             id={String(post.authorId)}
                         />
-                    { post.comments === undefined ? <></> 
-                        :  <Link
-                            to={`/posts/${post.id}`}
-                            className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"
-                        >
-                            {post.comments.length} comments
-                        </Link>}
+                        {post.comments === undefined ||
+                        post.comments === null ? (
+                            <></>
+                        ) : (
+                            <Link
+                                to={`/posts/${post.id}`}
+                                className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"
+                            >
+                                {post.comments.length} comments
+                            </Link>
+                        )}
                     </p>
                 </div>
             </div>

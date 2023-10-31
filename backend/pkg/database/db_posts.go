@@ -17,7 +17,7 @@ func AddPostByUser(
 ) error {
 	_, err := pool.Exec(
 		ctx,
-		`INSERT INTO posts (author_id, url, title) VALUES ($1, $2, $3)`,
+		`INSERT INTO posts (author_id, title, url) VALUES ($1, $2, $3)`,
 		author_id,
 		title,
 		url,
@@ -25,55 +25,55 @@ func AddPostByUser(
 	return err
 }
 
-func GetPostById(
-	ctx context.Context,
-	pool *pgxpool.Pool,
-	post_id int64,
-) ([]models.Post, []models.CommentResp, error) {
-	var posts []models.Post
-	var p models.Post
-	var comments []models.CommentResp
+func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*models.PostResponse, error) {
+	var p models.PostResponse
 
-	queryPosts := "SELECT * FROM posts WHERE id = $1"
-	queryComments := `select c.id, c.post_id, c.author_id, c.parent_id, c.message, c.created_at, u.first_name, u.last_name, u.username 
-						from "comments" c  
-						left join 
-						users u on u.id  = c.author_id 
-						where post_id = $1`
+	queryPosts := `SELECT p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at, u.first_name, u.last_name, u.username
+                    FROM posts AS p
+                    LEFT JOIN 
+                    users AS u ON u.id = p.author_id
+                    WHERE p.id = $1`
+
+	queryComments := `SELECT c.id, c.post_id, c.author_id, c.parent_id, c.message, 
+                        c.created_at, u.first_name, u.last_name, u.username 
+						FROM comments AS c  
+						LEFT JOIN 
+						users u ON u.id  = c.author_id 
+						WHERE post_id = $1`
 
 	row := pool.QueryRow(ctx, queryPosts, post_id)
-	if err := row.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt, &p.UpdatedAt); err != nil {
-		return nil, nil, err
+	if err := row.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt,
+		&p.UpdatedAt, &p.Author.FirstName, &p.Author.LastName, &p.Author.UserName); err != nil {
+		return nil, err
 	}
 
 	totalVotes, err := utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	p.Vote = totalVotes
-	posts = append(posts, p)
 
 	rows, err := pool.Query(ctx, queryComments, post_id)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	for rows.Next() {
 		var c models.CommentResp
 		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		c.Vote = totalVotes
 
-		comments = append(comments, c)
+		p.Comments = append(p.Comments, c)
 	}
 	defer rows.Close()
 
-	return posts, comments, nil
+	return &p, nil
 }
 
 func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {

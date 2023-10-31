@@ -21,7 +21,7 @@ export type Post = {
     createdAt: string;
     updatedAt: string;
     upVotes: number;
-    comments: Comment[];
+    comments: Comment[] | null;
     author: Author;
 };
 

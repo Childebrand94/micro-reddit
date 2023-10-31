@@ -19,6 +19,7 @@ const PostList = () => {
             console.error("Error:", error);
         }
     };
+
     useEffect(() => {
         fetchPosts();
     }, []);
