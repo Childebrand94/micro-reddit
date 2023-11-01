@@ -260,7 +260,7 @@ func (u *User) GetAllCommentsByUser(w http.ResponseWriter, r *http.Request) {
 		models.SendError(
 			w,
 			http.StatusInternalServerError,
-			"Unable to fetch user's posts form database",
+			"Unable to fetch user's comments form database",
 			err,
 		)
 		return
@@ -291,7 +291,7 @@ func (u *User) GetUserPoints(w http.ResponseWriter, r *http.Request) {
 		models.SendError(
 			w,
 			http.StatusInternalServerError,
-			"Unable to fetch user's posts form database",
+			"Unable to fetch user's info form database",
 			err,
 		)
 		return

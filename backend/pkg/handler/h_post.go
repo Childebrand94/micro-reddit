@@ -32,9 +32,10 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode request", err)
 		return
 	}
-	cookie := utils.GetSessionCookie(w, r)
-	if cookie == nil {
-		return
+
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
 	}
 
 	sessionToken := cookie.Value

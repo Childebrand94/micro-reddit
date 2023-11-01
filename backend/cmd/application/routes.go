@@ -1,8 +1,6 @@
 package application
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -25,14 +23,9 @@ func (a *App) loadRoutes() {
 	router.Use(middleware.Logger)
 	router.Use(cors.Handler)
 
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to Reddit"))
-		w.WriteHeader(http.StatusOK)
-	})
-
 	router.Route("/posts", a.loadPostRoutes)
 	router.Route("/users", a.loadUserRoutes)
-
+	router.Route("/sessions", a.loadSessionRoutes)
 	a.router = router
 }
 
@@ -69,4 +62,12 @@ func (a *App) loadUserRoutes(router chi.Router) {
 	router.Get("/{id}/posts", userHandler.GetAllPostsByUser)
 	router.Get("/{id}/comments", userHandler.GetAllCommentsByUser)
 	router.Get("/{id}/points", userHandler.GetUserPoints)
+}
+
+func (a *App) loadSessionRoutes(router chi.Router) {
+	sessionHandler := &handler.Session{
+		DB: a.DB,
+	}
+
+	router.Get("/", sessionHandler.IsSession)
 }
