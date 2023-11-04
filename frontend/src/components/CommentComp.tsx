@@ -1,57 +1,17 @@
-import { useState } from "react";
 import { getTimeDif } from "../utils/helpers.ts";
 import { Comment as CommentType } from "../utils/type.ts";
 import { User } from "./User.tsx";
+import { Arrows } from "./Arrows.tsx";
 
 export type CommentProp = {
     comment: CommentType;
 };
 
 const CommentComp: React.FC<CommentProp> = ({ comment }) => {
-    const [points, setPoints] = useState(comment.upVotes);
-
-    const handleArrowClick = async (path: string) => {
-        try {
-            const resp = await fetch(path, {
-                method: "PUT",
-            });
-            if (!resp.ok) {
-                throw new Error(`HTTP error! Status: ${resp.status}`);
-            }
-
-            setPoints((prePoints) => prePoints + 1);
-        } catch (error) {
-            console.error("Error during fetch:", error);
-            throw error;
-        }
-    };
-
+    console.log(comment.upVotes);
     return (
         <div className="grid grid-cols-[1fr,10fr]">
-            <div className="flex flex-col col-start-1 my-2">
-                <button className="my-1 ml-2">
-                    <img
-                        onClick={() =>
-                            handleArrowClick(`/api/posts/${comment.id}/up-vote`)
-                        }
-                        className="h-4"
-                        src="../../public/assets/arrow-up.png"
-                        alt="Up Arrow"
-                    />
-                </button>
-                <button className="ml-2">
-                    <img
-                        onClick={() =>
-                            handleArrowClick(
-                                `/api/posts/${comment.id}/down-vote`,
-                            )
-                        }
-                        className="h-4 rotate-180"
-                        src="../../public/assets/arrow-up.png"
-                        alt="Down Arrow"
-                    />
-                </button>
-            </div>
+            <Arrows id={-1} type="comments" />
             <div className="col-start-2">
                 <span className="text-gray-300 text-xs">
                     <h1 className="text-blue-300 text-xs inline">
@@ -61,7 +21,8 @@ const CommentComp: React.FC<CommentProp> = ({ comment }) => {
                         />
                     </h1>{" "}
                     <span>
-                        {points} points {getTimeDif(comment.createdAt)} ago
+                        {comment.upVotes} points {getTimeDif(comment.createdAt)}{" "}
+                        ago
                     </span>
                 </span>
                 <p>

@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { AuthContext } from "./context";
 
 type AuthProviderProps = {
@@ -7,9 +7,37 @@ type AuthProviderProps = {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState<boolean>(true);
+    const [userId, setUserId] = useState<number>(-1);
+
+    const fetchSession = async () => {
+        try {
+            const response = await fetch("/api/sessions", {
+                method: "GET",
+            });
+            if (!response.ok) {
+                setLoggedIn(false);
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            if (data.loggedIn) {
+                setLoggedIn(true);
+                setUserId(data.UserId);
+                console.log("Session exists");
+            } else {
+                setLoggedIn(false);
+                console.log("Please login");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSession();
+    }, []);
 
     return (
-        <AuthContext.Provider value={{ loggedIn, setLoggedIn }}>
+        <AuthContext.Provider value={{ loggedIn, setLoggedIn, userId }}>
             {children}
         </AuthContext.Provider>
     );

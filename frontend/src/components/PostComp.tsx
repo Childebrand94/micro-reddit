@@ -3,6 +3,7 @@ import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "./User.tsx";
+import { Arrows } from "./Arrows.tsx";
 
 export type PostProps = {
     post: PostType;
@@ -10,28 +11,6 @@ export type PostProps = {
 };
 
 export const PostComp: React.FC<PostProps> = ({ post, index }) => {
-    const [points, setPoints] = useState(post.upVotes);
-
-    const handleArrowClick = async (path: string) => {
-        try {
-            const resp = await fetch(path, {
-                method: "PUT",
-            });
-            if (!resp.ok) {
-                throw new Error(`HTTP error! Status: ${resp.status}`);
-            }
-
-            const domains: string[] = path.split("/");
-            if (domains[domains.length - 1] === "up-vote") {
-                setPoints((prePoints) => prePoints + 1);
-            } else {
-                setPoints((prePoints) => prePoints - 1);
-            }
-        } catch (error) {
-            console.error("Error during fetch:", error);
-            throw error;
-        }
-    };
     return (
         <div
             className={`grid ${
@@ -44,34 +23,7 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
             )}
 
-            {index && (
-                <div className="flex flex-col col-start-2 my-2">
-                    <button className="my-1">
-                        <img
-                            onClick={() =>
-                                handleArrowClick(
-                                    `/api/posts/${post.id}/up-vote`,
-                                )
-                            }
-                            className="h-6"
-                            src="../../public/assets/arrow-up.png"
-                            alt="Up Arrow"
-                        />
-                    </button>
-                    <button>
-                        <img
-                            onClick={() =>
-                                handleArrowClick(
-                                    `/api/posts/${post.id}/down-vote`,
-                                )
-                            }
-                            className="h-6 rotate-180"
-                            src="../../public/assets/arrow-up.png"
-                            alt="Down Arrow"
-                        />
-                    </button>
-                </div>
-            )}
+            {index && <Arrows type="posts" id={post.id} />}
 
             <div
                 className={`h-12 ${
@@ -79,8 +31,8 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 } my-2 flex flex-col`}
             >
                 <div className="flex">
-                    <Link
-                        to={`/posts/${post.id}`}
+                    <a
+                        href={post.url}
                         className="font-bold transition duration-200 cursor-pointer break-words"
                     >
                         {post.title}
@@ -88,12 +40,12 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                         <sub className="text-xs text-gray-400 ml-1">
                             ({shortenUrl(post.url)})
                         </sub>
-                    </Link>
+                    </a>
                 </div>
                 <div className="flex">
                     <p className="text-xs">
-                        {points ? points : 0}{" "}
-                        {points === 1 ? "point" : "points"} posted{" "}
+                        {post.upVotes ? post.upVotes : 0}{" "}
+                        {post.upVotes === 1 ? "point" : "points"} posted{" "}
                         {getTimeDif(post.createdAt)} ago by{" "}
                         <User
                             username={post.author.userName}

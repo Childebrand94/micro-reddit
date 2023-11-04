@@ -282,6 +282,7 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
+
 	type vote struct {
 		User_id    int64
 		Comment_id int64
@@ -301,10 +302,6 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 			votes = append(votes, v)
 		}
 	}
-	for _, v := range votes {
-		database.AddPostVotes(ctx, pool, v.User_id, v.Comment_id, v.Up_vote)
-	}
-
 	batch := &pgx.Batch{}
 
 	for _, v := range votes {

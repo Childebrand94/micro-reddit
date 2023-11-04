@@ -255,3 +255,12 @@ func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.U
 
 	return &up, nil
 }
+
+func EmailAvailable(ctx context.Context, pool *pgxpool.Pool, email string) (bool, error) {
+	var exists bool
+	err := pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)", email).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return !exists, nil
+}

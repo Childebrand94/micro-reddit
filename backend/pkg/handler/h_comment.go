@@ -95,8 +95,17 @@ func (c *Comment) CommentVotes(w http.ResponseWriter, r *http.Request) {
 	commentID_str := chi.URLParam(r, "comment_id")
 	vote_param := chi.URLParam(r, "vote")
 
-	// userID hard coded until sessions
-	user_id := 2
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+		return
+	}
+
+	userInfo, err := utils.ValidateSessionToken(ctx, c.DB, cookie.Value)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Could not validate user", err)
+	}
+
 	// convert id to int
 	comment_id := utils.ConvertID(commentID_str, w)
 
@@ -107,7 +116,7 @@ func (c *Comment) CommentVotes(w http.ResponseWriter, r *http.Request) {
 		vote = false
 	}
 
-	err := database.AddCommentVotes(ctx, c.DB, int64(user_id), int64(comment_id), vote)
+	err = database.AddCommentVotes(ctx, c.DB, userInfo.User_id, int64(comment_id), vote)
 	if err != nil {
 		models.SendError(
 			w,

@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import FilterOptions from "./FilterOptions";
 import NavSearch from "./NavSearch";
 import { useAuth } from "../context/UseAuth";
-import { LogoutButton } from "./LogoutButton";
 import LogInButton from "./LogInButton";
+import { NavbarProfile } from "./NavbarProfile";
 
 const NavBar = () => {
     const { loggedIn } = useAuth();
@@ -13,7 +13,7 @@ const NavBar = () => {
                 <Link to="/">
                     <img
                         className="w-12"
-                        src="../../public/assets/logo-reddit.svg"
+                        src="/assets/logo-reddit.svg"
                         alt="Reddit Logo"
                     />
                 </Link>
@@ -22,7 +22,7 @@ const NavBar = () => {
 
             <div className="flex items-center">
                 <NavSearch />
-                {loggedIn ? <LogoutButton /> : <LogInButton />}
+                {loggedIn ? <NavbarProfile /> : <LogInButton />}
             </div>
         </nav>
     );

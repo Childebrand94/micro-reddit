@@ -29,6 +29,7 @@ const CommentView = () => {
     useEffect(() => {
         fetchPostByID();
     }, []);
+    console.log(postData?.comments);
     return (
         <div>
             <NavBar />
@@ -40,7 +41,7 @@ const CommentView = () => {
                 <h1>Post Not Found</h1>
             )}
             <div className="h-2 bg-blue-100 mt-3"></div>
-            {postData ? (
+            {postData?.comments ? (
                 <CommentList comments={postData?.comments} />
             ) : (
                 <h1>Comments Not Found</h1>

@@ -10,7 +10,7 @@ const Profile = () => {
     const { user_id } = useParams();
     const [toggleView, setToggleView] = useState<boolean>(false);
 
-    const fetchComments = async () => {
+    const fetchUserData = async () => {
         try {
             const response = await fetch(`/api/users/${user_id}/posts`, {
                 method: "GET",
@@ -25,7 +25,7 @@ const Profile = () => {
         }
     };
     useEffect(() => {
-        fetchComments();
+        fetchUserData();
     }, []);
 
     const handleSubmittedClick = () => {

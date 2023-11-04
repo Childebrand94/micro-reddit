@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/UseAuth";
-import { redirect } from "react-router-dom";
 
 const LoginForm: React.FC = () => {
     const { setLoggedIn } = useAuth();
+    const [invaildCredential, setInvaildCredential] = useState(false);
 
     const [formData, setFormData] = useState<Record<string, string>>({
         email: "",
@@ -31,16 +31,16 @@ const LoginForm: React.FC = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Network respose was not ok");
+                const data = await response.json();
+                setInvaildCredential(true);
+                throw new Error(`${data.message}`);
             }
-
             const data = await response.json();
             console.log(data.message);
+            setLoggedIn(true);
             window.location.href = "/";
         } catch (error) {
             console.log("There was an error submitting the form", error);
-        } finally {
-            setLoggedIn(true);
         }
     };
 
@@ -51,10 +51,15 @@ const LoginForm: React.FC = () => {
             </h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group mb-4">
-                    <label
-                        htmlFor="email"
-                        className="block text-blue-500"
-                    ></label>
+                    <label htmlFor="email" className="block text-blue-500">
+                        {invaildCredential ? (
+                            <p className="text-red-500">
+                                Invaild Email or Password
+                            </p>
+                        ) : (
+                            <></>
+                        )}{" "}
+                    </label>
                     <input
                         type="email"
                         placeholder="Email"

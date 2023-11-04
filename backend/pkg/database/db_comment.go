@@ -60,7 +60,10 @@ func AddCommentVotes(
 	user_id, comment_id int64,
 	up_vote bool,
 ) error {
-	query := "INSERT INTO comment_vote (user_id, comment_id, up_vote) VALUES ($1, $2, $3)"
+	query := `INSERT INTO comment_vote(user_id, comment_id, up_vote)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (post_id, user_id)
+                DO UPDATE SET up_vote = EXCLUDED.up_vote;`
 	_, err := pool.Exec(ctx, query, user_id, comment_id, up_vote)
 	return err
 }

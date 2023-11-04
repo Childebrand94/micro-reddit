@@ -112,17 +112,29 @@ func AddPostVotes(
 	user_id, post_id int64,
 	up_vote bool,
 ) error {
-	query := "INSERT INTO post_votes (user_id, post_id, up_vote) VALUES ($1, $2, $3)"
-	_, err := pool.Exec(ctx, query, user_id, post_id, up_vote)
+	query := `INSERT INTO post_votes (post_id, user_id, up_vote)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (post_id, user_id)
+                DO UPDATE SET up_vote = EXCLUDED.up_vote;`
+	_, err := pool.Exec(ctx, query, post_id, user_id, up_vote)
 	return err
 }
 
 func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {
-	queryForPosts := `SELECT p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at, u.first_name,
-                        u.last_name, u.username
-                    FROM posts as p
+	queryForPosts := `SELECT 
+                      p.id,
+                      p.author_id,
+                      p.title,
+                      p.url,
+                      p.created_at,
+                      p.updated_at,
+                      u.first_name,
+                      u.last_name,
+                      u.username
+                    FROM 
+                      posts AS p
                     LEFT JOIN 
-                    users as u ON u.id = p.author_id`
+                      users AS u ON u.id = p.author_id;`
 
 	postRows, err := pool.Query(ctx, queryForPosts)
 	if err != nil {
@@ -162,17 +174,17 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostRespo
 
 func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.CommentResp, error) {
 	queryForComments := `SELECT 
-        c.id, 
-        c.post_id, 
-        c.author_id, 
-        c.parent_id, 
-        c.message, 
-        c.created_at, 
-        u.first_name, 
-        u.last_name, 
-        u.username 
-    FROM "comments" AS c  
-    LEFT JOIN users AS u ON u.id = c.author_id`
+                            c.id, 
+                            c.post_id, 
+                            c.author_id, 
+                            c.parent_id, 
+                            c.message, 
+                            c.created_at, 
+                            u.first_name, 
+                            u.last_name, 
+                            u.username 
+                        FROM "comments" AS c  
+                        LEFT JOIN users AS u ON u.id = c.author_id`
 
 	commentRows, err := pool.Query(ctx, queryForComments)
 	if err != nil {

@@ -20,17 +20,14 @@ const FilterOptions: React.FC = (): JSX.Element => {
 
     return (
         <div className="flex flex-col relative">
-            <div className="flex justify-center text-center w-14 rounded-xl bg-blue-400">
-                <button
-                    className="text-xl p-1"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
+            <div className="flex justify-center text-center w-14 p-1 rounded-xl bg-blue-400">
+                <button className="text-xl" onClick={() => setIsOpen(!isOpen)}>
                     {activeFilter.toUpperCase()}
                 </button>
             </div>
 
             <div
-                className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute overflow-hidden transition-max-height duration-300 ease-in ${
+                className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute overflow-hidden transition-max-height text-center ease-in ${
                     isOpen ? "max-h-60" : "max-h-0"
                 }`}
             >

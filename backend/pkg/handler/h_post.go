@@ -36,6 +36,7 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 	cookie, customErr := utils.GetSessionCookie(r)
 	if customErr != nil {
 		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+		return
 	}
 
 	sessionToken := cookie.Value
@@ -43,6 +44,7 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 	s, err := utils.ValidateSessionToken(ctx, p.DB, sessionToken)
 	if err != nil {
 		models.SendError(w, http.StatusUnauthorized, "Please login", err)
+		return
 	}
 
 	// call database function to insert post into tables
@@ -115,7 +117,18 @@ func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 
-	user_id := 2
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+		return
+	}
+
+	userInfo, err := utils.ValidateSessionToken(ctx, p.DB, cookie.Value)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Could not validate user", err)
+		return
+	}
+
 	strID := chi.URLParam(r, "id")
 	post_id, err := strconv.Atoi(strID)
 	if err != nil {
@@ -133,12 +146,10 @@ func (p *Post) PostVotes(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Bad URL", nil)
 	}
 
-	err = database.AddPostVotes(ctx, p.DB, int64(user_id), int64(post_id), upVote)
+	err = database.AddPostVotes(ctx, p.DB, userInfo.User_id, int64(post_id), upVote)
 	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Failed to get data from database", err)
-		return
+		models.SendError(w, http.StatusInternalServerError, "Internal error adding vote", err)
 	}
-
 	utils.SendSuccessfulResp(w, "Vote had been created")
 }
 

@@ -72,13 +72,13 @@ func GetSessionCookie(r *http.Request) (*http.Cookie, *models.CustomError) {
 			// No session Cookie present
 			return nil, &models.CustomError{
 				StatusCode:    http.StatusUnauthorized,
-				Message:       "Not authorized",
+				Message:       "Session cookie not found",
 				OriginalError: err,
 			}
 		}
 		return nil, &models.CustomError{
 			StatusCode:    http.StatusInternalServerError,
-			Message:       "Internal server error",
+			Message:       "Error retrieving session cookie",
 			OriginalError: err,
 		}
 	}
@@ -102,3 +102,16 @@ func ValidateSessionToken(ctx context.Context, pool *pgxpool.Pool, token string)
 
 	return &s, err
 }
+
+//
+// func URLFormatter(str string) (*string, error) {
+//     u, err := url.Parse(str)
+//     if err != nil {
+//         return nil, err
+//     }
+//     if u.Scheme == ""{
+//         u.Scheme = "http"
+//     }
+//     u.Q
+//
+// }

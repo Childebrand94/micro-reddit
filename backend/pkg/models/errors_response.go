@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 )
 
 type ErrorResponse struct {
@@ -22,7 +23,12 @@ func (e *CustomError) Error() string {
 }
 
 func SendError(w http.ResponseWriter, statusCode int, message string, err error) {
-	log.Printf("Error: %v", err)
+	_, file, line, ok := runtime.Caller(1)
+	if ok {
+		log.Printf("Error: %v | Message: %v | (file: %s, line: %d)", err, message, file, line)
+	} else {
+		log.Printf("Error: %v", err)
+	}
 	w.WriteHeader(statusCode)
 	resp := ErrorResponse{Message: message}
 	json.NewEncoder(w).Encode(resp)
