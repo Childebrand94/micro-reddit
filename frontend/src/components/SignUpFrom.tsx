@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { isValidElement, useState } from "react";
 
 const SignUpForm: React.FC = () => {
     const [formData, setFormData] = useState<Record<string, string>>({
@@ -9,6 +9,8 @@ const SignUpForm: React.FC = () => {
         password: "",
         retypePassword: "",
     });
+
+    const [vaildEmail, setVaildEmail] = useState<boolean>(true);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -36,6 +38,10 @@ const SignUpForm: React.FC = () => {
             });
 
             if (!response.ok) {
+                console.log(response.body);
+                if (response.status === 406) {
+                    setVaildEmail(false);
+                }
                 throw new Error("Network response was not ok");
             }
 
@@ -88,10 +94,9 @@ const SignUpForm: React.FC = () => {
                 </div>
 
                 <div className="form-group mb-4">
-                    <label
-                        htmlFor="email"
-                        className="block text-blue-500"
-                    ></label>
+                    <label htmlFor="email" className="block text-red-500">
+                        {vaildEmail ? "" : "Email address already in use."}
+                    </label>
                     <input
                         type="email"
                         placeholder="Email"

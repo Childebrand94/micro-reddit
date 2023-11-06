@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const data = await response.json();
             if (data.loggedIn) {
                 setLoggedIn(true);
-                setUserId(data.UserId);
+                setUserId(data.userId);
                 console.log("Session exists");
             } else {
                 setLoggedIn(false);

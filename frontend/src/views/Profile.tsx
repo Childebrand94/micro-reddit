@@ -1,18 +1,33 @@
 import NavBar from "../components/NavBar";
 import { PostComp } from "../components/PostComp";
 import { useEffect, useState } from "react";
-import { Post } from "../utils/type";
-import { useParams } from "react-router-dom";
+import { Post, User } from "../utils/type";
 import { ProfileBasic } from "../components/ProfileBasic";
+import { useParams } from "react-router-dom";
 
 const Profile = () => {
-    const [data, setUserData] = useState<Post[] | null>(null);
+    const [userPostData, setUserPostData] = useState<Post[] | null>(null);
+    const [userData, setUserData] = useState<User | null>(null);
     const { user_id } = useParams();
     const [toggleView, setToggleView] = useState<boolean>(false);
 
-    const fetchUserData = async () => {
+    const fetchUsersPosts = async () => {
         try {
             const response = await fetch(`/api/users/${user_id}/posts`, {
+                method: "GET",
+            });
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            setUserPostData(data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+    const fetchUser = async () => {
+        try {
+            const response = await fetch(`/api/users/${user_id}`, {
                 method: "GET",
             });
             if (!response.ok) {
@@ -24,9 +39,11 @@ const Profile = () => {
             console.error("Error:", error);
         }
     };
+
     useEffect(() => {
-        fetchUserData();
-    }, []);
+        fetchUsersPosts();
+        fetchUser();
+    }, [user_id]);
 
     const handleSubmittedClick = () => {
         setToggleView(!toggleView);
@@ -37,9 +54,9 @@ const Profile = () => {
             <NavBar />
             <div className="border-b-4 border-blue-400 bg-gray-100 w-full my-3 flex">
                 <h1 className="text-blue-700 ml-3 font-bold text-xl tracking-wide">
-                    {data ? data[0].author.userName : "Username not found"}
+                    {userData ? userData.username : "Username not found"}
                 </h1>
-                <div className="ml-4">
+                <div className="ml-4 flex">
                     <button
                         className={`mx-1 px-2 pt-1 ${
                             toggleView
@@ -65,19 +82,23 @@ const Profile = () => {
 
             {toggleView ? (
                 <div>
-                    {data !== null ? (
-                        data.map((p: Post) => {
+                    {userPostData !== null ? (
+                        userPostData.map((p: Post) => {
                             return (
                                 <PostComp key={p.id} post={p} index={null} />
                             );
                         })
                     ) : (
-                        <h1>User Not Found</h1>
+                        <h1>User has no posts.</h1>
                     )}
                 </div>
             ) : (
                 <ProfileBasic
-                    username={data ? data[0].author.userName : "Unknown"}
+                    username={
+                        userPostData
+                            ? userPostData[0].author.userName
+                            : "Unknown"
+                    }
                 />
             )}
         </div>

@@ -27,29 +27,29 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 
 	var payload models.User
 
-	ok, err := database.EmailAvailable(ctx, u.DB, payload.Email)
-	if err != nil {
-		models.SendError(w, http.StatusInternalServerError, "Internal error when checking email", err)
-		return
-	}
-
-	if !ok {
-		response := map[string]interface{}{
-			"message": "Email is already in use.",
-		}
-		w.Header().Set("Content-Type", "applicaton/json")
-		w.WriteHeader(http.StatusNotAcceptable)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&payload)
+	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Bad request format", err)
 		return
 	}
 	defer r.Body.Close()
 
+	exsists, err := database.EmailExists(ctx, u.DB, payload.Email)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Internal error when checking email", err)
+		return
+	}
+
+	if exsists {
+		response := map[string]interface{}{
+			"uniqueEmail": false,
+			"message":     "Email is already in use.",
+		}
+		w.Header().Set("Content-Type", "applicaton/json")
+		w.WriteHeader(http.StatusNotAcceptable)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(payload.Password),
 		bcrypt.DefaultCost,

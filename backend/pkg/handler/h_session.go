@@ -56,7 +56,7 @@ func (s *Session) IsSession(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := map[string]interface{}{
 		"loggedIn": true,
-		"userId":   session.Session_id,
+		"userId":   session.User_id,
 	}
 	json.NewEncoder(w).Encode(response)
 	return
