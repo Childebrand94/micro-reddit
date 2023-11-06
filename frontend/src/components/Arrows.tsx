@@ -1,18 +1,15 @@
 import React from "react";
+import { useFilter } from "../context/UseFilter";
 
 type ArrowProps = {
-    fetchType: () => void;
     postId: number;
     commentId: number;
     type: "posts" | "comments";
 };
 
-export const Arrows: React.FC<ArrowProps> = ({
-    fetchType,
-    postId,
-    commentId,
-    type,
-}) => {
+export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
+    const { setUpdateTrigger } = useFilter();
+
     // Define the endpoint paths
     const postPath = {
         upVote: `/api/posts/${postId}/up-vote`,
@@ -34,7 +31,7 @@ export const Arrows: React.FC<ArrowProps> = ({
                 //redirect to sign in
                 throw new Error(`HTTP error! Status: ${resp.status}`);
             }
-            fetchType();
+            setUpdateTrigger((prev: number) => prev + 1);
         } catch (error) {
             console.error("Error during fetch:", error);
         }

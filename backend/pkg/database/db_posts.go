@@ -134,7 +134,8 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostRespo
                     FROM 
                       posts AS p
                     LEFT JOIN 
-                      users AS u ON u.id = p.author_id;`
+                      users AS u ON u.id = p.author_id
+                    ORDER BY created_at DESC;`
 
 	postRows, err := pool.Query(ctx, queryForPosts)
 	if err != nil {

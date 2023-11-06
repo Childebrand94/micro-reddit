@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -52,7 +51,6 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusUnauthorized, "Please login", err)
 		return
 	}
-	fmt.Printf("%+v\n", payload)
 
 	err = database.AddComment(
 		ctx,

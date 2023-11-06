@@ -70,3 +70,5 @@ export type FormDataType = {
 export type LoginWindowState = "initial" | "signUp" | "signIn";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+export type Filter = "hot" | "top" | "new";

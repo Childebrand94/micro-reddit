@@ -1,4 +1,4 @@
-import { Post as PostType } from "../utils/type";
+import { Filter, Post as PostType } from "../utils/type";
 import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
 import { Link } from "react-router-dom";
 import { User } from "./User.tsx";
@@ -7,10 +7,9 @@ import { Arrows } from "./Arrows.tsx";
 export type PostProps = {
     post: PostType;
     index: number | null;
-    fetchPosts: () => void;
 };
 
-export const PostComp: React.FC<PostProps> = ({ post, index, fetchPosts }) => {
+export const PostComp: React.FC<PostProps> = ({ post, index }) => {
     return (
         <div
             className={`grid ${
@@ -23,14 +22,7 @@ export const PostComp: React.FC<PostProps> = ({ post, index, fetchPosts }) => {
                 </div>
             )}
 
-            {index && (
-                <Arrows
-                    type="posts"
-                    commentId={0}
-                    postId={post.id}
-                    fetchType={fetchPosts}
-                />
-            )}
+            {index && <Arrows type="posts" commentId={0} postId={post.id} />}
 
             <div
                 className={`h-12 ${

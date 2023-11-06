@@ -2,9 +2,10 @@ import { useState } from "react";
 
 type props = {
     postId: number;
+    fetchPosts: () => void;
 };
 
-export const CreateCommentForm: React.FC<props> = ({ postId }) => {
+export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
     const [formData, setFormData] = useState<string>("");
 
     const commentData = {
@@ -30,6 +31,7 @@ export const CreateCommentForm: React.FC<props> = ({ postId }) => {
             if (!response.ok) {
                 throw new Error("Was unable to send comment");
             }
+            fetchPosts();
             setFormData("");
             const data = await response.json();
             console.log(data);

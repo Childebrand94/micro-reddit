@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
-import { Post as PostType } from "../utils/type";
+import { useEffect, useState } from "react";
+import { Filter, Post as PostType } from "../utils/type";
 import PostComp from "./PostComp";
+import { useFilter } from "../context/UseFilter";
 
 const PostList = () => {
     const [posts, setPosts] = useState<PostType[]>([]);
+    const { updateTrigger, filter } = useFilter();
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (filter: Filter) => {
+        console.log("Fetching Posts...");
         try {
-            const response = await fetch("/api/posts", {
+            const response = await fetch(`/api/posts?sort=${filter}`, {
                 method: "GET",
             });
             if (!response.ok) {
@@ -21,20 +24,13 @@ const PostList = () => {
     };
 
     useEffect(() => {
-        fetchPosts();
-    }, []);
+        fetchPosts(filter);
+    }, [updateTrigger]);
 
     return (
         <div>
             {posts.map((post, i) => {
-                return (
-                    <PostComp
-                        fetchPosts={fetchPosts}
-                        index={i + 1}
-                        post={post}
-                        key={post.id}
-                    />
-                );
+                return <PostComp index={i + 1} post={post} key={post.id} />;
             })}
         </div>
     );

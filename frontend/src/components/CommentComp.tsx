@@ -30,12 +30,7 @@ const CommentComp: React.FC<CommentProp> = ({ comment, fetchComments }) => {
                         ago
                     </span>
                 </span>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Vivamus vel mauris vitae leo consequat ullamcorper. Fusce
-                    bibendum, ante ac porttitor dictum, velit odio egestas orci,
-                    in facilisis neque tortor eu nibh.
-                </p>
+                <p>{comment.message}</p>
             </div>
         </div>
     );

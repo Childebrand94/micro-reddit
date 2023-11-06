@@ -47,7 +47,10 @@ const CommentView = () => {
                                 post={postData}
                             />
                             {loggedIn && (
-                                <CreateCommentForm postId={postData.id} />
+                                <CreateCommentForm
+                                    fetchPosts={fetchPostByID}
+                                    postId={postData.id}
+                                />
                             )}
                             <div className="h-2 bg-blue-100 mt-3"></div>
                             {postData.comments ? (

@@ -1,4 +1,5 @@
 import { useState, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
     title: string;
@@ -6,6 +7,7 @@ type FormData = {
 };
 
 export const CreatePost = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<FormData>({
         title: "",
         url: "",
@@ -38,8 +40,8 @@ export const CreatePost = () => {
 
             const data = await response.json();
             console.log(data.message);
-            //change redirect to post that was just made  
-            window.location.href = "/";
+            //change redirect to post that was just made
+            navigate("/");
         } catch (error) {
             console.log("There was an error submitting the form", error);
         }

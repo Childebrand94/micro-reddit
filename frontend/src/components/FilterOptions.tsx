@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Filter } from "../utils/type";
+import { useFilter } from "../context/UseFilter";
 
-type filter = "hot" | "top" | "new";
-
-const FilterOptions: React.FC = (): JSX.Element => {
+const FilterOptions = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [activeFilter, setActiveFilter] = useState<filter>("hot");
+    const [activeFilter, setActiveFilter] = useState<Filter>("hot");
+    const { setFilter, setUpdateTrigger } = useFilter();
 
     const handleDropDown = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleLinkClick = (text: filter): void => {
+    const handleLinkClick = (text: Filter): void => {
         handleDropDown();
         setActiveFilter(text);
+        setFilter(text);
+        setUpdateTrigger((prev) => prev + 1);
     };
 
-    const options: filter[] = ["hot", "top", "new"];
+    const options: Filter[] = ["hot", "top", "new"];
 
     return (
         <div className="flex flex-col relative">
