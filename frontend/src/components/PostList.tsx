@@ -27,7 +27,14 @@ const PostList = () => {
     return (
         <div>
             {posts.map((post, i) => {
-                return <PostComp index={i + 1} post={post} key={post.id} />;
+                return (
+                    <PostComp
+                        fetchPosts={fetchPosts}
+                        index={i + 1}
+                        post={post}
+                        key={post.id}
+                    />
+                );
             })}
         </div>
     );

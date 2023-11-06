@@ -7,9 +7,10 @@ import { Arrows } from "./Arrows.tsx";
 export type PostProps = {
     post: PostType;
     index: number | null;
+    fetchPosts: () => void;
 };
 
-export const PostComp: React.FC<PostProps> = ({ post, index }) => {
+export const PostComp: React.FC<PostProps> = ({ post, index, fetchPosts }) => {
     return (
         <div
             className={`grid ${
@@ -22,7 +23,14 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
             )}
 
-            {index && <Arrows type="posts" commentId={0} postId={post.id} />}
+            {index && (
+                <Arrows
+                    type="posts"
+                    commentId={0}
+                    postId={post.id}
+                    fetchType={fetchPosts}
+                />
+            )}
 
             <div
                 className={`h-12 ${

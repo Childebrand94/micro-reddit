@@ -41,13 +41,20 @@ const CommentView = () => {
                         <h1>Loading...</h1>
                     ) : (
                         <>
-                            <PostComp index={null} post={postData} />
+                            <PostComp
+                                fetchPosts={fetchPostByID}
+                                index={null}
+                                post={postData}
+                            />
                             {loggedIn && (
                                 <CreateCommentForm postId={postData.id} />
                             )}
                             <div className="h-2 bg-blue-100 mt-3"></div>
                             {postData.comments ? (
-                                <CommentList comments={postData.comments} />
+                                <CommentList
+                                    fetchComments={fetchPostByID}
+                                    comments={postData.comments}
+                                />
                             ) : (
                                 <h1>No Comments Found</h1>
                             )}

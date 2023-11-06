@@ -3,14 +3,16 @@ import { Comment as CommentType } from "../utils/type.ts";
 import { User } from "./User.tsx";
 import { Arrows } from "./Arrows.tsx";
 
-export type CommentProp = {
+type CommentProp = {
     comment: CommentType;
+    fetchComments: () => void;
 };
 
-const CommentComp: React.FC<CommentProp> = ({ comment }) => {
+const CommentComp: React.FC<CommentProp> = ({ comment, fetchComments }) => {
     return (
         <div className="grid grid-cols-[1fr,10fr]">
             <Arrows
+                fetchType={fetchComments}
                 postId={comment.postId}
                 commentId={comment.id}
                 type="comments"
