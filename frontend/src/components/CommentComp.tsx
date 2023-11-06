@@ -8,10 +8,13 @@ export type CommentProp = {
 };
 
 const CommentComp: React.FC<CommentProp> = ({ comment }) => {
-    console.log(comment.upVotes);
     return (
         <div className="grid grid-cols-[1fr,10fr]">
-            <Arrows id={-1} type="comments" />
+            <Arrows
+                postId={comment.postId}
+                commentId={comment.id}
+                type="comments"
+            />
             <div className="col-start-2">
                 <span className="text-gray-300 text-xs">
                     <h1 className="text-blue-300 text-xs inline">

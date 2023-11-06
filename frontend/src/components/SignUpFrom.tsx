@@ -1,4 +1,4 @@
-import React, { isValidElement, useState } from "react";
+import React, { useState } from "react";
 
 const SignUpForm: React.FC = () => {
     const [formData, setFormData] = useState<Record<string, string>>({
@@ -27,9 +27,8 @@ const SignUpForm: React.FC = () => {
             return;
         }
 
-        const url = "/api/users";
         try {
-            const response = await fetch(url, {
+            const response = await fetch("/api/users", {
                 method: "Post",
                 headers: {
                     "Content-Type": "applications/json",
@@ -38,7 +37,7 @@ const SignUpForm: React.FC = () => {
             });
 
             if (!response.ok) {
-                console.log(response.body);
+                console.log();
                 if (response.status === 406) {
                     setVaildEmail(false);
                 }

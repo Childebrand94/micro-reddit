@@ -25,7 +25,7 @@ func (e *CustomError) Error() string {
 func SendError(w http.ResponseWriter, statusCode int, message string, err error) {
 	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		log.Printf("Error: %v | Message: %v | (file: %s, line: %d)", err, message, file, line)
+		log.Printf("Error: %v \n Message: %v \n (file: %s, line: %d)", err, message, file, line)
 	} else {
 		log.Printf("Error: %v", err)
 	}

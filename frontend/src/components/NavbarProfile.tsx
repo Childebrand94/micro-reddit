@@ -32,7 +32,7 @@ export const NavbarProfile = () => {
     };
 
     return (
-        <div className="realative w-9">
+        <div className="w-9">
             <button onClick={toggleDropdown}>
                 <img className="pt-2" src="/assets/user.png" />
             </button>

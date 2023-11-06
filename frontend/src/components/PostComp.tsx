@@ -1,6 +1,5 @@
 import { Post as PostType } from "../utils/type";
 import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { User } from "./User.tsx";
 import { Arrows } from "./Arrows.tsx";
@@ -23,7 +22,7 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
             )}
 
-            {index && <Arrows type="posts" id={post.id} />}
+            {index && <Arrows type="posts" commentId={0} postId={post.id} />}
 
             <div
                 className={`h-12 ${
@@ -37,9 +36,9 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                     >
                         {post.title}
 
-                        <sub className="text-xs text-gray-400 ml-1">
+                        <p className="inline text-xs text-gray-400 ml-1">
                             ({shortenUrl(post.url)})
-                        </sub>
+                        </p>
                     </a>
                 </div>
                 <div className="flex">

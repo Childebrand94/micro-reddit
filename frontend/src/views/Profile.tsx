@@ -89,7 +89,7 @@ const Profile = () => {
                             );
                         })
                     ) : (
-                        <h1>User has no posts.</h1>
+                        <h1>No Posts</h1>
                     )}
                 </div>
             ) : (

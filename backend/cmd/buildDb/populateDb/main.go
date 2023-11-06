@@ -37,11 +37,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	populateDatabaseWithUsers(dbpool)
-	populateDatabaseWithPosts(dbpool)
-	addVotesPosts(dbpool)
-	populateDatabaseWithComments(dbpool)
-	populateCommentsWithComments(dbpool)
+	// populateDatabaseWithUsers(dbpool)
+	// populateDatabaseWithPosts(dbpool)
+	// addVotesPosts(dbpool)
+	// populateDatabaseWithComments(dbpool)
+	// populateCommentsWithComments(dbpool)
 	populateCommentsWithVotes(dbpool)
 	fmt.Println("Successfully populated database.")
 }
@@ -219,6 +219,7 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 }
 
 func populateCommentsWithComments(pool *pgxpool.Pool) {
+	fmt.Println("Adding comments to comments...")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -231,23 +232,25 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 		log.Fatalf("Failed to get comments from database: %v", err)
 	}
 
+	childComments := make([]models.CommentResp, 0)
+
 	for i, pc := range comments {
 		var c models.CommentResp
-		id := sql.NullInt64{
-			Int64: pc.ID,
-			Valid: true,
-		}
 
 		c.Post_ID = pc.Post_ID
 		c.Author_ID = users[(i+1)%len(users)].ID
-		c.Parent_ID = id
+		c.Parent_ID = sql.NullInt64{
+			Int64: pc.ID,
+			Valid: true,
+		}
 		c.Message = fmt.Sprintf("What a great comment %s", users[(i+1)%len(users)].First_name)
-		comments = append(comments, c)
+
+		childComments = append(childComments, c)
 	}
 
 	batch := &pgx.Batch{}
 
-	for _, c := range comments {
+	for _, c := range childComments {
 		batch.Queue(
 			"INSERT INTO comments (post_id, author_id, parent_id, message) VALUES ($1, $2, $3, $4)",
 			c.Post_ID,
@@ -258,7 +261,7 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 	}
 
 	br := pool.SendBatch(ctx, batch)
-	_, err = br.Exec()
+	err = br.Close()
 	if err != nil {
 		log.Fatalf("Failed to add comments to database: %v", err)
 	}
@@ -314,8 +317,12 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 	}
 
 	br := pool.SendBatch(ctx, batch)
-	_, err = br.Exec()
+	// _, err = br.Exec()
+	// if err != nil {
+	// 	log.Fatalf("Failed to add comment votes to database: %v", err)
+	// }
+	err = br.Close()
 	if err != nil {
-		log.Fatalf("Failed to add comment votes to database: %v", err)
+		log.Fatalf("Failed to add comments to database: %v", err)
 	}
 }

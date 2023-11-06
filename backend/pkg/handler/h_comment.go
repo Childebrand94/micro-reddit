@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -38,12 +39,26 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode payload", err)
 		return
 	}
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+		return
+	}
+
+	sessionToken := cookie.Value
+
+	s, err := utils.ValidateSessionToken(ctx, c.DB, sessionToken)
+	if err != nil {
+		models.SendError(w, http.StatusUnauthorized, "Please login", err)
+		return
+	}
+	fmt.Printf("%+v\n", payload)
 
 	err = database.AddComment(
 		ctx,
 		c.DB,
 		int64(post_id),
-		payload.Author_ID,
+		s.User_id,
 		sql.NullInt64(payload.Parent_ID),
 		payload.Message,
 	)
@@ -112,8 +127,10 @@ func (c *Comment) CommentVotes(w http.ResponseWriter, r *http.Request) {
 	var vote bool
 	if vote_param == "up-vote" {
 		vote = true
-	} else {
+	} else if vote_param == "down-vote" {
 		vote = false
+	} else {
+		models.SendError(w, http.StatusBadRequest, "Bad URL", nil)
 	}
 
 	err = database.AddCommentVotes(ctx, c.DB, userInfo.User_id, int64(comment_id), vote)
