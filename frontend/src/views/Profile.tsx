@@ -93,13 +93,11 @@ const Profile = () => {
                     )}
                 </div>
             ) : (
-                <ProfileBasic
-                    username={
-                        userPostData
-                            ? userPostData[0].author.userName
-                            : "Unknown"
-                    }
-                />
+                <ProfileBasic/>
+                   
+                
+                    
+                
             )}
         </div>
     );

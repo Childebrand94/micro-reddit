@@ -108,15 +108,15 @@ func GetUserByEmail(ctx context.Context, pool *pgxpool.Pool, email string) (*mod
 }
 
 func CreateSession(ctx context.Context, pool *pgxpool.Pool, sessionId string, userId int64) error {
-	querey := "INSERT INTO sessions (session_id, user_id) VALUES ($1, $2)"
+	query := "INSERT INTO sessions (session_id, user_id) VALUES ($1, $2)"
 
-	_, err := pool.Exec(ctx, querey, sessionId, userId)
+	_, err := pool.Exec(ctx, query, sessionId, userId)
 	return err
 }
 
 func DeleteSession(ctx context.Context, pool *pgxpool.Pool, sessionId string) error {
-	querey := `DELETE FROM sessions WHERE session_id = $1`
-	_, err := pool.Exec(ctx, querey, sessionId)
+	query := `DELETE FROM sessions WHERE session_id = $1`
+	_, err := pool.Exec(ctx, query, sessionId)
 	return err
 }
 
@@ -225,14 +225,14 @@ func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.U
         WHERE 
             pv.user_id = $1;`
 
-	queryCommentVotes := `
-        SELECT 
-            COALESCE(SUM(CASE WHEN cv.up_vote = true THEN 1 ELSE 0 END), 0) AS up_vote_count,
-            COALESCE(SUM(CASE WHEN cv.up_vote = false THEN 1 ELSE 0 END), 0) AS down_vote_count
-        FROM 
-            comment_vote AS cv 
-        WHERE 
-            cv.user_id = $1;`
+	// queryCommentVotes := `
+	//        SELECT
+	//            COALESCE(SUM(CASE WHEN cv.up_vote = true THEN 1 ELSE 0 END), 0) AS up_vote_count,
+	//            COALESCE(SUM(CASE WHEN cv.up_vote = false THEN 1 ELSE 0 END), 0) AS down_vote_count
+	//        FROM
+	//            comment_vote AS cv
+	//        WHERE
+	//            cv.user_id = $1;`
 
 	var up models.UserPoints
 
@@ -246,12 +246,11 @@ func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.U
 		return nil, err
 	}
 
-	err = pool.QueryRow(ctx, queryCommentVotes, id).Scan(&up.CommentUpVotes, &up.CommentDownVotes)
-	if err != nil {
-		return nil, err
-	}
-	// Compute total karma (adjust the logic as per your requirements)
-	up.Karma = up.PostCount + up.PostUpVotes - up.PostDownVotes + up.CommentUpVotes - up.CommentDownVotes
+	// err = pool.QueryRow(ctx, queryCommentVotes, id).Scan(&up.CommentUpVotes, &up.CommentDownVotes)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// up.Karma = up.PostCount + up.PostUpVotes - up.PostDownVotes + up.CommentUpVotes - up.CommentDownVotes
 
 	return &up, nil
 }

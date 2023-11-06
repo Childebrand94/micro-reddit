@@ -7,7 +7,7 @@ type AuthProviderProps = {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState<boolean>(true);
-    const [userId, setUserId] = useState<number>(-1);
+    const [userId, setUserId] = useState<number | null >(null);
 
     const fetchSession = async () => {
         try {

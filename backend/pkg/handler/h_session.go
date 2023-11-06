@@ -38,7 +38,6 @@ func (s *Session) IsSession(w http.ResponseWriter, r *http.Request) {
 
 	session, err := utils.ValidateSessionToken(ctx, s.DB, cookie.Value)
 	if err != nil {
-		println("reset cookie")
 		// if there is no session but a cookie is found clear the cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_token",

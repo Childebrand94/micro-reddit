@@ -34,18 +34,18 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	exsists, err := database.EmailExists(ctx, u.DB, payload.Email)
+	exists, err := database.EmailExists(ctx, u.DB, payload.Email)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Internal error when checking email", err)
 		return
 	}
 
-	if exsists {
+	if exists {
 		response := map[string]interface{}{
 			"uniqueEmail": false,
 			"message":     "Email is already in use.",
 		}
-		w.Header().Set("Content-Type", "applicaton/json")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotAcceptable)
 		json.NewEncoder(w).Encode(response)
 		return
@@ -70,7 +70,7 @@ func (u *User) Create(w http.ResponseWriter, r *http.Request) {
 	log.Print("Successfully created user")
 
 	// Create Session for user
-	sessionId := utils.GenereateSessionToken()
+	sessionId := utils.GenerateSessionToken()
 
 	err = database.CreateSession(ctx, u.DB, sessionId, userId)
 	if err != nil {
@@ -114,7 +114,7 @@ func (u *User) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionId := utils.GenereateSessionToken()
+	sessionId := utils.GenerateSessionToken()
 
 	err = database.CreateSession(ctx, u.DB, sessionId, user.ID)
 	if err != nil {
@@ -312,6 +312,30 @@ func (u *User) GetUserPoints(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+
+	userPosts, err := database.GetAllPostsByUser(ctx, u.DB, int64(id))
+	if err != nil {
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Unable to fetch user's info form database",
+			err,
+		)
+		return
+	}
+	userComments, err := database.GetAllCommentsByUser(ctx, u.DB, int64(id))
+	if err != nil {
+		models.SendError(
+			w,
+			http.StatusInternalServerError,
+			"Unable to fetch user's info form database",
+			err,
+		)
+		return
+	}
+
+	resp.Karma = utils.CalcKarma(userPosts, userComments)
+
 	data, err := json.Marshal(resp)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)

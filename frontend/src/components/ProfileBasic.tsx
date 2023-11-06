@@ -61,7 +61,7 @@ export const ProfileBasic = () => {
             <div className="flex py-1">
                 <div className="mr-2">Sites promoted:</div>
                 <div className="font-bold">
-                    {pointsData ? pointsData.postUpVotes : "Uknown"}
+                    {pointsData ? pointsData.postUpVotes : "Unknown"}
                 </div>
             </div>
             <div className="flex py-1">

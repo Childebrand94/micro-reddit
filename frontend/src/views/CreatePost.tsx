@@ -38,6 +38,7 @@ export const CreatePost = () => {
 
             const data = await response.json();
             console.log(data.message);
+            //change redirect to post that was just made  
             window.location.href = "/";
         } catch (error) {
             console.log("There was an error submitting the form", error);

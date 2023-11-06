@@ -2,7 +2,7 @@ import { useState } from "react";
 const NavSearch = () => {
     const [searchInput, setSearchInput] = useState("");
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSearchInput(e.target.value);
     };

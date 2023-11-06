@@ -317,10 +317,6 @@ func populateCommentsWithVotes(pool *pgxpool.Pool) {
 	}
 
 	br := pool.SendBatch(ctx, batch)
-	// _, err = br.Exec()
-	// if err != nil {
-	// 	log.Fatalf("Failed to add comment votes to database: %v", err)
-	// }
 	err = br.Close()
 	if err != nil {
 		log.Fatalf("Failed to add comments to database: %v", err)

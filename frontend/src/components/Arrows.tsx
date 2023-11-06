@@ -25,6 +25,7 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
                 method: "PUT",
             });
             if (!resp.ok) {
+                //redirect to sign in 
                 throw new Error(`HTTP error! Status: ${resp.status}`);
             }
         } catch (error) {

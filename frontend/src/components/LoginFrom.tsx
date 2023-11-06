@@ -3,7 +3,7 @@ import { useAuth } from "../context/UseAuth";
 
 const LoginForm: React.FC = () => {
     const { setLoggedIn } = useAuth();
-    const [invaildCredential, setInvaildCredential] = useState(false);
+    const [invalidCredential, setInvalidCredential] = useState(false);
 
     const [formData, setFormData] = useState<Record<string, string>>({
         email: "",
@@ -32,7 +32,7 @@ const LoginForm: React.FC = () => {
 
             if (!response.ok) {
                 const data = await response.json();
-                setInvaildCredential(true);
+                setInvalidCredential(true);
                 throw new Error(`${data.message}`);
             }
             const data = await response.json();
@@ -52,9 +52,9 @@ const LoginForm: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <div className="form-group mb-4">
                     <label htmlFor="email" className="block text-blue-500">
-                        {invaildCredential ? (
+                        {invalidCredential ? (
                             <p className="text-red-500">
-                                Invaild Email or Password
+                                Invalid Email or Password
                             </p>
                         ) : (
                             <></>

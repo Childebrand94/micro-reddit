@@ -11,23 +11,24 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/Childebrand94/micro-reddit/pkg/models"
 )
 
-func GetVoteTotal(pool *pgxpool.Pool, id int64, table, column string) (pgtype.Int8, error) {
-	var totalVotes pgtype.Int8
+func GetVoteTotal(pool *pgxpool.Pool, id int64, table, column string) (int, error) {
+	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer ctxCancel()
+
+	var totalVotes int
 	query := fmt.Sprintf(`SELECT 
-  SUM(CASE WHEN up_vote = true THEN 1 ELSE 0 END) - SUM(CASE WHEN up_vote = false THEN 1 ELSE 0 END)  as total_votes
+  COALESCE(SUM(CASE WHEN up_vote = true THEN 1 ELSE 0 END) - SUM(CASE WHEN up_vote = false THEN 1 ELSE 0 END), 0) as total_votes
 	FROM %s 
 	WHERE %s = $1;`, table, column)
 
-	err := pool.QueryRow(context.TODO(), query, id).Scan(&totalVotes)
+	err := pool.QueryRow(ctx, query, id).Scan(&totalVotes)
 	if err != nil {
-		var zeroValue pgtype.Int8
-		return zeroValue, err
+		return 0, err
 	}
 
 	return totalVotes, nil
@@ -49,7 +50,7 @@ func SendSuccessfulResp(w http.ResponseWriter, message string) {
 	})
 }
 
-func GenereateSessionToken() string {
+func GenerateSessionToken() string {
 	token := uuid.New().String()
 	return token
 }
@@ -101,6 +102,23 @@ func ValidateSessionToken(ctx context.Context, pool *pgxpool.Pool, token string)
 	}
 
 	return &s, err
+}
+
+func CalcKarma(posts []models.PostWithAuthor, comments []models.CommentResp) int {
+	var totalPostVotes int
+	var totalCommentVotes int
+	for _, p := range posts {
+		totalPostVotes = 0
+		totalPostVotes += p.Vote
+	}
+
+	for _, c := range comments {
+		totalCommentVotes = 0
+		totalCommentVotes += c.Vote
+	}
+
+	karma := totalPostVotes + totalCommentVotes + len(posts) + len(comments)
+	return karma
 }
 
 //

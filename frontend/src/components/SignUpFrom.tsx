@@ -10,7 +10,7 @@ const SignUpForm: React.FC = () => {
         retypePassword: "",
     });
 
-    const [vaildEmail, setVaildEmail] = useState<boolean>(true);
+    const [validEmail, setValidEmail] = useState<boolean>(true);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -39,7 +39,7 @@ const SignUpForm: React.FC = () => {
             if (!response.ok) {
                 console.log();
                 if (response.status === 406) {
-                    setVaildEmail(false);
+                    setValidEmail(false);
                 }
                 throw new Error("Network response was not ok");
             }
@@ -94,7 +94,7 @@ const SignUpForm: React.FC = () => {
 
                 <div className="form-group mb-4">
                     <label htmlFor="email" className="block text-red-500">
-                        {vaildEmail ? "" : "Email address already in use."}
+                        {validEmail ? "" : "Email address already in use."}
                     </label>
                     <input
                         type="email"

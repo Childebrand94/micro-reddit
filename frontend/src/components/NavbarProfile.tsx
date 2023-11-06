@@ -18,7 +18,7 @@ export const NavbarProfile = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Network respose was not ok");
+                throw new Error("Network response was not ok");
             }
 
             const data = await response.json();
@@ -56,7 +56,7 @@ export const NavbarProfile = () => {
                         className="hover:bg-blue-300 w-full rounded-lg p-1 text-left"
                         onClick={handleClick}
                     >
-                        Signout
+                        Sign out
                     </button>
                 </div>
             ) : (

@@ -3,8 +3,6 @@ package models
 import (
 	"database/sql"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Comment struct {
@@ -14,7 +12,7 @@ type Comment struct {
 	// Parent_ID pgtype.Int8 `db:"parent_id"  json:"parentId"`
 	Parent_ID  sql.NullInt64 `db:"parent_id"  json:"parentID"`
 	Message    string        `db:"message"    json:"message"`
-	Vote       pgtype.Int8   `                json:"upVotes"`
+	Vote       int           `                json:"upVotes"`
 	Created_at time.Time     `db:"created_at" json:"createdAt"`
 }
 
