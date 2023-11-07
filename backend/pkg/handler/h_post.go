@@ -62,7 +62,15 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 
-	resp, err := database.GetAllPosts(ctx, p.DB)
+	queryValues := r.URL.Query()
+
+	sort := queryValues.Get("sort")
+
+	if sort == "" {
+		sort = "hot"
+	}
+
+	resp, err := database.GetAllPosts(ctx, p.DB, sort)
 	if err != nil {
 		models.SendError(
 			w,

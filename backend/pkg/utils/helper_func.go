@@ -121,6 +121,54 @@ func CalcKarma(posts []models.PostWithAuthor, comments []models.CommentResp) int
 	return karma
 }
 
+type SortMethod struct {
+	ByVotesDesc    string
+	ByCreationDesc string
+	ByHot          string
+}
+
+func GetSortMethod(sortType string) string {
+	baseQuery := `
+        SELECT 
+            p.id,
+            p.author_id,
+            p.title,
+            p.url,
+            p.created_at,
+            p.updated_at,
+            u.first_name,
+            u.last_name,
+            u.username,
+            COALESCE(SUM(CASE WHEN pv.up_vote THEN 1 ELSE 0 END), 0) AS upvotes_count
+        FROM 
+            posts p
+        LEFT JOIN 
+            users u ON u.id = p.author_id
+        LEFT JOIN 
+            post_votes pv ON p.id = pv.post_id
+        GROUP BY 
+            p.id, u.id
+    `
+
+	sortMethods := SortMethod{
+		ByVotesDesc:    baseQuery + " ORDER BY upvotes_count DESC, p.created_at DESC",
+		ByCreationDesc: baseQuery + " ORDER BY p.created_at DESC",
+		ByHot:          baseQuery,
+	}
+
+	switch sortType {
+	case "top":
+		return sortMethods.ByVotesDesc
+	case "new":
+		return sortMethods.ByCreationDesc
+	case "hot":
+		return sortMethods.ByHot
+
+	default:
+		return sortMethods.ByCreationDesc
+	}
+}
+
 //
 // func URLFormatter(str string) (*string, error) {
 //     u, err := url.Parse(str)

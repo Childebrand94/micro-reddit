@@ -76,8 +76,8 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
 	return &p, nil
 }
 
-func GetAllPosts(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {
-	allPosts, err := GetPostsHelper(ctx, pool)
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
+	allPosts, err := GetPostsHelper(ctx, pool, sort)
 	if err != nil {
 		return nil, err
 	}
@@ -120,24 +120,10 @@ func AddPostVotes(
 	return err
 }
 
-func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostResponse, error) {
-	queryForPosts := `SELECT 
-                      p.id,
-                      p.author_id,
-                      p.title,
-                      p.url,
-                      p.created_at,
-                      p.updated_at,
-                      u.first_name,
-                      u.last_name,
-                      u.username
-                    FROM 
-                      posts AS p
-                    LEFT JOIN 
-                      users AS u ON u.id = p.author_id
-                    ORDER BY created_at DESC;`
+func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
+	query := utils.GetSortMethod(sort)
 
-	postRows, err := pool.Query(ctx, queryForPosts)
+	postRows, err := pool.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +135,7 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostRespo
 	for postRows.Next() {
 
 		var p models.PostResponse
+		var totalvotes int
 
 		if err := postRows.Scan(
 			&p.ID,
@@ -159,7 +146,8 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.PostRespo
 			&p.UpdatedAt,
 			&p.Author.FirstName,
 			&p.Author.LastName,
-			&p.Author.UserName); err != nil {
+			&p.Author.UserName,
+			&totalvotes); err != nil {
 			return nil, err
 		}
 		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
