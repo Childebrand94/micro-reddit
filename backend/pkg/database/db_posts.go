@@ -76,8 +76,8 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
 	return &p, nil
 }
 
-func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
-	allPosts, err := GetPostsHelper(ctx, pool, sort)
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string) ([]models.PostResponse, error) {
+	allPosts, err := GetPostsHelper(ctx, pool, sort, search)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,23 @@ func AddPostVotes(
 	return err
 }
 
-func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
+func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort, search string) ([]models.PostResponse, error) {
+	if search == "" {
+		allPosts, err := GetPostsSort(ctx, pool, sort)
+		if err != nil {
+			return nil, err
+		}
+		return allPosts, nil
+	} else {
+		allPosts, err := GetPostsSearch(ctx, pool, search)
+		if err != nil {
+			return nil, err
+		}
+		return allPosts, nil
+	}
+}
+
+func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
 	query := utils.GetSortMethod(sort)
 
 	postRows, err := pool.Query(ctx, query)
@@ -158,6 +174,61 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort string) ([]mod
 		allPosts = append(allPosts, p)
 	}
 
+	return allPosts, nil
+}
+
+func GetPostsSearch(ctx context.Context, pool *pgxpool.Pool, search string) ([]models.PostResponse, error) {
+	searchTerm := "%" + search + "%"
+	query := `SELECT 
+                    p.id,
+                    p.author_id,
+                    p.title,
+                    p.url,
+                    p.created_at,
+                    p.updated_at,
+                    u.first_name,
+                    u.last_name,
+                    u.username
+                FROM 
+                    posts p
+                LEFT JOIN 
+                    users u ON u.id = p.author_id
+                WHERE p.title ILIKE $1
+                    OR u.username ILIKE $1
+                    OR p.url ILIKE $1;`
+
+	postRows, err := pool.Query(ctx, query, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+
+	defer postRows.Close()
+
+	var allPosts []models.PostResponse
+
+	for postRows.Next() {
+
+		var p models.PostResponse
+
+		if err := postRows.Scan(
+			&p.ID,
+			&p.Author_ID,
+			&p.Title,
+			&p.URL,
+			&p.CreatedAt,
+			&p.UpdatedAt,
+			&p.Author.FirstName,
+			&p.Author.LastName,
+			&p.Author.UserName); err != nil {
+			return nil, err
+		}
+		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
+		if err != nil {
+			return nil, err
+		}
+
+		allPosts = append(allPosts, p)
+	}
 	return allPosts, nil
 }
 

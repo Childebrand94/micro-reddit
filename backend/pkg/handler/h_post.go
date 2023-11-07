@@ -65,12 +65,13 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 	queryValues := r.URL.Query()
 
 	sort := queryValues.Get("sort")
+	search := queryValues.Get("search")
 
 	if sort == "" {
 		sort = "hot"
 	}
 
-	resp, err := database.GetAllPosts(ctx, p.DB, sort)
+	resp, err := database.GetAllPosts(ctx, p.DB, sort, search)
 	if err != nil {
 		models.SendError(
 			w,
