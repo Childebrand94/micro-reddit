@@ -191,7 +191,7 @@ func GetAllCommentsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]
 			return nil, err
 		}
 
-		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_votes", "comment_id")
 		if err != nil {
 			return nil, err
 		}

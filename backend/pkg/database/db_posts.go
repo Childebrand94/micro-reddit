@@ -63,7 +63,7 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
 		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
 			return nil, err
 		}
-		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_votes", "comment_id")
 		if err != nil {
 			return nil, err
 		}
@@ -199,7 +199,7 @@ func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Commen
 		); err != nil {
 			return nil, err
 		}
-		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_votes", "comment_id")
 		if err != nil {
 			return nil, err
 		}

@@ -128,6 +128,8 @@ type SortMethod struct {
 }
 
 func GetSortMethod(sortType string) string {
+	threeHoursAgo := "NOW() - INTERVAL '48 hours'"
+
 	baseQuery := `
         SELECT 
             p.id,
@@ -146,27 +148,24 @@ func GetSortMethod(sortType string) string {
             users u ON u.id = p.author_id
         LEFT JOIN 
             post_votes pv ON p.id = pv.post_id
-        GROUP BY 
-            p.id, u.id
     `
 
-	sortMethods := SortMethod{
-		ByVotesDesc:    baseQuery + " ORDER BY upvotes_count DESC, p.created_at DESC",
-		ByCreationDesc: baseQuery + " ORDER BY p.created_at DESC",
-		ByHot:          baseQuery,
+	sortMethods := map[string]string{
+		"top": baseQuery + " GROUP BY p.id, u.id ORDER BY upvotes_count DESC, p.created_at DESC",
+		"new": baseQuery + " GROUP BY p.id, u.id ORDER BY p.created_at DESC",
+		"hot": baseQuery + `
+            LEFT JOIN (
+                SELECT post_id, COUNT(*) as recent_upvotes_count
+                FROM post_votes
+                WHERE up_vote = true AND created_at >= ` + threeHoursAgo + `
+                GROUP BY post_id
+            ) AS recent_pv ON p.id = recent_pv.post_id
+            GROUP BY p.id, u.id, recent_pv.recent_upvotes_count
+            ORDER BY recent_pv.recent_upvotes_count DESC NULLS LAST, p.created_at DESC
+        `,
 	}
 
-	switch sortType {
-	case "top":
-		return sortMethods.ByVotesDesc
-	case "new":
-		return sortMethods.ByCreationDesc
-	case "hot":
-		return sortMethods.ByHot
-
-	default:
-		return sortMethods.ByCreationDesc
-	}
+	return sortMethods[sortType]
 }
 
 //

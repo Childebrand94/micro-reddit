@@ -4,8 +4,13 @@ import NavSearch from "./NavSearch";
 import { useAuth } from "../context/UseAuth";
 import LogInButton from "./LogInButton";
 import { NavbarProfile } from "./NavbarProfile";
+import { Filter } from "../utils/type";
 
-const NavBar = () => {
+type Props = {
+    fetchPosts: (value: Filter, str: string | null) => void;
+};
+
+const NavBar: React.FC<Props> = ({ fetchPosts }) => {
     const { loggedIn } = useAuth();
     return (
         <nav className="flex justify-between items-center max-w-full h-12 bg-blue-100 px-4">
@@ -21,7 +26,7 @@ const NavBar = () => {
             <FilterOptions />
 
             <div className="flex items-center">
-                <NavSearch />
+                <NavSearch fetchPosts={fetchPosts} />
                 {loggedIn ? <NavbarProfile /> : <LogInButton />}
             </div>
         </nav>

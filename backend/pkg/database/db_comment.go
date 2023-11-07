@@ -44,7 +44,7 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]mode
 		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
 			return nil, err
 		}
-		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_vote", "comment_id")
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "s", "comment_id")
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func AddCommentVotes(
 	user_id, comment_id int64,
 	up_vote bool,
 ) error {
-	query := `INSERT INTO comment_vote(user_id, comment_id, up_vote)
+	query := `INSERT INTO comment_votes(user_id, comment_id, up_vote)
                 VALUES ($1, $2, $3)
                 ON CONFLICT (comment_id, user_id)
                 DO UPDATE SET up_vote = EXCLUDED.up_vote;`

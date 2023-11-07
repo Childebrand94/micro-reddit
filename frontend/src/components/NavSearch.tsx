@@ -1,10 +1,22 @@
-import { useState } from "react";
-const NavSearch = () => {
-    const [searchInput, setSearchInput] = useState("");
+import React, { useState, useCallback } from "react";
+import { Filter } from "../utils/type";
+import { debounce } from "../utils/helpers";
+
+type Props = {
+    fetchPosts: (filter: Filter, search: string | null) => void;
+};
+
+const NavSearch: React.FC<Props> = ({ fetchPosts }) => {
+    const [searchInput, setSearchInput] = useState<string>("");
+
+    const debouncedFetchPosts = useCallback(
+        debounce((searchValue: string) => fetchPosts("hot", searchValue), 500),
+        [],
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
         setSearchInput(e.target.value);
+        debouncedFetchPosts(e.target.value);
     };
 
     return (
@@ -19,4 +31,5 @@ const NavSearch = () => {
         </div>
     );
 };
+
 export default NavSearch;
