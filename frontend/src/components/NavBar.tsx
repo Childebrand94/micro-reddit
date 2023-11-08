@@ -5,6 +5,7 @@ import { useAuth } from "../context/UseAuth";
 import LogInButton from "./LogInButton";
 import { NavbarProfile } from "./NavbarProfile";
 import { Filter } from "../utils/type";
+import {FcReddit} from "react-icons/fc"
 
 type Props = {
     fetchPosts: (value: Filter, str: string | null) => void;
@@ -13,20 +14,20 @@ type Props = {
 const NavBar: React.FC<Props> = ({ fetchPosts }) => {
     const { loggedIn } = useAuth();
     return (
-        <nav className="flex justify-between items-center max-w-full h-12 bg-blue-100 px-4">
-            <div className="mr-2">
+        <nav className="grid grid-cols-[1fr_2fr_1fr] gap-4 max-w-full h-12 bg-blue-100 px-4">
+            <div className="col-start-1 flex items-center justify-between mr-2 max-w-sm">
                 <Link to="/">
-                    <img
-                        className="w-12"
-                        src="/assets/logo-reddit.svg"
-                        alt="Reddit Logo"
-                    />
+                    <FcReddit size={50} />   
                 </Link>
-            </div>
+                <p className="invisible absolute  sm:relative sm:visible tracking-wide text-xl font-bold font-custom">
+                    reddit
+                </p>
             <FilterOptions />
-
-            <div className="flex items-center">
+            </div>
+            <div className="flex items-center col-start-2 w-full">
                 <NavSearch fetchPosts={fetchPosts} />
+            </div>
+            <div className="flex items-center justify-end col-start-3">
                 {loggedIn ? <NavbarProfile /> : <LogInButton />}
             </div>
         </nav>

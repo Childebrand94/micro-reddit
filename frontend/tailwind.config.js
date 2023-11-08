@@ -6,6 +6,9 @@ export default {
             fontSize: {
                 xxs: "0.6rem",
             },
+            fontFamily: {
+                'custom' : ['Nunito', 'sans-serif']
+            }
         },
     },
     plugins: [],

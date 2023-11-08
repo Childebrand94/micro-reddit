@@ -36,14 +36,14 @@ export const ProfileBasic = () => {
     const formattedData = moment(dateStr).format("MMMM D, YYYY");
 
     return (
-        <div className="flex flex-col w-full">
-            <div className="flex py-1">
+        <div className="flex flex-col w-full ">
+            <div className="flex py-1 px-2">
                 <div className="mr-2">Karma:</div>
                 <div className="font-bold">
                     {pointsData ? pointsData.karma : "unKnown"}
                 </div>
             </div>
-            <div className="flex py-1">
+            <div className="flex py-1 px-2">
                 <div className="mr-2">Member since:</div>
                 <div className="font-bold">{formattedData}</div>
             </div>
@@ -52,19 +52,19 @@ export const ProfileBasic = () => {
                     Stats
                 </div>
             </div>
-            <div className="flex py-1">
+            <div className="flex py-1 px-2">
                 <div className="pr-2">Total submissions:</div>
                 <div className="font-bold">
                     {pointsData ? pointsData.postCount : "Unknown"}
                 </div>
             </div>
-            <div className="flex py-1">
+            <div className="flex py-1 px-2">
                 <div className="mr-2">Sites promoted:</div>
                 <div className="font-bold">
                     {pointsData ? pointsData.postUpVotes : "Unknown"}
                 </div>
             </div>
-            <div className="flex py-1">
+            <div className="flex py-1 px-2">
                 <div className="mr-2">Sites demoted:</div>
                 <div className="font-bold">
                     {pointsData ? pointsData.postDownVotes : "Unknown"}

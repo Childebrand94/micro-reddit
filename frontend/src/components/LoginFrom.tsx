@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/UseAuth";
+import { LoginWindowState } from "../utils/type";
 
-const LoginForm: React.FC = () => {
+type props = {
+    fn: (arg: LoginWindowState) => void;
+};
+
+const LoginForm: React.FC<props> = ({fn}) => {
     const { setLoggedIn } = useAuth();
     const [invalidCredential, setInvalidCredential] = useState(false);
 
@@ -45,7 +50,7 @@ const LoginForm: React.FC = () => {
     };
 
     return (
-        <div className="text-center flex flex-col bg-white p-7 rounded-md ">
+        <div className="text-center flex flex-col">
             <h1 className="text-3xl font-bold tracking-wide mb-5 text-blue-500">
                 Login
             </h1>
@@ -91,11 +96,17 @@ const LoginForm: React.FC = () => {
 
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white py-2 px-5 rounded-md hover:bg-blue-700 transition"
+                    className="bg-blue-500 text-white py-2 px-5 rounded-md hover:bg-blue-700 transition w-full"
                 >
                     Login
                 </button>
             </form>
+            <div className="mt-3">
+                <p>New to reddit?</p>
+                <button className=" underline" onClick={() => fn("signUp")}>
+                Create your account here
+                </button>
+            </div>
         </div>
     );
 };

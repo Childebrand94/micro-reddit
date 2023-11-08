@@ -1,47 +1,77 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Filter } from "../utils/type";
-import { useFilter } from "../context/UseFilter";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { FaFireFlameCurved } from 'react-icons/fa6';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { BsStars, BsPlusCircle } from 'react-icons/bs';
+import { Filter } from '../utils/type';
+import { useFilter } from '../context/UseFilter';
 
 const FilterOptions = () => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [activeFilter, setActiveFilter] = useState<Filter>("hot");
-    const { setFilter, setUpdateTrigger } = useFilter();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [activeFilter, setActiveFilter] = useState<Filter>('hot');
+  const { setFilter, setUpdateTrigger } = useFilter();
 
-    const handleDropDown = () => {
-        setIsOpen(!isOpen);
-    };
+  const handleDropDown = () => {
+    setIsOpen(!isOpen);
+  };
 
-    const handleLinkClick = (text: Filter): void => {
-        handleDropDown();
-        setActiveFilter(text);
-        setFilter(text);
-        setUpdateTrigger((prev) => prev + 1);
-    };
+  const handleLinkClick = (text: Filter): void => {
+    handleDropDown();
+    setActiveFilter(text);
+    setFilter(text);
+    setUpdateTrigger((prev) => prev + 1);
+  };
 
-    const options: Filter[] = ["hot", "top", "new"];
+  
+  const filterIcons = {
+    hot: <FaFireFlameCurved className="mr-2" />,
+    top: <BsStars className="mr-2" />,
+    new: <BsPlusCircle className="mr-2" />, 
+  };
 
-    return (
-        <div className="flex flex-col relative">
-            <div className="flex justify-center text-center w-14 p-1 rounded-xl bg-blue-400">
-                <button className="text-xl" onClick={() => setIsOpen(!isOpen)}>
-                    {activeFilter.toUpperCase()}
-                </button>
-            </div>
+  return (
+    <div className="flex flex-col relative ml-3 ">
+      <button
+        className={`text-lg font-bold px-3 py-1 flex items-center justify-between w-full ${isOpen? "rounded-t-lg": "rounded-lg" } bg-blue-400`}
+        onClick={handleDropDown}
+      >
+        
+        {filterIcons[activeFilter]}
+        {activeFilter.toUpperCase()}
+        {isOpen ? (
+          <IoIosArrowUp className="ml-2" size={15} />
+        ) : (
+          <IoIosArrowDown className="ml-2" size={15} />
+        )}
 
-            <div
-                className={`flex flex-col text-xl w-14 rounded-xl bg-blue-400 absolute overflow-hidden transition-max-height text-center ease-in ${
-                    isOpen ? "max-h-60" : "max-h-0"
-                }`}
+       
+      </button>
+
+      {isOpen && (
+        <div
+          className="flex flex-col text-xl bg-blue-400 rounded-b-xl transition-all ease-in absolute top-full"
+          style={{ minWidth: '100%' }}
+        >
+          {Object.entries(filterIcons).map(([key, icon]) => {
+            if(key === activeFilter) return null;
+
+            return (
+            <Link
+              key={key}
+              className={`py-1 pl-2 font-semibold hover:bg-blue-300 flex items-center`}
+              onClick={() => handleLinkClick(key as Filter)}
+              to={'/'}
             >
-                {options.map((x, i) => (
-                    <Link key={i} onClick={() => handleLinkClick(x)} to={"/"}>
-                        {x.toUpperCase()}
-                    </Link>
-                ))}
-            </div>
+              {icon}
+              {key.toUpperCase()}
+            </Link>
+            )
+          })}
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default FilterOptions;
+

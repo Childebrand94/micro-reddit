@@ -7,7 +7,7 @@ type Props = {
 
 const PostList: React.FC<Props> = ({ posts }) => {
     return (
-        <div>
+        <div className="sm:px-6">
             {posts.map((post, i) => {
                 return <PostComp index={i + 1} post={post} key={post.id} />;
             })}

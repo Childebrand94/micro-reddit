@@ -93,11 +93,7 @@ const Profile = () => {
                     )}
                 </div>
             ) : (
-                <ProfileBasic/>
-                   
-                
-                    
-                
+                <ProfileBasic />
             )}
         </div>
     );

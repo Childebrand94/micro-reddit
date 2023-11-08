@@ -1,4 +1,4 @@
-import { Filter, Post as PostType } from "../utils/type";
+import { Post as PostType } from "../utils/type";
 import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
 import { Link } from "react-router-dom";
 import { User } from "./User.tsx";
@@ -11,11 +11,7 @@ export type PostProps = {
 
 export const PostComp: React.FC<PostProps> = ({ post, index }) => {
     return (
-        <div
-            className={`grid ${
-                index ? "grid-cols-[0.5fr,1fr,9fr]" : "grid-cols-1"
-            } m-2 gap-2`}
-        >
+        <div className="flex px-2 gap-2 sm:gap-3">
             {index && (
                 <div className="w-4 col-start-1">
                     <p className="my-2 text-xl">{index}.</p>

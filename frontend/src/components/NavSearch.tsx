@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Filter } from "../utils/type";
+import { BsSearch } from 'react-icons/bs';
 import { debounce } from "../utils/helpers";
 
 type Props = {
@@ -19,17 +20,22 @@ const NavSearch: React.FC<Props> = ({ fetchPosts }) => {
         debouncedFetchPosts(e.target.value);
     };
 
-    return (
-        <div>
-            <input
-                className="h-5/6 mx-4 w-5/6 rounded-xl p-2"
-                type="text"
-                placeholder="Search here"
-                onChange={handleChange}
-                value={searchInput}
-            />
+  return (
+    <div className="w-full">
+      <div className="relative rounded-xl p-2">
+        <input
+          className="w-full pl-8 focus:outline-none p-1 rounded-xl"
+          type="text"
+          placeholder="Search Reddit"
+          onChange={handleChange}
+          value={searchInput}
+        />
+        <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          <BsSearch className="text-gray-400 ml-2" />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default NavSearch;

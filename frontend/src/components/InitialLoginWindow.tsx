@@ -12,7 +12,7 @@ export const InitialLoginWindow: React.FC<props> = ({ fn }) => {
                 className="text-3xl font-bold tracking-wide mb-5 text-blue-500"
                 style={{ fontFamily: "'Trebuchet MS', sans-serif" }}
             >
-                Welcome to RetroReddit!
+                Welcome to Reddit!
             </h1>
             <button
                 onClick={() => fn("signIn")}

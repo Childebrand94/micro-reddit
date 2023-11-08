@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { InitialLoginWindow } from "../components/InitialLoginWindow";
 import LoginForm from "../components/LoginFrom";
 import SignUpForm from "../components/SignUpFrom";
 import { LoginWindowState } from "../utils/type";
 
 export const Login = () => {
-    const [formWindow, setFormWindow] = useState<LoginWindowState>("initial");
+    const [formWindow, setFormWindow] = useState<LoginWindowState>("signIn");
 
     const handleClick = (str: LoginWindowState) => {
         setFormWindow(str);
@@ -13,10 +12,8 @@ export const Login = () => {
 
     const renderFormContent = () => {
         switch (formWindow) {
-            case "initial":
-                return <InitialLoginWindow fn={handleClick} />;
             case "signIn":
-                return <LoginForm />;
+                return <LoginForm fn={handleClick}/>;
             case "signUp":
                 return <SignUpForm />;
             default:
@@ -25,8 +22,8 @@ export const Login = () => {
     };
 
     return (
-        <div className="h-screen bg-gray-200 flex justify-center items-center">
-            <div className="text-center flex flex-col bg-white p-7 rounded-md border-2 border-blue-500">
+        <div className="h-screen flex justify-center items-center">
+            <div className="text-center flex flex-col bg-white p-7 rounded-md ">
                 {renderFormContent()}
             </div>
         </div>

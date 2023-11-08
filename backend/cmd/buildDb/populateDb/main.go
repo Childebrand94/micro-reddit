@@ -132,7 +132,7 @@ func addVotesPosts(pool *pgxpool.Pool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	posts, err := database.GetPostsHelper(ctx, pool, "hot")
+	posts, err := database.GetPostsHelper(ctx, pool, "hot", "")
 	if err != nil {
 		log.Fatalf("Failed to get posts from database: %v", err)
 	}
@@ -184,7 +184,7 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	posts, err := database.GetPostsHelper(ctx, pool, "hot")
+	posts, err := database.GetPostsHelper(ctx, pool, "hot", "")
 	if err != nil {
 		log.Fatalf("Failed to get posts from database: %v", err)
 	}
