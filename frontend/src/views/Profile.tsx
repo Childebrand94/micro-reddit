@@ -50,8 +50,8 @@ const Profile = () => {
     };
 
     return (
-        <div>
-            <NavBar />
+        <div className="flex flex-col h-screen">
+            <NavBar/>
             <div className="border-b-4 border-blue-400 bg-gray-100 w-full my-3 flex">
                 <h1 className="text-blue-700 ml-3 font-bold text-xl tracking-wide">
                     {userData ? userData.username : "Username not found"}
@@ -81,7 +81,7 @@ const Profile = () => {
             </div>
 
             {toggleView ? (
-                <div>
+                <div className="flex flex-grow justify-center bg-gray-200 mt-2">
                     {userPostData !== null ? (
                         userPostData.map((p: Post) => {
                             return (

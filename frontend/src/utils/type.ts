@@ -8,7 +8,10 @@ export type Comment = {
     id: number;
     postId: number;
     authorId: number;
-    parentId: number;
+    parentID:{
+    Int64: number;
+    Valid: boolean;
+  };
     message: string;
     upVotes: number;
     createdAt: string;

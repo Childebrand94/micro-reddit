@@ -40,7 +40,7 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
         }
     };
     return (
-        <div>
+        <div className="w-11/12 rounded-xl ">
             <form className="flex flex-col" onSubmit={handleSubmit}>
                 <label htmlFor="text"></label>
 
@@ -51,11 +51,11 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
                     value={formData}
                     onChange={handleChange}
                     placeholder="What are your thoughts?"
-                    className="border-2 p-2 mx-2 mt-2"
+                    className=" border-2 p-2 mx-2 mt-2"
                     required
                 ></textarea>
                 <button
-                    className="ml-2 mt-2 w-20 bg-gray-400 text-white text-xs py-1 px-2 rounded-md hover:bg-gray-500 transition"
+                    className="ml-2 mt-2 w-20 bg-blue-400 text-white text-xs py-1 px-2 rounded-sm hover:bg-blue-500 transition"
                     type="submit"
                 >
                     Comment

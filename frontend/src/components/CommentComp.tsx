@@ -5,19 +5,18 @@ import { Arrows } from "./Arrows.tsx";
 
 type CommentProp = {
     comment: CommentType;
-    fetchComments: () => void;
 };
 
-const CommentComp: React.FC<CommentProp> = ({ comment, fetchComments }) => {
+const CommentComp: React.FC<CommentProp> = ({ comment }) => {
     return (
-        <div className="grid grid-cols-[1fr,10fr]">
+        <div className={`bg-white border border-gray-200 w-11/12 rounded-xl my-1 flex  ${comment.parentID["Valid"]  ? "ml-20" : ""} `}>
             <Arrows
-                fetchType={fetchComments}
                 postId={comment.postId}
                 commentId={comment.id}
                 type="comments"
+            
             />
-            <div className="col-start-2">
+            <div className={` ml-2 col-start-2`}>
                 <span className="text-gray-300 text-xs">
                     <h1 className="text-blue-300 text-xs inline">
                         <User

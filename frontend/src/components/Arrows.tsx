@@ -44,7 +44,7 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
             } my-2`}
         >
             <button
-                className="my-1"
+                className="my-1 w-6"
                 onClick={() =>
                     handleArrowClick(
                         type === "posts" ? postPath.upVote : commentPath.upVote,

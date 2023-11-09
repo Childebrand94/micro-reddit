@@ -47,7 +47,7 @@ export const CreatePost = () => {
     };
 
     return (
-        <div className="flex items-center justify-center w-full h-screen bg-blue-200">
+        <div className="flex items-center justify-center w-full h-screen bg-gray-200">
             <div className="text-center flex flex-col bg-white p-7 rounded-md max-w-lg w-8/12 ">
                 <h1 className="text-3xl font-bold tracking-wide mb-5 text-blue-500">
                     Create Post
@@ -55,11 +55,10 @@ export const CreatePost = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group mb-4">
                         <label htmlFor="title" className="block text-blue-500">
-                            Title
                         </label>
                         <input
                             type="text"
-                            placeholder="Enter title"
+                            placeholder="Title"
                             id="title"
                             name="title"
                             value={formData.title}
@@ -71,13 +70,10 @@ export const CreatePost = () => {
 
                     <div className="form-group mb-4">
                         <label htmlFor="url" className="block text-blue-500">
-                            URL
                         </label>
                         <input
                             type="url"
-                            placeholder="Enter the URL"
-                            pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}(/.*)?$"
-                            title="www.example.com"
+                            placeholder="URL"
                             id="url"
                             name="url"
                             value={formData.url}
@@ -89,7 +85,7 @@ export const CreatePost = () => {
 
                     <button
                         type="submit"
-                        className="bg-blue-500 text-white py-2 px-5 rounded-md hover:bg-blue-700 transition"
+                        className="bg-blue-400 text-white py-2 px-5 w-32 rounded-md hover:bg-blue-500 transition"
                     >
                         Post
                     </button>

@@ -6,12 +6,14 @@ import { useParams } from "react-router-dom";
 import { CommentList } from "../components/CommentList.tsx";
 import { useAuth } from "../context/UseAuth.tsx";
 import { CreateCommentForm } from "../components/CreateCommentForm.tsx";
+import { useFilter } from "../context/UseFilter.tsx";
 
 const CommentView = () => {
     const { loggedIn } = useAuth();
     const [postData, setPostData] = useState<PostType | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { post_id } = useParams();
+    const { updateTrigger } = useFilter()
 
     const fetchPostByID = async () => {
         try {
@@ -31,37 +33,38 @@ const CommentView = () => {
     };
     useEffect(() => {
         fetchPostByID();
-    }, []);
+    }, [updateTrigger]);
     return (
-        <div>
+        <div className="h-screen bg-gray-200 flex flex-col" >
             {postData ? (
                 <>
                     <NavBar />
                     {isLoading ? (
                         <h1>Loading...</h1>
                     ) : (
-                        <>
+                        <div className="flex flex-col items-center mt-3"> 
                             <PostComp
-                                fetchPosts={fetchPostByID}
                                 index={null}
                                 post={postData}
                             />
-                            {loggedIn && (
-                                <CreateCommentForm
-                                    fetchPosts={fetchPostByID}
-                                    postId={postData.id}
-                                />
-                            )}
-                            <div className="h-2 bg-blue-100 mt-3"></div>
-                            {postData.comments ? (
-                                <CommentList
-                                    fetchComments={fetchPostByID}
-                                    comments={postData.comments}
-                                />
-                            ) : (
-                                <h1>No Comments Found</h1>
-                            )}
-                        </>
+
+                            <div className="bg-white rounded-xl p-2 h-full w-11/12 flex flex-col items-center mt-3">
+                                {loggedIn && (
+                                    <CreateCommentForm
+                                        fetchPosts={fetchPostByID}
+                                        postId={postData.id}
+                                    />
+                                )}
+
+                                    {postData.comments ? (
+                                        <CommentList
+                                            comments={postData.comments}
+                                        />
+                                    ) : (
+                                        <h1 className="text-xl font-bold tracking-wide">Be the first to comment</h1>
+                                    )}
+                            </div>
+                        </div>
                     )}
                 </>
             ) : (

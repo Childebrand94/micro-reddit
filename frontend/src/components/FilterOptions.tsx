@@ -37,11 +37,13 @@ const FilterOptions = () => {
       >
         
         {filterIcons[activeFilter]}
+        <div className='invisible absolute sm:relative sm:visible'>
         {activeFilter.toUpperCase()}
+        </div>
         {isOpen ? (
-          <IoIosArrowUp className="ml-2" size={15} />
+          <IoIosArrowUp className="sm:ml-2" size={15} />
         ) : (
-          <IoIosArrowDown className="ml-2" size={15} />
+          <IoIosArrowDown className="sm:ml-2" size={15} />
         )}
 
        

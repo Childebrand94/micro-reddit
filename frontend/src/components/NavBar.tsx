@@ -13,13 +13,14 @@ type Props = {
 
 const NavBar: React.FC<Props> = ({ fetchPosts }) => {
     const { loggedIn } = useAuth();
+
     return (
         <nav className="grid grid-cols-[1fr_2fr_1fr] gap-4 max-w-full h-12 bg-blue-100 px-4">
             <div className="col-start-1 flex items-center justify-between mr-2 max-w-sm">
                 <Link to="/">
-                    <FcReddit size={50} />   
+                    <FcReddit size={45} />   
                 </Link>
-                <p className="invisible absolute  sm:relative sm:visible tracking-wide text-xl font-bold font-custom">
+                <p className="invisible absolute mx-1 sm:relative sm:visible tracking-wide text-xl font-bold font-custom">
                     reddit
                 </p>
             <FilterOptions />
