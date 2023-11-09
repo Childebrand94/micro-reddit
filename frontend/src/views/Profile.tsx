@@ -1,17 +1,21 @@
 import NavBar from "../components/nav/NavBar";
 import { PostComp } from "../components/post/PostComp";
 import { useEffect, useState } from "react";
-import { Post, User } from "../utils/type";
+import { Post, User, Filter } from "../utils/type";
 import { ProfileBasic } from "../components/ProfileBasic";
 import { useParams } from "react-router-dom";
 import { useFilter } from "../context/UseFilter";
 
-const Profile = () => {
+type Props = {
+    fetchPosts: (value: Filter, str: string | null) => void;
+};
+
+const Profile: React.FC<Props> = ({ fetchPosts }) => {
     const [userPostData, setUserPostData] = useState<Post[] | null>(null);
     const [userData, setUserData] = useState<User | null>(null);
     const { user_id } = useParams();
     const [toggleView, setToggleView] = useState<boolean>(false);
-    const { updateTrigger} = useFilter()
+    const { updateTrigger } = useFilter();
 
     const fetchUsersPosts = async () => {
         try {
@@ -53,7 +57,7 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col bg-gray-200 h-screen">
-            <NavBar fetchPosts={()=>{}}/>
+            <NavBar fetchPosts={fetchPosts} />
             <div className="border-b-4 border-blue-400 bg-gray-100 w-full my-3 flex">
                 <h1 className="text-blue-600 ml-3 font-bold text-xl tracking-wide">
                     {userData ? userData.username : "Username not found"}
@@ -82,9 +86,8 @@ const Profile = () => {
                 </div>
             </div>
 
-
             {toggleView ? (
-                <div className="flex flex-col flex-grow items-center w-full bg-gray-200 mt-2" >
+                <div className="flex flex-col flex-grow items-center w-full bg-gray-200 mt-2">
                     {userPostData !== null ? (
                         userPostData.map((p: Post) => {
                             return (
