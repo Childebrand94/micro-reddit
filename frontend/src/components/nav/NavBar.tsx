@@ -8,7 +8,7 @@ import { Filter } from "../../utils/type";
 import {FcReddit} from "react-icons/fc"
 
 type Props = {
-    fetchPosts: (value: Filter, str: string | null) => void;
+    fetchPosts: ((value: Filter, str: string | null) => void);
 };
 
 const NavBar: React.FC<Props> = ({ fetchPosts }) => {

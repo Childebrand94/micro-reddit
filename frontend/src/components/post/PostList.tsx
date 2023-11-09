@@ -18,8 +18,8 @@ const PostList: React.FC<Props> = ({ posts }) => {
         setIsPostExpanded(!isPostExpanded);
     };
     return (
-        <div className="sm:px-6 bg-gray-200">
-            <div className="max-w-2xl mx-auto flex flex-col justify-center items-center">
+        <div className="sm:px-6 bg-gray-200 flex justify-center items-center w-screen h-full">
+            <div className="max-w-lg mx-auto">
             {loggedIn && (
                 <div className="sm:w-11/12 border border-gray-300 p-2 bg-white rounded-xl">
                     {isPostExpanded ? (

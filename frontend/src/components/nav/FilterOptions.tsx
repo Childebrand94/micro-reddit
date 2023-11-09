@@ -5,6 +5,7 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BsStars, BsPlusCircle } from 'react-icons/bs';
 import { Filter } from '../../utils/type';
 import { useFilter } from '../../context/UseFilter';
+import { GiPodiumWinner} from 'react-icons/gi'
 
 const FilterOptions = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -25,8 +26,8 @@ const FilterOptions = () => {
   
   const filterIcons = {
     hot: <FaFireFlameCurved className="mr-2" />,
-    top: <BsStars className="mr-2" />,
-    new: <BsPlusCircle className="mr-2" />, 
+    top: <GiPodiumWinner className="mr-2" />,
+    new: <BsStars className="mr-2" />, 
   };
 
   return (
@@ -37,7 +38,7 @@ const FilterOptions = () => {
       >
         
         {filterIcons[activeFilter]}
-        <div className='invisible absolute sm:relative sm:visible'>
+        <div className={`${isOpen ? "visible relative" : "invisible absolute"} sm:relative sm:visible`}>
         {activeFilter.toUpperCase()}
         </div>
         {isOpen ? (

@@ -11,14 +11,14 @@ export type PostProps = {
 
 export const PostComp: React.FC<PostProps> = ({ post, index }) => {
     return (
-        <div className="flex h-24 px-2 gap-2 bg-white border border-gray-200 rounded-xl my-1 sm:gap-3 sm:w-11/12 sm:max-h-20">
+        <div className="flex h-24 px-2 gap-2 bg-white border border-gray-200 rounded-xl my-1 sm:gap-3 w-full sm:max-h-20">
             {index && (
                 <div className="w-4 mr-2 col-start-1">
                     <p className="my-2 text-xl">{index}.</p>
                 </div>
             )}
 
-            {index && <Arrows type="posts" commentId={0} postId={post.id} />}
+            <Arrows type="posts" commentId={0} postId={post.id} />
 
             <div
                 className={`h-12 ${
@@ -48,7 +48,12 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                         />
                         {post.comments === undefined ||
                         post.comments === null ? (
-                            <></>
+                            <Link
+                                to={`/posts/${post.id}`}
+                                className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"
+                            >
+                                0 Comments
+                            </Link>
                         ) : (
                             <Link
                                 to={`/posts/${post.id}`}

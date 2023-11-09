@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react";
+import { BiLogoReddit } from "react-icons/bi";
 import { useFilter } from "../../context/UseFilter";
 type FormData = {
     title: string;
@@ -51,8 +52,11 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
     };
 
     return (
-        <div>
-            <form className="flex flex-col" onSubmit={handleSubmit}>
+        <div className="flex">
+            <div>
+                <BiLogoReddit size={35} /> 
+            </div>
+            <form className="flex flex-col w-full" onSubmit={handleSubmit}>
                 <label htmlFor="title"></label>
                 <input
                     required

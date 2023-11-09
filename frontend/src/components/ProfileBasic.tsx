@@ -36,7 +36,8 @@ export const ProfileBasic = () => {
     const formattedData = moment(dateStr).format("MMMM D, YYYY");
 
     return (
-        <div className="flex flex-col w-full ">
+        <div className="flex flex-col items-center w-full h-full ">
+            <div className="bg-white w-5/6 rounded-lg h-5/6 p-4">
             <div className="flex py-1 px-2">
                 <div className="mr-2">Karma:</div>
                 <div className="font-bold">
@@ -47,7 +48,7 @@ export const ProfileBasic = () => {
                 <div className="mr-2">Member since:</div>
                 <div className="font-bold">{formattedData}</div>
             </div>
-            <div className="flex py-2 bg-gray-200">
+            <div className="flex my-2 border-b-2 border-black w-56">
                 <div className="pl-2 font-bold w-full tracking-wide text-lg ">
                     Stats
                 </div>
@@ -69,6 +70,7 @@ export const ProfileBasic = () => {
                 <div className="font-bold">
                     {pointsData ? pointsData.postDownVotes : "Unknown"}
                 </div>
+            </div>
             </div>
         </div>
     );
