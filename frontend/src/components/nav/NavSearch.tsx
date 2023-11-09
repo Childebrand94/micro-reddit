@@ -5,7 +5,7 @@ import { debounce } from "../../utils/helpers";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {
-    fetchPosts: (filter: Filter, search: string | null) => void;
+    fetchPosts: ((value: Filter, str: string | null) => void);
 };
 
 const NavSearch: React.FC<Props> = ({ fetchPosts }) => {
@@ -18,6 +18,8 @@ const NavSearch: React.FC<Props> = ({ fetchPosts }) => {
         debounce((searchValue: string) => fetchPosts("hot", searchValue), 500),
         [],
     );
+
+   
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value);
