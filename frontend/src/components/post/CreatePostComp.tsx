@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { useFilter } from "../context/UseFilter";
+import { useFilter } from "../../context/UseFilter";
 type FormData = {
     title: string;
     url: string;
@@ -62,7 +62,7 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
                     value={formData.title}
                     onChange={handleChange}
                     placeholder="Title"
-                    className="bg-gray-100 w-11/12 my-1 ml-2 px-2 font-normal text-black"
+                    className="bg-gray-100 w-11/12 my-1 ml-2 px-2 font-normal text-black max-w-lg"
                 ></input>
                 <label htmlFor="url"></label>
                 <input
@@ -73,16 +73,14 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
                     value={formData.url}
                     onChange={handleChange}
                     placeholder="URL"
-                    className="bg-gray-100 w-11/12 ml-2 my-1 px-2 font-normal text-black"
+                    className="bg-gray-100 w-11/12 ml-2 my-1 px-2 font-normal text-black max-w-lg"
                 ></input>
-                <div className="flex justify-end w-full">
                     <button
                         type="submit"
-                        className="bg-blue-300 hover:bg-blue-400 rounded-lg w-16 my-1 mr-2 "
+                        className="bg-blue-300 hover:bg-blue-400 rounded-lg w-16 my-1 ml-2 "
                     >
                         Create
                     </button>
-                </div>
             </form>
         </div>
     );

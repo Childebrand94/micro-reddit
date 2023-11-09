@@ -1,7 +1,7 @@
 import { useState } from "react";
-import LoginForm from "../components/LoginFrom";
-import SignUpForm from "../components/SignUpFrom";
+import LoginForm from "../components/user/LoginFrom";
 import { LoginWindowState } from "../utils/type";
+import SignUpForm from "../components/user/SignUpFrom";
 
 export const Login = () => {
     const [formWindow, setFormWindow] = useState<LoginWindowState>("signIn");

@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { FaFireFlameCurved } from 'react-icons/fa6';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BsStars, BsPlusCircle } from 'react-icons/bs';
-import { Filter } from '../utils/type';
-import { useFilter } from '../context/UseFilter';
+import { Filter } from '../../utils/type';
+import { useFilter } from '../../context/UseFilter';
 
 const FilterOptions = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

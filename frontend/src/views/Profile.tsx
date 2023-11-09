@@ -1,5 +1,5 @@
-import NavBar from "../components/NavBar";
-import { PostComp } from "../components/PostComp";
+import NavBar from "../components/nav/NavBar";
+import { PostComp } from "../components/post/PostComp";
 import { useEffect, useState } from "react";
 import { Post, User } from "../utils/type";
 import { ProfileBasic } from "../components/ProfileBasic";
@@ -51,7 +51,7 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col h-screen">
-            <NavBar/>
+            <NavBar fetchPosts={()=>{}}/>
             <div className="border-b-4 border-blue-400 bg-gray-100 w-full my-3 flex">
                 <h1 className="text-blue-700 ml-3 font-bold text-xl tracking-wide">
                     {userData ? userData.username : "Username not found"}

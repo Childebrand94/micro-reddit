@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import { PostComp } from "../components/PostComp";
+import NavBar from "../components/nav/NavBar.tsx";
+import { PostComp } from "../components/post/PostComp.tsx";
 import { Post as PostType } from "../utils/type";
 import { useParams } from "react-router-dom";
-import { CommentList } from "../components/CommentList.tsx";
+import { CommentList } from "../components/comments/CommentList.tsx";
 import { useAuth } from "../context/UseAuth.tsx";
-import { CreateCommentForm } from "../components/CreateCommentForm.tsx";
 import { useFilter } from "../context/UseFilter.tsx";
+import { CreateCommentForm } from "../components/comments/CreateCommentForm.tsx";
 
 const CommentView = () => {
     const { loggedIn } = useAuth();
@@ -38,7 +38,7 @@ const CommentView = () => {
         <div className="h-screen bg-gray-200 flex flex-col" >
             {postData ? (
                 <>
-                    <NavBar />
+                    <NavBar fetchPosts={()=> {}} />
                     {isLoading ? (
                         <h1>Loading...</h1>
                     ) : (

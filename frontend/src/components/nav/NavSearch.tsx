@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Filter } from "../utils/type";
+import { Filter } from "../../utils/type";
 import { BsSearch } from 'react-icons/bs';
-import { debounce } from "../utils/helpers";
+import { debounce } from "../../utils/helpers";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {

@@ -1,8 +1,8 @@
-import { Post as PostType } from "../utils/type";
-import { shortenUrl, getTimeDif } from "../utils/helpers.ts";
+import { Post as PostType } from "../../utils/type.ts";
+import { shortenUrl, getTimeDif } from "../../utils/helpers.ts";
 import { Link } from "react-router-dom";
 import { User } from "./User.tsx";
-import { Arrows } from "./Arrows.tsx";
+import { Arrows } from "../Arrows.tsx";
 
 export type PostProps = {
     post: PostType;

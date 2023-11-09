@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/UseAuth";
-import { LoginWindowState } from "../utils/type";
+import { useAuth } from "../../context/UseAuth";
+import { LoginWindowState } from "../../utils/type";
 
 type props = {
     fn: (arg: LoginWindowState) => void;

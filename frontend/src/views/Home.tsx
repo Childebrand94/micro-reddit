@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Filter, Post as PostType } from "../utils/type";
 import { useFilter } from "../context/UseFilter";
-import PostList from "../components/PostList";
-import NavBar from "../components/NavBar";
+import PostList from "../components/post/PostList";
+import NavBar from "../components/nav/NavBar";
 
 const Home = () => {
     const [posts, setPosts] = useState<PostType[]>([]);

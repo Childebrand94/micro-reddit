@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import FilterOptions from "./FilterOptions";
 import NavSearch from "./NavSearch";
-import { useAuth } from "../context/UseAuth";
-import LogInButton from "./LogInButton";
-import { NavbarProfile } from "./NavbarProfile";
-import { Filter } from "../utils/type";
+import { useAuth } from "../../context/UseAuth";
+import LogInButton from "../user/LogInButton";
+import { Profile } from "./NavProfile";
+import { Filter } from "../../utils/type";
 import {FcReddit} from "react-icons/fc"
 
 type Props = {
@@ -29,7 +29,7 @@ const NavBar: React.FC<Props> = ({ fetchPosts }) => {
                 <NavSearch fetchPosts={fetchPosts} />
             </div>
             <div className="flex items-center justify-end col-start-3">
-                {loggedIn ? <NavbarProfile /> : <LogInButton />}
+                {loggedIn ? <Profile /> : <LogInButton />}
             </div>
         </nav>
     );

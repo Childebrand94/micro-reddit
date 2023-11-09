@@ -1,7 +1,7 @@
-import { Post as PostType } from "../utils/type";
+import { Post as PostType } from "../../utils/type";
 import PostComp from "./PostComp";
 import { BiLogoReddit } from "react-icons/bi";
-import { useAuth } from "../context/UseAuth";
+import { useAuth } from "../../context/UseAuth";
 import { useState } from "react";
 import { CreatePostComp } from "./CreatePostComp";
 
@@ -19,6 +19,7 @@ const PostList: React.FC<Props> = ({ posts }) => {
     };
     return (
         <div className="sm:px-6 bg-gray-200">
+            <div className="max-w-2xl mx-auto flex flex-col justify-center items-center">
             {loggedIn && (
                 <div className="sm:w-11/12 border border-gray-300 p-2 bg-white rounded-xl">
                     {isPostExpanded ? (
@@ -43,6 +44,7 @@ const PostList: React.FC<Props> = ({ posts }) => {
                 return <PostComp index={i + 1} post={post} key={post.id} />;
             })}
         </div>
+</div>
     );
 };
 export default PostList;

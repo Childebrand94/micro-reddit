@@ -1,7 +1,7 @@
-import { getTimeDif } from "../utils/helpers.ts";
-import { Comment as CommentType } from "../utils/type.ts";
-import { User } from "./User.tsx";
-import { Arrows } from "./Arrows.tsx";
+import { getTimeDif } from "../../utils/helpers.ts";
+import { Comment as CommentType } from "../../utils/type.ts";
+import { User } from "../post/User.tsx";
+import { Arrows } from "../Arrows.tsx";
 
 type CommentProp = {
     comment: CommentType;

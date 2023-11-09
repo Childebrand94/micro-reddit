@@ -1,4 +1,4 @@
-import { Comment as CommentType } from "../utils/type";
+import { Comment as CommentType } from "../../utils/type";
 import CommentComp from "./CommentComp";
 type props = {
     comments: CommentType[];

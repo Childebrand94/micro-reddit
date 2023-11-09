@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, redirect } from "react-router-dom";
-import { useAuth } from "../context/UseAuth";
+import { useAuth } from "../../context/UseAuth";
 import {FaRedditSquare} from "react-icons/fa"
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { CgProfile } from 'react-icons/cg';
@@ -8,7 +8,7 @@ import { IoCreateOutline } from 'react-icons/io5';
 import {BiLogOut} from 'react-icons/bi';
 
 
-export const NavbarProfile = () => {
+export const Profile = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { setLoggedIn, userId } = useAuth();
 

@@ -1,4 +1,4 @@
-import { useAuth } from "../context/UseAuth";
+import { useAuth } from "../../context/UseAuth";
 import { redirect } from "react-router-dom";
 
 export const LogoutButton = () => {
