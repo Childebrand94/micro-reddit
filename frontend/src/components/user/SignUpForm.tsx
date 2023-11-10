@@ -160,7 +160,7 @@ const SignUpForm: React.FC = () => {
                 </div>
 
                 <button
-                   type="submit"
+                    type="submit"
                     className="bg-blue-500 text-white py-2 px-5 rounded-md hover:bg-blue-700 transition"
                 >
                     Sign Up

@@ -212,16 +212,45 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer ctxCancel()
 
-	idStr := chi.URLParam(r, "id")
-	id := utils.ConvertID(idStr, w)
-	var updateUser models.User
+	var payload models.User
+
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&updateUser)
+	err := decoder.Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusBadRequest, "Bad Request", err)
 		return
 	}
-	err = database.UpdateUserByID(ctx, u.DB, updateUser, int64(id))
+	defer r.Body.Close()
+
+	exsits, err := database.EmailExists(ctx, u.DB, payload.Email)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to validate user's email", err)
+		return
+	}
+
+	if !exsits {
+		models.SendError(w, http.StatusUnauthorized, "Email does not exist", err)
+		return
+	}
+
+	user, err := database.GetUserByEmail(ctx, u.DB, payload.Email)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to get users email", err)
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(payload.Password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to process user password", err)
+		return
+	}
+
+	payload.Password = string(hashedPassword)
+
+	err = database.UpdateUserPassword(ctx, u.DB, payload.Password, user.ID)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to update database", err)
 		return

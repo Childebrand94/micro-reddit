@@ -11,7 +11,7 @@ export type PostProps = {
 
 export const PostComp: React.FC<PostProps> = ({ post, index }) => {
     return (
-        <div className="flex h-24 px-2 gap-2 bg-white border border-gray-200 rounded-xl my-1 sm:gap-3 w-full sm:max-h-20">
+        <div className="flex h-24 px-2 gap-2 bg-white border border-gray-200 rounded-xl my-1 max-w-lg sm:gap-3 w-full sm:max-h-20">
             {index && (
                 <div className="w-4 mr-2 col-start-1">
                     <p className="my-2 text-xl">{index}.</p>

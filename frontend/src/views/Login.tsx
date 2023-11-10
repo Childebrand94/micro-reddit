@@ -1,7 +1,8 @@
 import { useState } from "react";
-import LoginForm from "../components/user/LoginFrom";
+import LoginForm from "../components/user/LoginForm";
 import { LoginWindowState } from "../utils/type";
-import SignUpForm from "../components/user/SignUpFrom";
+import SignUpForm from "../components/user/SignUpForm";
+import { ResetPasswordForm } from "../components/user/ResetPasswordForm";
 
 export const Login = () => {
     const [formWindow, setFormWindow] = useState<LoginWindowState>("signIn");
@@ -13,9 +14,11 @@ export const Login = () => {
     const renderFormContent = () => {
         switch (formWindow) {
             case "signIn":
-                return <LoginForm fn={handleClick}/>;
+                return <LoginForm fn={handleClick} />;
             case "signUp":
                 return <SignUpForm />;
+            case "forgotPassword":
+                return <ResetPasswordForm fn={handleClick} />;
             default:
                 return null;
         }

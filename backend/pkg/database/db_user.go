@@ -67,20 +67,17 @@ func GetUserByID(ctx context.Context, pool *pgxpool.Pool, id int) (*models.UserR
 	return &resp, nil
 }
 
-func UpdateUserByID(
+func UpdateUserPassword(
 	ctx context.Context,
 	pool *pgxpool.Pool,
-	updateUser models.User,
+	newPassword string,
 	id int64,
 ) error {
-	query := `Update users SET first_name=$1, last_name=$2, username=$3, email=$4 WHERE id=$5`
+	query := `UPDATE users SET password = $1 WHERE id = $2`
 	_, err := pool.Exec(
 		ctx,
 		query,
-		updateUser.First_name,
-		updateUser.Last_name,
-		updateUser.Username,
-		updateUser.Email,
+		newPassword,
 		id,
 	)
 	return err
@@ -225,15 +222,6 @@ func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.U
         WHERE 
             pv.user_id = $1;`
 
-	// queryCommentVotes := `
-	//        SELECT
-	//            COALESCE(SUM(CASE WHEN cv.up_vote = true THEN 1 ELSE 0 END), 0) AS up_vote_count,
-	//            COALESCE(SUM(CASE WHEN cv.up_vote = false THEN 1 ELSE 0 END), 0) AS down_vote_count
-	//        FROM
-	//            comment_vote AS cv
-	//        WHERE
-	//            cv.user_id = $1;`
-
 	var up models.UserPoints
 
 	err := pool.QueryRow(ctx, queryPosts, id).Scan(&up.PostCount)
@@ -245,12 +233,6 @@ func GetUserPoints(ctx context.Context, pool *pgxpool.Pool, id int64) (*models.U
 	if err != nil {
 		return nil, err
 	}
-
-	// err = pool.QueryRow(ctx, queryCommentVotes, id).Scan(&up.CommentUpVotes, &up.CommentDownVotes)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// up.Karma = up.PostCount + up.PostUpVotes - up.PostDownVotes + up.CommentUpVotes - up.CommentDownVotes
 
 	return &up, nil
 }

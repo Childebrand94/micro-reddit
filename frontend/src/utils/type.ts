@@ -8,10 +8,10 @@ export type Comment = {
     id: number;
     postId: number;
     authorId: number;
-    parentID:{
-    Int64: number;
-    Valid: boolean;
-  };
+    parentID: {
+        Int64: number;
+        Valid: boolean;
+    };
     message: string;
     upVotes: number;
     createdAt: string;
@@ -70,7 +70,11 @@ export type FormDataType = {
     password: string;
     retypepassword: string;
 };
-export type LoginWindowState = "initial" | "signUp" | "signIn";
+export type LoginWindowState =
+    | "initial"
+    | "signUp"
+    | "signIn"
+    | "forgotPassword";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 

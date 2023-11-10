@@ -53,12 +53,12 @@ func (a *App) loadUserRoutes(router chi.Router) {
 		DB: a.DB,
 	}
 
+	router.Get("/", userHandler.List)
 	router.Post("/", userHandler.Create)
+	router.Put("/", userHandler.UpdateByID)
 	router.Post("/login", userHandler.Authenticate)
 	router.Post("/logout", userHandler.Logout)
-	router.Get("/", userHandler.List)
 	router.Get("/{id}", userHandler.GetByID)
-	router.Put("/{id}", userHandler.UpdateByID)
 	router.Get("/{id}/posts", userHandler.GetAllPostsByUser)
 	router.Get("/{id}/comments", userHandler.GetAllCommentsByUser)
 	router.Get("/{id}/points", userHandler.GetUserPoints)

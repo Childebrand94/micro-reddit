@@ -1,18 +1,15 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/UseAuth";
 import { LoginWindowState } from "../../utils/type";
 
-type props = {
+type Props = {
     fn: (arg: LoginWindowState) => void;
 };
 
-const LoginForm: React.FC<props> = ({fn}) => {
-    const { setLoggedIn } = useAuth();
-    const [invalidCredential, setInvalidCredential] = useState(false);
-
+export const ResetPasswordForm: React.FC<Props> = ({ fn }) => {
     const [formData, setFormData] = useState<Record<string, string>>({
         email: "",
         password: "",
+        retypePassword: "",
     });
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,46 +22,42 @@ const LoginForm: React.FC<props> = ({fn}) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const url = "/api/users/login";
+        if (formData.password !== formData.retypePassword) {
+            alert("Passwords do not match!");
+            return;
+        }
         try {
-            const response = await fetch(url, {
-                method: "Post",
+            const response = await fetch("/api/users", {
+                method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "applications/json",
                 },
                 body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
-                const data = await response.json();
-                setInvalidCredential(true);
-                throw new Error(`${data.message}`);
+                throw new Error("Failed to update user password");
             }
             const data = await response.json();
-            console.log(data.message);
-            setLoggedIn(true);
-            window.location.href = "/";
+            console.log(data);
         } catch (error) {
-            console.log("There was an error submitting the form", error);
+            console.log("Error:", error);
+        } finally {
+            fn("signIn");
         }
     };
 
     return (
         <div className="text-center flex flex-col">
             <h1 className="text-3xl font-bold tracking-wide mb-5 text-blue-500">
-                Login
+                Reset Password
             </h1>
             <form onSubmit={handleSubmit}>
-                <div className="form-group mb-4">
-                    <label htmlFor="email" className="block text-blue-500">
-                        {invalidCredential ? (
-                            <p className="text-red-500">
-                                Invalid Email or Password
-                            </p>
-                        ) : (
-                            <></>
-                        )}{" "}
-                    </label>
+                <div className="form-group mb-4 ">
+                    <label
+                        htmlFor="email"
+                        className="block text-blue-500"
+                    ></label>
                     <input
                         type="email"
                         placeholder="Email"
@@ -75,9 +68,6 @@ const LoginForm: React.FC<props> = ({fn}) => {
                         required
                         className="mt-1 p-2 w-full border rounded-md"
                     />
-                </div>
-
-                <div className="form-group mb-4">
                     <label
                         htmlFor="password"
                         className="block text-blue-500"
@@ -92,23 +82,35 @@ const LoginForm: React.FC<props> = ({fn}) => {
                         required
                         className="mt-1 p-2 w-full border rounded-md"
                     />
+                    <label
+                        htmlFor="retypePassword"
+                        className="block text-blue-500"
+                    ></label>
+                    <input
+                        type="password"
+                        placeholder="Confirm Password"
+                        id="retypePassword"
+                        name="retypePassword"
+                        value={formData.retypepassword}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 p-2 w-full border rounded-md"
+                    />
                 </div>
 
                 <button
                     type="submit"
                     className="bg-blue-500 text-white py-2 px-5 rounded-md hover:bg-blue-700 transition w-full"
                 >
-                    Login
+                    Reset
                 </button>
             </form>
             <div className="mt-3">
                 <p>New to reddit?</p>
                 <button className=" underline" onClick={() => fn("signUp")}>
-                Create your account here
+                    Create your account here
                 </button>
             </div>
         </div>
     );
 };
-
-export default LoginForm;
