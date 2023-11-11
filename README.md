@@ -53,14 +53,14 @@ Micro-reddit is my first full-stack project, a Reddit clone with core functional
 
  A full-stack Reddit clone with core functionalities like account creation, posting, commenting, and a voting system, built using Go, TypeScript, PostgreSQL, Vite, React, and Tailwind CSS.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-Built With
 
-    ![Go][Go-url]
-    ![PostgreSQL][PostgreSQL-url]
-    ![Vite][Vite-url]
-    ![React][React.js]][React-url]
-    ![TypeScript][TypeScript-url]
-    ![Tailwind CSS][Tailwind-css-url]
+### Built With
+  ![Go][Go-url]
+  ![PostgreSQL][PostgreSQL-url]
+  ![Vite][Vite-url]
+  ![React][React.js][React-url]
+  ![TypeScript][TypeScript-url]
+  ![Tailwind CSS][Tailwind-css-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -81,10 +81,10 @@ Before you begin, ensure you have the following prerequisites installed:
 - [NPM-url](https://www.npmjs.com/)
 ### Installation
 
-1. Clone the repo
+1. **Clone the Repo**
+   Clone the repository to your local machine:
    ```sh
    git clone https://github.com/Childebrand94/micro-reddit
-   ```
 2. Front-End Setup:
    Navigate to the front-end directory and install the dependencies:
    ```sh
@@ -102,22 +102,23 @@ Before you begin, ensure you have the following prerequisites installed:
    go mod tidy
    ```
 5. Database Setup:
-    Ensure PostgreSQL is running.
-    To create schema and populate with fake data. 
-    ```
+    Ensure PostgreSQL is running. To create schema and populate with fake data. 
+    ```sh
     cd backend 
     make migrate
     make seed
     ```
-    Alternatively you can use make all to do all this and start the server. 
-
+  Alternatively, you can use the following command to handle the setup and start the server:
+    ```sh
+    make all
+    ```
 6. Running the Application:
-    Front-End: Run the Vite development server:
+    - Front-End: Run the Vite development server:
     ```
     cd frontend 
     npm run dev
     ```
-    Back-end: Start up server after schema has be created and populated 
+    - Back-end: Start up server after schema has be created and populated 
     ```
     cd backend
     make run 
