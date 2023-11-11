@@ -55,12 +55,13 @@ Micro-reddit is my first full-stack project, a Reddit clone with core functional
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
-  ![Go][Go-url]
-  ![PostgreSQL][PostgreSQL-url]
-  ![Vite][Vite-url]
-  ![React][React.js][React-url]
-  ![TypeScript][TypeScript-url]
-  ![Tailwind CSS][Tailwind-css-url]
+[![Go][Go]][Go-url]
+[![PostgreSQL][PostgreSQL]][PostgreSQL-url]
+[![Vite][Vite]][Vite-url]
+[![React][React.js]][React-url]
+[![TypeScript][TypeScript]][TypeScript-url]
+[![TailwindCSS][TailwindCSS]][TailwindCSS-url]
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
