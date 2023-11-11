@@ -37,7 +37,6 @@ const SignUpForm: React.FC = () => {
             });
 
             if (!response.ok) {
-                console.log();
                 if (response.status === 406) {
                     setValidEmail(false);
                 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { useFilter } from "../context/UseFilter";
+import { useNavigate } from "react-router-dom";
 
 type ArrowProps = {
     postId: number;
@@ -9,8 +10,8 @@ type ArrowProps = {
 
 export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
     const { setUpdateTrigger } = useFilter();
+    const navigate = useNavigate();
 
-    // Define the endpoint paths
     const postPath = {
         upVote: `/api/posts/${postId}/up-vote`,
         downVote: `/api/posts/${postId}/down-vote`,
@@ -29,6 +30,9 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
             });
             if (!resp.ok) {
                 //redirect to sign in
+                if (resp.status === 401) {
+                    navigate("/users");
+                }
                 throw new Error(`HTTP error! Status: ${resp.status}`);
             }
             setUpdateTrigger((prev: number) => prev + 1);

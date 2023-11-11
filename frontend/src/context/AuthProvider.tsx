@@ -7,7 +7,7 @@ type AuthProviderProps = {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState<boolean>(true);
-    const [userId, setUserId] = useState<number | null >(null);
+    const [userId, setUserId] = useState<number | null>(null);
 
     const fetchSession = async () => {
         try {
@@ -22,7 +22,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (data.loggedIn) {
                 setLoggedIn(true);
                 setUserId(data.userId);
-                console.log("Session exists");
             } else {
                 setLoggedIn(false);
                 console.log("Please login");

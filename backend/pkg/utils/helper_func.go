@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -168,15 +169,14 @@ func GetSortMethod(sortType string) string {
 	return sortMethods[sortType]
 }
 
-//
-// func URLFormatter(str string) (*string, error) {
-//     u, err := url.Parse(str)
-//     if err != nil {
-//         return nil, err
-//     }
-//     if u.Scheme == ""{
-//         u.Scheme = "http"
-//     }
-//     u.Q
-//
-// }
+func IsValidURL(toTest string) (bool, error) {
+	parsedURL, err := url.ParseRequestURI(toTest)
+	if err != nil {
+		return false, err
+	}
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return false, nil
+	}
+
+	return true, nil
+}

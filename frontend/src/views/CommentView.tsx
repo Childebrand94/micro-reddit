@@ -49,7 +49,7 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
                         <div className="flex flex-col items-center mt-3">
                             <PostComp index={null} post={postData} />
 
-                            <div className="bg-white rounded-xl p-2 h-full w-11/12 flex flex-col items-center mt-3">
+                            <div className="bg-white rounded-xl p-2 h-full w-11/12 max-w-lg flex flex-col items-center mt-3">
                                 {loggedIn && (
                                     <CreateCommentForm
                                         fetchPosts={fetchPostByID}
@@ -61,7 +61,9 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
                                     <CommentList comments={postData.comments} />
                                 ) : (
                                     <h1 className="text-xl font-bold tracking-wide">
-                                        Be the first to comment
+                                        {loggedIn
+                                            ? "Be the first to comment"
+                                            : "Please login to comment"}
                                     </h1>
                                 )}
                             </div>

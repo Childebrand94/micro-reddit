@@ -10,6 +10,7 @@ type Props = {
     toggleExpansion: () => void;
 };
 export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
+    const [isInvalidURL, setInvalidURL] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormData>({
         title: "",
         url: "",
@@ -39,7 +40,12 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
             });
 
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                if (response.status === 400) {
+                    setInvalidURL(true);
+                    throw new Error("Bad URL");
+                } else {
+                    throw new Error("Network response was not ok");
+                }
             }
 
             const data = await response.json();
@@ -54,7 +60,7 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
     return (
         <div className="flex">
             <div>
-                <BiLogoReddit size={35} /> 
+                <BiLogoReddit size={35} />
             </div>
             <form className="flex flex-col w-full" onSubmit={handleSubmit}>
                 <label htmlFor="title"></label>
@@ -68,7 +74,12 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
                     placeholder="Title"
                     className="bg-gray-100 w-11/12 my-1 ml-2 px-2 font-normal text-black max-w-lg"
                 ></input>
-                <label htmlFor="url"></label>
+                <label
+                    htmlFor="url"
+                    className="text-red-500 tracking-wide ml-3"
+                >
+                    {isInvalidURL && "Invalid URL"}
+                </label>
                 <input
                     required
                     type="url"
@@ -79,12 +90,12 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
                     placeholder="URL"
                     className="bg-gray-100 w-11/12 ml-2 my-1 px-2 font-normal text-black max-w-lg"
                 ></input>
-                    <button
-                        type="submit"
-                        className="bg-blue-300 hover:bg-blue-400 rounded-lg w-16 my-1 ml-2 "
-                    >
-                        Create
-                    </button>
+                <button
+                    type="submit"
+                    className="bg-blue-300 hover:bg-blue-400 rounded-lg w-16 my-1 ml-2 "
+                >
+                    Create
+                </button>
             </form>
         </div>
     );

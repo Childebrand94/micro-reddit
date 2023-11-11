@@ -16,11 +16,11 @@ const NavBar: React.FC<Props> = ({ fetchPosts }) => {
 
     return (
         <nav className="grid grid-cols-[1fr_2fr_1fr] gap-4 max-w-full h-12 bg-blue-100 px-4">
-            <div className="col-start-1 flex items-center justify-between mr-2 max-w-sm">
+            <div className="col-start-1 flex items-center justify-between mr-2 w-28">
                 <Link to="/">
                     <FcReddit size={45} />   
                 </Link>
-                <p className="invisible absolute mx-1 sm:relative sm:visible tracking-wide text-xl font-bold font-custom">
+                <p className="invisible absolute mx-1 lg:relative lg:visible tracking-wide text-xl font-bold font-custom">
                     reddit
                 </p>
             <FilterOptions />

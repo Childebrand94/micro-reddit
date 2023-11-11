@@ -19,8 +19,6 @@ function App() {
             if (search && search.trim() !== "") {
                 url += `&search=${encodeURIComponent(search.trim())}`;
             }
-            console.log(url);
-
             const response = await fetch(url, {
                 method: "GET",
             });
@@ -28,13 +26,14 @@ function App() {
                 throw new Error("Network response was not ok");
             }
             const data = await response.json();
-            if (!data) {
-                console.log(data);
+
+            if (data === null) {
+                setPosts(null);
+            } else {
+                setPosts(data);
             }
-            setPosts(data ? [...data] : null);
         } catch (error) {
             console.error("Error:", error);
-            setPosts(null);
         }
     };
 

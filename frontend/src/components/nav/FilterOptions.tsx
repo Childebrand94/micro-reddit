@@ -38,7 +38,7 @@ const FilterOptions = () => {
       >
         
         {filterIcons[activeFilter]}
-        <div className={`${isOpen ? "visible relative" : "invisible absolute"} sm:relative sm:visible`}>
+        <div className={`${isOpen ? "visible relative" : "invisible absolute"} md:relative md:visible`}>
         {activeFilter.toUpperCase()}
         </div>
         {isOpen ? (

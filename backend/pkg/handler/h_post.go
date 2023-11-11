@@ -32,6 +32,11 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode request", err)
 		return
 	}
+	ok, err := utils.IsValidURL(payload.URL)
+	if !ok || err != nil {
+		models.SendError(w, http.StatusBadRequest, "Invalid URL", err)
+		return
+	}
 
 	cookie, customErr := utils.GetSessionCookie(r)
 	if customErr != nil {
@@ -47,14 +52,12 @@ func (p *Post) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// call database function to insert post into tables
 	err = database.AddPostByUser(ctx, p.DB, s.User_id, payload.URL, payload.Title)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to add user to database", err)
 		return
 	}
 
-	// Send success response
 	utils.SendSuccessfulResp(w, "Successfully created a Post")
 }
 
