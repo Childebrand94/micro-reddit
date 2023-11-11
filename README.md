@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Childebrand94/micro-reddit">
-    <img src="./frontend/public/assets/logo-reddit.svg" alt="Logo" width="80" height="80"> 
+    <img src="./frontend/public/assets/Reddit-Logo.wine.svg" alt="Logo" width="120" height="80"> 
   </a>
 <h3 align="center">Micro Reddit</h3>
   <p align="center">
@@ -47,7 +47,7 @@
 <!-- ABOUT THE PROJECT -->
 About The Project
 
-![Alt Text](public/assets/ReadMeVideos/showcaseGif.gif)
+![Alt Text](frontend/public/assets/showcaseGif.gif)
 
 Micro-reddit is my first full-stack project, a Reddit clone with core functionalities like account creation, posting, commenting, and a voting system. The backend is built with Go, using PostgreSQL and pgx, while the frontend utilizes Vite, React, and Tailwind CSS. The project aims to replicate the classic Reddit experience with a modern touch, featuring a user-friendly interface and robust performance.
 
@@ -55,12 +55,12 @@ Micro-reddit is my first full-stack project, a Reddit clone with core functional
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
-[![Go][Go]][Go-url]
-[![PostgreSQL][PostgreSQL]][PostgreSQL-url]
-[![Vite][Vite]][Vite-url]
-[![React][React.js]][React-url]
-[![TypeScript][TypeScript]][TypeScript-url]
-[![TailwindCSS][TailwindCSS]][TailwindCSS-url]
+- [![Go][Go]][Go-url]
+- [![PostgreSQL][PostgreSQL]][PostgreSQL-url]
+- [![Vite][Vite]][Vite-url]
+- [![React][React.js]][React-url]
+- [![TypeScript][TypeScript]][TypeScript-url]
+- [![TailwindCSS][TailwindCSS]][TailwindCSS-url]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
