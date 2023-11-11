@@ -109,22 +109,17 @@ Before you begin, ensure you have the following prerequisites installed:
     make migrate
     make seed
     ```
-  Alternatively, you can use the following command to handle the setup and start the server:
-    ```sh
-    make all
-    ```
-6. Running the Application:
-    - Front-End: Run the Vite development server:
+6. Front-End: Run the Vite development server:
     ```sh
     cd frontend 
     npm run dev
     ```
-    - Back-end: Start up server after schema has be created and populated 
+7. Back-end: Start up server after schema has be created and populated 
     ```sh
     cd backend
-    make run 
+    make run
     ```
- 
+  
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
