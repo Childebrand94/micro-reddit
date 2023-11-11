@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Childebrand94/micro-reddit">
-    <img src="./frontend/public/assets/Reddit-Logo.wine.svg" alt="Logo" width="120" height="80"> 
+    <img src="./frontend/public/assets/Reddit-Logo.wine.svg" alt="Logo" width="300" height="200"> 
   </a>
 <h3 align="center">Micro Reddit</h3>
   <p align="center">
@@ -78,8 +78,8 @@ Before you begin, ensure you have the following prerequisites installed:
 - [TypeScript](https://www.typescriptlang.org/)
 - [Go](https://go.dev/dl/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Vite-url](https://vitejs.dev/)
-- [NPM-url](https://www.npmjs.com/)
+- [Vite](https://vitejs.dev/)
+- [NPM](https://www.npmjs.com/)
 ### Installation
 
 1. **Clone the Repo**
@@ -115,12 +115,12 @@ Before you begin, ensure you have the following prerequisites installed:
     ```
 6. Running the Application:
     - Front-End: Run the Vite development server:
-    ```
+    ```sh
     cd frontend 
     npm run dev
     ```
     - Back-end: Start up server after schema has be created and populated 
-    ```
+    ```sh
     cd backend
     make run 
     ```
