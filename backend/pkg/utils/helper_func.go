@@ -230,3 +230,26 @@ func UserPostVoteCheck(ctx context.Context, pool *pgxpool.Pool, postId int64, us
 		return "downVote", nil
 	}
 }
+
+func UserCommentVoteCheck(ctx context.Context, pool *pgxpool.Pool, commentId int64, userId *int64) (models.VoteStatus, error) {
+	if userId == nil {
+		return "noVote", nil
+	}
+	var result bool
+	query := `SELECT up_vote
+                FROM comment_votes cv 
+                WHERE comment_id = $1 AND user_id = $2;`
+	row := pool.QueryRow(ctx, query, commentId, *userId)
+	err := row.Scan(&result)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "noVote", nil
+		}
+		return "noVote", err
+	}
+	if result {
+		return "upVote", nil
+	} else {
+		return "downVote", nil
+	}
+}

@@ -9,12 +9,16 @@ type CommentProp = {
 
 const CommentComp: React.FC<CommentProp> = ({ comment }) => {
     return (
-        <div className={`bg-white border border-gray-200 w-11/12 rounded-xl my-1 flex  ${comment.parentID["Valid"]  ? "ml-20" : ""} `}>
+        <div
+            className={`bg-white border border-gray-200 w-11/12 rounded-xl my-1 flex  ${
+                comment.parentID["Valid"] ? "ml-20" : ""
+            } `}
+        >
             <Arrows
                 postId={comment.postId}
                 commentId={comment.id}
                 type="comments"
-            
+                usersVote={comment.usersVoteStatus}
             />
             <div className={` ml-2 col-start-2`}>
                 <span className="text-gray-300 text-xs">

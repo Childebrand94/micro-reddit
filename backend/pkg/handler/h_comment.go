@@ -80,7 +80,23 @@ func (c *Comment) List(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	post_id := utils.ConvertID(idStr, w)
 
-	comments, err := database.ListComments(ctx, c.DB, int64(post_id))
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		if customErr.StatusCode == 401 {
+			cookie = nil
+		} else {
+			models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+			return
+		}
+	}
+
+	user_id, err := utils.GetUserIdFromCookie(ctx, c.DB, cookie)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to query database", err)
+		return
+	}
+
+	comments, err := database.ListComments(ctx, c.DB, int64(post_id), user_id)
 	if err != nil {
 		models.SendError(
 			w,

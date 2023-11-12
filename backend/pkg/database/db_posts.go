@@ -110,6 +110,10 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
 			return nil, err
 		}
 		c.Vote = totalVotes
+		c.UsersVoteStatus, err = utils.UserCommentVoteCheck(ctx, pool, c.ID, userId)
+		if err != nil {
+			return nil, err
+		}
 
 		p.Comments = append(p.Comments, c)
 	}
@@ -147,6 +151,11 @@ func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string, u
 			); err != nil {
 				return nil, err
 			}
+			c.UsersVoteStatus, err = utils.UserCommentVoteCheck(ctx, pool, c.ID, userId)
+			if err != nil {
+				return nil, err
+			}
+
 			post.Comments = append(post.Comments, c)
 		}
 		postResp = append(postResp, post)

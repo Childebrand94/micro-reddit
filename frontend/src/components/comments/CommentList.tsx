@@ -11,6 +11,7 @@ export const CommentList: React.FC<props> = ({ comments }) => {
                     <CommentComp
                         comment={c}
                         key={c.id}
+                        usersVotes={c.usersVoteStatus}
                     />
                 );
             })}

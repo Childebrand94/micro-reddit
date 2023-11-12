@@ -23,7 +23,8 @@ func AddComment(
 	return err
 }
 
-func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]models.CommentResp, error) {
+func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId *int64) ([]models.CommentResp, error) {
+	println("Listing Comments...")
 	query := `SELECT c.id, c.post_id, c.author_id, c.parent_id, c.message, 
                         c.created_at, u.first_name, u.last_name, u.username 
 						FROM comments AS c  
@@ -41,14 +42,32 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64) ([]mode
 
 	for rows.Next() {
 		var c models.CommentResp
-		if err := rows.Scan(&c.ID, &c.Post_ID, &c.Author_ID, &c.Parent_ID, &c.Message, &c.Created_at, &c.Author.FirstName, &c.Author.LastName, &c.Author.UserName); err != nil {
+		if err := rows.Scan(
+			&c.ID,
+			&c.Post_ID,
+			&c.Author_ID,
+			&c.Parent_ID,
+			&c.Message,
+			&c.Created_at,
+			&c.Author.FirstName,
+			&c.Author.LastName,
+			&c.Author.UserName,
+		); err != nil {
 			return nil, err
 		}
+
 		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "s", "comment_id")
 		if err != nil {
 			return nil, err
 		}
+
 		c.Vote = totalVotes
+
+		c.UsersVoteStatus, err = utils.UserCommentVoteCheck(ctx, pool, c.ID, userId)
+		if err != nil {
+			return nil, err
+		}
+
 		comments = append(comments, c)
 	}
 	return comments, nil

@@ -15,6 +15,7 @@ export type Comment = {
     message: string;
     upVotes: number;
     createdAt: string;
+    usersVoteStatus: VoteOptions;
 };
 export type Post = {
     id: number;

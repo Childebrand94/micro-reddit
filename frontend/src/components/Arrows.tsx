@@ -38,8 +38,10 @@ export const Arrows: React.FC<ArrowProps> = ({
                 //redirect to sign in
                 if (resp.status === 401) {
                     navigate("/users");
+                    throw new Error("User must login for this action");
+                } else {
+                    throw new Error(`Network response was not ok.`);
                 }
-                throw new Error(`HTTP error! Status: ${resp.status}`);
             }
             setUpdateTrigger((prev: number) => prev + 1);
         } catch (error) {
