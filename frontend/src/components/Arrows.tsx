@@ -1,14 +1,21 @@
 import React from "react";
 import { useFilter } from "../context/UseFilter";
 import { useNavigate } from "react-router-dom";
+import { VoteOptions } from "../utils/type";
 
 type ArrowProps = {
     postId: number;
     commentId: number;
     type: "posts" | "comments";
+    usersVote: VoteOptions;
 };
 
-export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
+export const Arrows: React.FC<ArrowProps> = ({
+    postId,
+    usersVote,
+    commentId,
+    type,
+}) => {
     const { setUpdateTrigger } = useFilter();
     const navigate = useNavigate();
 
@@ -24,7 +31,6 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
 
     const handleArrowClick = async (path: string) => {
         try {
-            console.log("Sending put request for votes...");
             const resp = await fetch(path, {
                 method: "PUT",
             });
@@ -55,11 +61,19 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
                     )
                 }
             >
-                <img
-                    className="h-6 hover:scale-110 transition-transform"
-                    src="/assets/arrow-up.png"
-                    alt="Up Arrow"
-                />
+                {usersVote === "upVote" ? (
+                    <img
+                        className="h-6 hover:scale-110 transition-transform"
+                        src="/assets/arrow-up-filled.png"
+                        alt="Up Arrow"
+                    />
+                ) : (
+                    <img
+                        className="h-6 hover:scale-110 transition-transform"
+                        src="/assets/arrow-up.png"
+                        alt="Up Arrow"
+                    />
+                )}
             </button>
             <button
                 onClick={() =>
@@ -70,11 +84,19 @@ export const Arrows: React.FC<ArrowProps> = ({ postId, commentId, type }) => {
                     )
                 }
             >
-                <img
-                    className="h-6 rotate-180 hover:scale-110 transition-transform"
-                    src="/assets/arrow-up.png"
-                    alt="Down Arrow"
-                />
+                {usersVote === "downVote" ? (
+                    <img
+                        className="h-6 rotate-180 hover:scale-110 transition-transform"
+                        src="/assets/arrow-up-filled.png"
+                        alt="Down Arrow"
+                    />
+                ) : (
+                    <img
+                        className="h-6 rotate-180 hover:scale-110 transition-transform"
+                        src="/assets/arrow-up.png"
+                        alt="Down Arrow"
+                    />
+                )}
             </button>
         </div>
     );

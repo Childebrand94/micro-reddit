@@ -74,7 +74,25 @@ func (p *Post) List(w http.ResponseWriter, r *http.Request) {
 		sort = "hot"
 	}
 
-	resp, err := database.GetAllPosts(ctx, p.DB, sort, search)
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+
+		fmt.Printf("CustomErr: %v", customErr)
+		if customErr.StatusCode == 401 {
+			cookie = nil
+		} else {
+			models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+			return
+		}
+	}
+
+	user_id, err := utils.GetUserIdFromCookie(ctx, p.DB, cookie)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to query database", err)
+		return
+	}
+
+	resp, err := database.GetAllPosts(ctx, p.DB, sort, search, user_id)
 	if err != nil {
 		models.SendError(
 			w,
@@ -103,7 +121,25 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 	strID := chi.URLParam(r, "id")
 	post_id := utils.ConvertID(strID, w)
 
-	resp, err := database.GetPostById(ctx, p.DB, int64(post_id))
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+
+		fmt.Printf("CustomErr: %v", customErr)
+		if customErr.StatusCode == 401 {
+			cookie = nil
+		} else {
+			models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+			return
+		}
+	}
+
+	userId, err := utils.GetUserIdFromCookie(ctx, p.DB, cookie)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to query database", err)
+		return
+	}
+
+	resp, err := database.GetPostById(ctx, p.DB, int64(post_id), userId)
 	if err != nil {
 		models.SendError(
 			w,

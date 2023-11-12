@@ -18,7 +18,12 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                 </div>
             )}
 
-            <Arrows type="posts" commentId={0} postId={post.id} />
+            <Arrows
+                type="posts"
+                usersVote={post.usersVoteStatus}
+                commentId={0}
+                postId={post.id}
+            />
 
             <div
                 className={`h-12 ${

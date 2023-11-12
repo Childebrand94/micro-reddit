@@ -117,7 +117,7 @@ func DeleteSession(ctx context.Context, pool *pgxpool.Pool, sessionId string) er
 	return err
 }
 
-func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]models.PostWithAuthor, error) {
+func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64, votersId *int64) ([]models.PostWithAuthor, error) {
 	query := `
 		SELECT 
 			p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at,
@@ -137,14 +137,30 @@ func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64) ([]mod
 
 	for rows.Next() {
 		var p models.PostWithAuthor
-		if err := rows.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt, &p.UpdatedAt, &p.Author.FirstName, &p.Author.LastName, &p.Author.UserName); err != nil {
+		if err := rows.Scan(
+			&p.ID,
+			&p.Author_ID,
+			&p.Title,
+			&p.URL,
+			&p.CreatedAt,
+			&p.UpdatedAt,
+			&p.Author.FirstName,
+			&p.Author.LastName,
+			&p.Author.UserName,
+		); err != nil {
 			return nil, err
 		}
+
 		totalVotes, err := utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
 		if err != nil {
 			return nil, err
 		}
 		p.Vote = totalVotes
+
+		p.UsersVoteStatus, err = utils.UserPostVoteCheck(ctx, pool, p.ID, votersId)
+		if err != nil {
+			return nil, err
+		}
 
 		posts = append(posts, p)
 	}

@@ -16,8 +16,9 @@ type Post struct {
 
 type PostResponse struct {
 	Post
-	Author   Author        `json:"author"`
-	Comments []CommentResp `json:"comments"`
+	UsersVoteStatus VoteStatus    `json:"usersVoteStatus"`
+	Author          Author        `json:"author"`
+	Comments        []CommentResp `json:"comments"`
 }
 
 type Author struct {
@@ -28,5 +29,14 @@ type Author struct {
 
 type PostWithAuthor struct {
 	Post
-	Author Author `json:"author"`
+	UsersVoteStatus VoteStatus `json:"usersVoteStatus"`
+	Author          Author     `json:"author"`
 }
+
+type VoteStatus string
+
+const (
+	Upvote   VoteStatus = "upvote"
+	Downvote VoteStatus = "downvote"
+	NoVote   VoteStatus = "noVote"
+)

@@ -269,7 +269,23 @@ func (u *User) GetAllPostsByUser(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusBadRequest, "Invalid user ID", err)
 		return
 	}
-	resp, err := database.GetAllPostsByUser(ctx, u.DB, int64(id))
+	cookie, customErr := utils.GetSessionCookie(r)
+	if customErr != nil {
+		if customErr.StatusCode == 401 {
+			cookie = nil
+		} else {
+			models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
+			return
+		}
+	}
+
+	votersId, err := utils.GetUserIdFromCookie(ctx, u.DB, cookie)
+	if err != nil {
+		models.SendError(w, http.StatusInternalServerError, "Failed to query database", err)
+		return
+	}
+
+	resp, err := database.GetAllPostsByUser(ctx, u.DB, int64(id), votersId)
 	if err != nil {
 		models.SendError(
 			w,
@@ -342,7 +358,7 @@ func (u *User) GetUserPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userPosts, err := database.GetAllPostsByUser(ctx, u.DB, int64(id))
+	userPosts, err := database.GetAllPostsByUser(ctx, u.DB, int64(id), nil)
 	if err != nil {
 		models.SendError(
 			w,

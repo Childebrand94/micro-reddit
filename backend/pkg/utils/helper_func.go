@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -105,6 +106,32 @@ func ValidateSessionToken(ctx context.Context, pool *pgxpool.Pool, token string)
 	return &s, err
 }
 
+func GetUserIdFromCookie(ctx context.Context, pool *pgxpool.Pool, cookie *http.Cookie) (*int64, error) {
+	if cookie == nil {
+		return nil, nil
+	}
+
+	query := "SELECT user_id FROM sessions WHERE session_id = $1"
+
+	var nullableId sql.NullInt64
+
+	row := pool.QueryRow(ctx, query, cookie.Value)
+	err := row.Scan(&nullableId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if !nullableId.Valid {
+		return nil, nil
+	}
+
+	id := nullableId.Int64
+
+	return &id, nil
+}
+
 func CalcKarma(posts []models.PostWithAuthor, comments []models.CommentResp) int {
 	var totalPostVotes int
 	var totalCommentVotes int
@@ -129,7 +156,7 @@ type SortMethod struct {
 }
 
 func GetSortMethod(sortType string) string {
-	threeHoursAgo := "NOW() - INTERVAL '48 hours'"
+	timeLimit := "NOW() - INTERVAL '48 hours'"
 
 	baseQuery := `
         SELECT 
@@ -158,7 +185,7 @@ func GetSortMethod(sortType string) string {
             LEFT JOIN (
                 SELECT post_id, COUNT(*) as recent_upvotes_count
                 FROM post_votes
-                WHERE up_vote = true AND created_at >= ` + threeHoursAgo + `
+                WHERE up_vote = true AND created_at >= ` + timeLimit + `
                 GROUP BY post_id
             ) AS recent_pv ON p.id = recent_pv.post_id
             GROUP BY p.id, u.id, recent_pv.recent_upvotes_count
@@ -179,4 +206,27 @@ func IsValidURL(toTest string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func UserPostVoteCheck(ctx context.Context, pool *pgxpool.Pool, postId int64, userId *int64) (models.VoteStatus, error) {
+	if userId == nil {
+		return "noVote", nil
+	}
+	var result bool
+	query := `SELECT up_vote
+                FROM post_votes pv 
+                WHERE post_id = $1 AND user_id = $2;`
+	row := pool.QueryRow(ctx, query, postId, *userId)
+	err := row.Scan(&result)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "noVote", nil
+		}
+		return "noVote", err
+	}
+	if result {
+		return "upVote", nil
+	} else {
+		return "downVote", nil
+	}
 }

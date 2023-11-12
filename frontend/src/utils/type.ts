@@ -26,6 +26,7 @@ export type Post = {
     upVotes: number;
     comments: Comment[] | null;
     author: Author;
+    usersVoteStatus: VoteOptions;
 };
 
 export type User = {
@@ -79,3 +80,5 @@ export type LoginWindowState =
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export type Filter = "hot" | "top" | "new";
+
+export type VoteOptions = "upVote" | "downVote" | "noVote";

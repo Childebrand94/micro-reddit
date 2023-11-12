@@ -25,9 +25,7 @@ func AddPostByUser(
 	return err
 }
 
-func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*models.PostResponse, error) {
-	var p models.PostResponse
-
+func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId *int64) (*models.PostResponse, error) {
 	queryPosts := `SELECT 
                         p.id, 
                         p.author_id, 
@@ -60,9 +58,19 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
                     WHERE 
                         post_id = $1`
 
+	var p models.PostResponse
 	row := pool.QueryRow(ctx, queryPosts, post_id)
-	if err := row.Scan(&p.ID, &p.Author_ID, &p.Title, &p.URL, &p.CreatedAt,
-		&p.UpdatedAt, &p.Author.FirstName, &p.Author.LastName, &p.Author.UserName); err != nil {
+	if err := row.Scan(
+		&p.ID,
+		&p.Author_ID,
+		&p.Title,
+		&p.URL,
+		&p.CreatedAt,
+		&p.UpdatedAt,
+		&p.Author.FirstName,
+		&p.Author.LastName,
+		&p.Author.UserName,
+	); err != nil {
 		return nil, err
 	}
 
@@ -71,6 +79,11 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
 		return nil, err
 	}
 	p.Vote = totalVotes
+
+	p.UsersVoteStatus, err = utils.UserPostVoteCheck(ctx, pool, p.ID, userId)
+	if err != nil {
+		return nil, err
+	}
 
 	rows, err := pool.Query(ctx, queryComments, post_id)
 	if err != nil {
@@ -105,8 +118,8 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64) (*model
 	return &p, nil
 }
 
-func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string) ([]models.PostResponse, error) {
-	allPosts, err := GetPostsHelper(ctx, pool, sort, search)
+func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string, userId *int64) ([]models.PostResponse, error) {
+	allPosts, err := GetPostsHelper(ctx, pool, sort, search, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -152,15 +165,15 @@ func AddPostVotes(ctx context.Context, pool *pgxpool.Pool, user_id, post_id int6
 	return err
 }
 
-func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort, search string) ([]models.PostResponse, error) {
+func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort, search string, userId *int64) ([]models.PostResponse, error) {
 	if search == "" {
-		allPosts, err := GetPostsSort(ctx, pool, sort)
+		allPosts, err := GetPostsSort(ctx, pool, sort, userId)
 		if err != nil {
 			return nil, err
 		}
 		return allPosts, nil
 	} else {
-		allPosts, err := GetPostsSearch(ctx, pool, search)
+		allPosts, err := GetPostsSearch(ctx, pool, search, userId)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +181,7 @@ func GetPostsHelper(ctx context.Context, pool *pgxpool.Pool, sort, search string
 	}
 }
 
-func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string) ([]models.PostResponse, error) {
+func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string, userId *int64) ([]models.PostResponse, error) {
 	query := utils.GetSortMethod(sort)
 
 	postRows, err := pool.Query(ctx, query)
@@ -202,6 +215,10 @@ func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string) ([]model
 		if err != nil {
 			return nil, err
 		}
+		p.UsersVoteStatus, err = utils.UserPostVoteCheck(ctx, pool, p.ID, userId)
+		if err != nil {
+			return nil, err
+		}
 
 		allPosts = append(allPosts, p)
 	}
@@ -209,25 +226,25 @@ func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string) ([]model
 	return allPosts, nil
 }
 
-func GetPostsSearch(ctx context.Context, pool *pgxpool.Pool, search string) ([]models.PostResponse, error) {
+func GetPostsSearch(ctx context.Context, pool *pgxpool.Pool, search string, userId *int64) ([]models.PostResponse, error) {
 	searchTerm := "%" + search + "%"
 	query := `SELECT 
-                    p.id,
-                    p.author_id,
-                    p.title,
-                    p.url,
-                    p.created_at,
-                    p.updated_at,
-                    u.first_name,
-                    u.last_name,
-                    u.username
-                FROM 
-                    posts p
-                LEFT JOIN 
-                    users u ON u.id = p.author_id
-                WHERE p.title ILIKE $1
-                    OR u.username ILIKE $1
-                    OR p.url ILIKE $1;`
+                p.id,
+                p.author_id,
+                p.title,
+                p.url,
+                p.created_at,
+                p.updated_at,
+                u.first_name,
+                u.last_name,
+                u.username
+            FROM 
+                posts p
+            LEFT JOIN 
+                users u ON u.id = p.author_id
+            WHERE p.title ILIKE $1
+                OR u.username ILIKE $1
+                OR p.url ILIKE $1;`
 
 	postRows, err := pool.Query(ctx, query, searchTerm)
 	if err != nil {
@@ -255,6 +272,10 @@ func GetPostsSearch(ctx context.Context, pool *pgxpool.Pool, search string) ([]m
 			return nil, err
 		}
 		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")
+		if err != nil {
+			return nil, err
+		}
+		p.UsersVoteStatus, err = utils.UserPostVoteCheck(ctx, pool, p.ID, userId)
 		if err != nil {
 			return nil, err
 		}
