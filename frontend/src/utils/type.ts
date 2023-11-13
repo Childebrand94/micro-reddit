@@ -13,6 +13,7 @@ export type Comment = {
         Valid: boolean;
     };
     message: string;
+    path: string;
     upVotes: number;
     createdAt: string;
     usersVoteStatus: VoteOptions;

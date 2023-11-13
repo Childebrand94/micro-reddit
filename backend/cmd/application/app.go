@@ -38,8 +38,6 @@ func (a *App) Start(ctx context.Context) error {
 		fmt.Println("Closed PostgreSQL connection", err)
 	}()
 
-	fmt.Println("Starting server...")
-
 	// creating channel
 	ch := make(chan error, 1)
 
@@ -50,6 +48,8 @@ func (a *App) Start(ctx context.Context) error {
 		}
 		close(ch)
 	}()
+
+	fmt.Println("Server is running...")
 
 	// setting up receiver for channel
 	select {

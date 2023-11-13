@@ -48,6 +48,7 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
                         c.author_id, 
                         c.parent_id, 
                         c.message, 
+                        c.path,
                         c.created_at, 
                         u.first_name, 
                         u.last_name, 
@@ -56,7 +57,8 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
                         comments AS c
                         LEFT JOIN users AS u ON u.id = c.author_id
                     WHERE 
-                        post_id = $1`
+                        post_id = $1
+                    ORDER BY path`
 
 	var p models.PostResponse
 	row := pool.QueryRow(ctx, queryPosts, post_id)
@@ -98,6 +100,7 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
 			&c.Author_ID,
 			&c.Parent_ID,
 			&c.Message,
+			&c.Path,
 			&c.Created_at,
 			&c.Author.FirstName,
 			&c.Author.LastName,
@@ -131,7 +134,7 @@ func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string, u
 	var postResp []models.PostResponse
 
 	for _, post := range allPosts {
-		query := "SELECT * FROM comments WHERE post_id = $1"
+		query := "SELECT * FROM comments WHERE post_id = $1 ORDER BY path"
 
 		rows, err := pool.Query(ctx, query, post.ID)
 		if err != nil {
@@ -147,6 +150,7 @@ func GetAllPosts(ctx context.Context, pool *pgxpool.Pool, sort, search string, u
 				&c.Author_ID,
 				&c.Parent_ID,
 				&c.Message,
+				&c.Path,
 				&c.Created_at,
 			); err != nil {
 				return nil, err
@@ -307,7 +311,8 @@ func GetCommentsHelper(ctx context.Context, pool *pgxpool.Pool) ([]models.Commen
                             u.last_name, 
                             u.username 
                         FROM "comments" AS c  
-                        LEFT JOIN users AS u ON u.id = c.author_id`
+                        LEFT JOIN users AS u ON u.id = c.author_id
+                        ORDER BY path`
 
 	commentRows, err := pool.Query(ctx, queryForComments)
 	if err != nil {

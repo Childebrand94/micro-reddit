@@ -59,6 +59,7 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		s.User_id,
 		sql.NullInt64(payload.Parent_ID),
 		payload.Message,
+		payload.Path,
 	)
 	if err != nil {
 		models.SendError(

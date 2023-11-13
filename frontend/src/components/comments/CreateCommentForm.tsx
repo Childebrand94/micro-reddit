@@ -10,7 +10,10 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
 
     const commentData = {
         postId: postId,
-        parentId: null,
+        parentId: {
+            Int64: 0,
+            Valid: false,
+        },
         message: formData,
     };
 

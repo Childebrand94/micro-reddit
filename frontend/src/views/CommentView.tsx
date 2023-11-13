@@ -39,7 +39,7 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
         fetchPostByID();
     }, [updateTrigger]);
     return (
-        <div className="h-screen bg-gray-200 flex flex-col">
+        <div className="min-h-screen h-full bg-gray-200 flex flex-col">
             {postData ? (
                 <>
                     <NavBar fetchPosts={fetchPosts} />
@@ -58,7 +58,10 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
                                 )}
 
                                 {postData.comments ? (
-                                    <CommentList comments={postData.comments} />
+                                    <CommentList
+                                        fetchPosts={fetchPostByID}
+                                        comments={postData.comments}
+                                    />
                                 ) : (
                                     <h1 className="text-xl font-bold tracking-wide">
                                         {loggedIn
