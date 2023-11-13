@@ -51,7 +51,6 @@ About The Project
 
 Micro-reddit is my first full-stack project, a Reddit clone with core functionalities like account creation, posting, commenting, and a voting system. The backend is built with Go, using PostgreSQL and pgx, while the frontend utilizes Vite, React, and Tailwind CSS. The project aims to replicate the classic Reddit experience with a modern touch, featuring a user-friendly interface and robust performance.
 
- A full-stack Reddit clone with core functionalities like account creation, posting, commenting, and a voting system, built using Go, TypeScript, PostgreSQL, Vite, React, and Tailwind CSS.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
@@ -75,10 +74,8 @@ Welcome to Micro-Reddit! This project is a compact version of Reddit, showcasing
 Before you begin, ensure you have the following prerequisites installed:
 
 - [Node.js](https://nodejs.org/en/download/)
-- [TypeScript](https://www.typescriptlang.org/)
 - [Go](https://go.dev/dl/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Vite](https://vitejs.dev/)
 - [NPM](https://www.npmjs.com/)
 ### Installation
 
@@ -119,6 +116,7 @@ Before you begin, ensure you have the following prerequisites installed:
     cd backend
     make run
     ```
+8. Go to http://localhost:5173/
   
 
 
