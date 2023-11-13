@@ -38,11 +38,17 @@ func main() {
 	}
 
 	populateDatabaseWithUsers(dbpool)
+	println("Added Users")
 	populateDatabaseWithPosts(dbpool)
+	println("Added Posts")
 	addVotesPosts(dbpool)
+	println("Added Posts Votes")
 	populateDatabaseWithComments(dbpool)
+	println("Added Comments")
 	populateCommentsWithComments(dbpool)
+	println("Added Child Comments")
 	populateCommentsWithVotes(dbpool)
+	println("Added Comment votes")
 	fmt.Println("Successfully populated database.")
 }
 
@@ -194,32 +200,45 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 	}
 
 	var comments []models.Comment
+	commentsMessge := `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed velit dignissim sodales ut eu sem integer vitae. Sed augue lacus viverra vitae congue eu consequat ac felis. Sed ullamcorper morbi tincidunt ornare massa eget. Viverra nam libero justo laoreet sit amet cursus. Sit amet consectetur adipiscing elit duis tristique. Interdum velit laoreet id donec ultrices tincidunt arcu non. Quis vel eros donec ac odio tempor orci dapibus ultrices. Nullam vehicula ipsum a arcu cursus vitae congue mauris rhoncus. Urna et pharetra pharetra massa massa ultricies mi quis hendrerit.`
 
 	for i, p := range posts {
 		var c models.Comment
 
 		c.Post_ID = p.ID
 		c.Author_ID = users[i%len(users)].ID
-		c.Message = fmt.Sprintf("What a great post %s", users[i%len(users)].First_name)
+		c.Message = commentsMessge
 
 		comments = append(comments, c)
 	}
 
-	batch := &pgx.Batch{}
-
-	for _, c := range comments {
-		batch.Queue(
-			"INSERT INTO comments (post_id, author_id, message) VALUES ($1, $2, $3)",
-			c.Post_ID,
-			c.Author_ID,
-			c.Message,
-		)
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		log.Fatalf("Failed to start transaction: %v", err)
 	}
 
-	br := pool.SendBatch(ctx, batch)
-	_, err = br.Exec()
+	query := "INSERT INTO comments (post_id, author_id, message) VALUES ($1, $2, $3) RETURNING id"
+
+	for _, c := range comments {
+		var id int64
+
+		err := tx.QueryRow(ctx, query, c.Post_ID, c.Author_ID, c.Message).Scan(&id)
+		if err != nil {
+			tx.Rollback(ctx)
+			log.Fatalf("Failed to insert comment and retrieve ID: %v", err)
+		}
+
+		_, err = tx.Exec(ctx, "UPDATE comments SET path = CAST($1 as TEXT) WHERE id = $1 ", id)
+		if err != nil {
+			tx.Rollback(ctx)
+			log.Fatalf("Failed to update path for root level comment: %v", err)
+		}
+
+	}
+
+	err = tx.Commit(ctx)
 	if err != nil {
-		log.Fatalf("Failed to add comments to database: %v", err)
+		log.Fatalf("Failed to commit transaction: %v", err)
 	}
 }
 
@@ -231,14 +250,15 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 	if err != nil {
 		log.Fatalf("Failed to get users from database: %v", err)
 	}
-	comments, err := database.GetCommentsHelper(ctx, pool)
+	parentComments, err := database.GetCommentsHelper(ctx, pool)
 	if err != nil {
 		log.Fatalf("Failed to get comments from database: %v", err)
 	}
 
-	childComments := make([]models.CommentResp, 0)
+	var childComments []models.CommentResp
+	message := `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed velit dignissim sodales ut eu sem integer vitae.`
 
-	for i, pc := range comments {
+	for i, pc := range parentComments {
 		var c models.CommentResp
 
 		c.Post_ID = pc.Post_ID
@@ -247,29 +267,44 @@ func populateCommentsWithComments(pool *pgxpool.Pool) {
 			Int64: pc.ID,
 			Valid: true,
 		}
-		c.Message = fmt.Sprintf("What a great comment %s", users[(i+1)%len(users)].First_name)
+		c.Message = message
+		c.Path = pc.Path
 
 		childComments = append(childComments, c)
 	}
 
-	batch := &pgx.Batch{}
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		log.Fatalf("Failed to start transaction: %v", err)
+	}
+
+	query := "INSERT INTO comments (post_id, author_id, message, parent_id) VALUES ($1, $2, $3, $4) RETURNING id"
 
 	for _, c := range childComments {
-		batch.Queue(
-			"INSERT INTO comments (post_id, author_id, parent_id, message) VALUES ($1, $2, $3, $4)",
-			c.Post_ID,
-			c.Author_ID,
-			c.Parent_ID,
-			c.Message,
-		)
+		var id int64
+
+		err := tx.QueryRow(ctx, query, c.Post_ID, c.Author_ID, c.Message, c.Parent_ID).Scan(&id)
+		if err != nil {
+			tx.Rollback(ctx)
+			log.Fatalf("Failed to insert child comment and retrieve ID: %v", err)
+		}
+		updateQuery := `UPDATE comments 
+                        SET path = parent.path || '/' || CAST($2 AS TEXT) 
+                        FROM comments AS parent 
+                        WHERE parent.id = $1 AND comments.id = $2`
+
+		_, err = tx.Exec(ctx, updateQuery, c.Parent_ID, id)
+		if err != nil {
+			tx.Rollback(ctx)
+			log.Fatalf("Failed to update path for child comment: %v", err)
+		}
+
 	}
 
-	br := pool.SendBatch(ctx, batch)
-	err = br.Close()
+	err = tx.Commit(ctx)
 	if err != nil {
-		log.Fatalf("Failed to add comments to database: %v", err)
+		log.Fatalf("Failed to commit transaction: %v", err)
 	}
-	fmt.Println("Successfully added comments to comments.")
 }
 
 func randomBool() bool {

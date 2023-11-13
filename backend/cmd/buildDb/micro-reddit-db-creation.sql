@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS comments (
     author_id bigint NOT NULL,
     parent_id bigint default NULL,
     message text NOT NULL,
+    path text,
     created_at timestamp with time zone NOT NULL default NOW(),
     CONSTRAINT fk_comment_post_id FOREIGN KEY(post_id) REFERENCES posts(id),
     CONSTRAINT fk_comment_author_id FOREIGN KEY(author_id) REFERENCES users(id),

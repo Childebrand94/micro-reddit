@@ -237,7 +237,7 @@ func UserCommentVoteCheck(ctx context.Context, pool *pgxpool.Pool, commentId int
 	}
 	var result bool
 	query := `SELECT up_vote
-                FROM comment_votes cv 
+                FROM comment_votes 
                 WHERE comment_id = $1 AND user_id = $2;`
 	row := pool.QueryRow(ctx, query, commentId, *userId)
 	err := row.Scan(&result)

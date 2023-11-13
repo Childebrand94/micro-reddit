@@ -14,6 +14,7 @@ type Comment struct {
 	Message    string        `db:"message"    json:"message"`
 	Vote       int           `                json:"upVotes"`
 	Created_at time.Time     `db:"created_at" json:"createdAt"`
+	Path       string        `db:"path" json:"path"`
 }
 
 type CommentResp struct {
