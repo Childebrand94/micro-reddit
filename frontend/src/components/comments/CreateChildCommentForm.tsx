@@ -17,14 +17,11 @@ export const CreateChildCommentForm: React.FC<props> = ({
     const commentData = {
         postId: comment.postId,
         message: formData,
-        parentID: {
-            int64: comment.id,
-            valid: true,
-        },
+        parentID: comment.id,
         path: comment.path,
     };
 
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(event.target.value);
     };
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -56,18 +53,18 @@ export const CreateChildCommentForm: React.FC<props> = ({
     return (
         <div className="w-11/12 rounded-xl ">
             <form className="flex flex-col" onSubmit={handleSubmit}>
-                <label htmlFor="text"></label>
+                <label htmlFor="comment"></label>
 
-                <textarea
+                <input
+                    type="text"
                     id="comment"
                     name="comment"
-                    rows={4}
                     value={formData}
                     onChange={handleChange}
                     placeholder="What are your thoughts?"
-                    className=" border-2 p-2 mx-2 mt-2"
+                    className=" border-2 p-2 rounded-lg mx-2 mt-2 w-full"
                     required
-                ></textarea>
+                ></input>
                 <div>
                     <button
                         className="ml-2 mt-2 w-20 bg-blue-400 text-white text-xs py-1 px-2 rounded-sm hover:bg-blue-500 transition"

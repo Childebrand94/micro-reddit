@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -25,7 +24,6 @@ func AddComment(ctx context.Context, pool *pgxpool.Pool, postID, authorID int64,
 		tx.Rollback(ctx)
 		return err
 	}
-	fmt.Printf("ParentID: %+v", parentID)
 
 	if parentID.Valid {
 		updateQuery := `UPDATE comments SET path = parent.path || '/' || CAST($2 AS TEXT) FROM comments AS parent WHERE parent.id = $1 AND comments.id = $2`

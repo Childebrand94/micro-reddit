@@ -10,10 +10,7 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
 
     const commentData = {
         postId: postId,
-        parentId: {
-            Int64: 0,
-            Valid: false,
-        },
+        parentId: null,
         message: formData,
     };
 
@@ -36,6 +33,7 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
             }
             fetchPosts();
             setFormData("");
+
             const data = await response.json();
             console.log(data);
         } catch (error) {

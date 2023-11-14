@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,13 +32,14 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload models.Comment
+	var payload models.CommentRequest
 
 	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to decode payload", err)
 		return
 	}
+	fmt.Printf("Comment: %+v", payload)
 	cookie, customErr := utils.GetSessionCookie(r)
 	if customErr != nil {
 		models.SendError(w, customErr.StatusCode, customErr.Message, customErr.OriginalError)
@@ -51,13 +53,28 @@ func (c *Comment) Create(w http.ResponseWriter, r *http.Request) {
 		models.SendError(w, http.StatusUnauthorized, "Please login", err)
 		return
 	}
+	var parentID sql.NullInt64
+
+	if payload.Parent_ID == 0 {
+		fmt.Println("Root level comment")
+		parentID = sql.NullInt64{
+			Int64: 0,
+			Valid: false,
+		}
+	} else {
+		fmt.Println("Child Comment")
+		parentID = sql.NullInt64{
+			Int64: payload.Parent_ID,
+			Valid: true,
+		}
+	}
 
 	err = database.AddComment(
 		ctx,
 		c.DB,
 		int64(post_id),
 		s.User_id,
-		sql.NullInt64(payload.Parent_ID),
+		parentID,
 		payload.Message,
 		payload.Path,
 	)

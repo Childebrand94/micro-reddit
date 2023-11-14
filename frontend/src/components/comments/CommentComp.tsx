@@ -44,7 +44,7 @@ const CommentComp: React.FC<CommentProp> = ({ comment, fetchPosts }) => {
                 type="comments"
                 usersVote={comment.usersVoteStatus}
             />
-            <div className={` ml-2 col-start-2`}>
+            <div className="ml-2 col-start-2 w-full">
                 <span className="text-gray-300 text-xs">
                     <h1 className="text-blue-300 text-xs inline">
                         <User

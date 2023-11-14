@@ -52,7 +52,9 @@ export const Arrows: React.FC<ArrowProps> = ({
     return (
         <div
             className={`flex flex-col ${
-                type === "comments" ? "col-start-1" : "col-start-2"
+                type === "comments"
+                    ? "col-start-1 border-l pl-1"
+                    : "col-start-2"
             } my-2`}
         >
             <button
