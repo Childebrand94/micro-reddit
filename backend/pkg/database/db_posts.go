@@ -108,9 +108,6 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
 		); err != nil {
 			return nil, err
 		}
-		if c.Parent_ID.Valid {
-			c.Parent_ID = c.Parent_ID.Int64
-		}
 		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_votes", "comment_id")
 		if err != nil {
 			return nil, err
