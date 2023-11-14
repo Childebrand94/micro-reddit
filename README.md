@@ -54,17 +54,18 @@ Micro-reddit is my first full-stack project, a Reddit clone with core functional
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Built With
-- [![Go][Go]][Go-url]
-- [![PostgreSQL][PostgreSQL]][PostgreSQL-url]
-- [![Vite][Vite]][Vite-url]
-- [![React][React.js]][React-url]
-- [![TypeScript][TypeScript]][TypeScript-url]
-- [![TailwindCSS][TailwindCSS]][TailwindCSS-url]
 
+-   [![Go][Go]][Go-url]
+-   [![PostgreSQL][PostgreSQL]][PostgreSQL-url]
+-   [![Vite][Vite]][Vite-url]
+-   [![React][React.js]][React-url]
+-   [![TypeScript][TypeScript]][TypeScript-url]
+-   [![TailwindCSS][TailwindCSS]][TailwindCSS-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 Welcome to Micro-Reddit! This project is a compact version of Reddit, showcasing the integration of modern web technologies. The front-end is built with Vite, React, TypeScript, and Tailwind CSS, offering a responsive and dynamic user interface. The back-end is powered by Go with a PostgreSQL database, ensuring efficient data handling and scalability. Here's how to set up and run the project on your local machine for development and testing.
@@ -73,66 +74,69 @@ Welcome to Micro-Reddit! This project is a compact version of Reddit, showcasing
 
 Before you begin, ensure you have the following prerequisites installed:
 
-- [Node.js](https://nodejs.org/en/download/)
-- [Go](https://go.dev/dl/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [NPM](https://www.npmjs.com/)
+-   [Node.js](https://nodejs.org/en/download/)
+-   [Go](https://go.dev/dl/)
+-   [PostgreSQL](https://www.postgresql.org/)
+-   [NPM](https://www.npmjs.com/)
+
 ### Installation
 
 1. **Clone the Repo**
    Clone the repository to your local machine:
-   ```sh
-   git clone https://github.com/Childebrand94/micro-reddit
+    ```sh
+    git clone https://github.com/Childebrand94/micro-reddit
+    ```
 2. Front-End Setup:
    Navigate to the front-end directory and install the dependencies:
-   ```sh
-   cd frontend
-   npm install
-   ```
+    ```sh
+    cd frontend
+    npm install
+    ```
 3. Run the file
-   ```sh
-   npm run dev
-   ```
+    ```sh
+    npm run dev
+    ```
 4. Back-End Setup:
    In a separate terminal, navigate to the back-end directory. Install Go dependencies:
-   ```sh
-   cd backend
-   go mod tidy
-   ```
-5. Database Setup:
-    Ensure PostgreSQL is running. To create schema and populate with fake data. 
     ```sh
-    cd backend 
+    cd backend
+    go mod tidy
+    ```
+5. Database Setup:
+   Ensure PostgreSQL is running. To create schema and populate with fake data.
+    ```sh
+    cd backend
     make migrate
     make seed
     ```
 6. Front-End: Run the Vite development server:
     ```sh
-    cd frontend 
+    cd frontend
     npm run dev
     ```
-7. Back-end: Start up server after schema has be created and populated 
+7. Back-end: Start up server after schema has be created and populated
     ```sh
     cd backend
     make run
     ```
 8. Go to http://localhost:5173/
-  
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
+
 Micro-reddit offers an intuitive and engaging platform for users to interact with a community-driven content system, similar to the classic Reddit experience. Once registered, users can create posts, comment on existing posts, and participate in discussions by upvoting or downvoting content. The application features a straightforward navigation system, allowing users to easily browse through different posts, utilize the search bar for specific content, and engage with the community. Whether you're looking to share interesting links, start discussions, or simply explore community content, micro-reddit provides a seamless and user-friendly environment. The sorting system ensures that users can access the most relevant and up-to-date content, enhancing the overall user experience on the platform.
 
-
 <!-- ROADMAP -->
+
 ## Roadmap
 
-- [ ] Arrow's highlight showing users pervious vote  
-- [ ] Hierarchical comments
+-   [x] Arrow's highlight showing users pervious vote
+-   [x] Hierarchical comments
+-   [ ] Expand/Collapse comment replies
+-   [ ] Pagination
 
 See the [open issues](https://github.com/Childebrand94/micro-reddit/issues) for a full list of proposed features (and known issues).
 
@@ -149,6 +153,7 @@ See the [open issues](https://github.com/Childebrand94/micro-reddit/issues) for 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -169,7 +174,7 @@ Don't forget to give the project a star! Thanks again!
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [React-url]: https://reactjs.org/
 [NPM]: https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white
-[NPM-url]:https://www.npmjs.com/
+[NPM-url]: https://www.npmjs.com/
 [TailwindCSS]: https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white
 [TailwindCSS-url]: https://v2.tailwindcss.com/docs
 [Vite]: https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white
@@ -182,4 +187,3 @@ Don't forget to give the project a star! Thanks again!
 [PostgreSQL-url]: https://www.postgresql.org/
 [TypeScript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [TypeScript-url]: https://www.typescriptlang.org/
-
