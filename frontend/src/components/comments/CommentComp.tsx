@@ -22,7 +22,7 @@ const CommentComp: React.FC<CommentProp> = ({ comment, fetchPosts }) => {
     const handleIndentation = () => {
         const indentationAmount = comment.path.split("/");
         if (indentationAmount.length === 1) {
-            setChildCompIndent(() => 1);
+            setChildCompIndent(() => 0);
         } else {
             setChildCompIndent(() => indentationAmount.length);
         }
@@ -33,10 +33,10 @@ const CommentComp: React.FC<CommentProp> = ({ comment, fetchPosts }) => {
     }, []);
     return (
         <div
-            className={`bg-purple-${childCompIndent.toString()}00 w-${
-                11 - childCompIndent
-            }/12 rounded-xl my-1 flex `}
-            style={{ marginLeft: `${15 * childCompIndent}px` }}
+            className={`w-11/12 rounded-xl my-1 flex p-1 `}
+            style={{
+                paddingLeft: `${15 * childCompIndent}px`,
+            }}
         >
             <Arrows
                 postId={comment.postId}
