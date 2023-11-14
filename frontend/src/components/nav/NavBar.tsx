@@ -15,7 +15,7 @@ const NavBar: React.FC<Props> = ({ fetchPosts }) => {
     const { loggedIn } = useAuth();
 
     return (
-        <nav className="grid grid-cols-[1fr_2fr_1fr] gap-4 overflow-x-hidden h-12 bg-blue-100 px-4">
+        <nav className="grid grid-cols-[1fr_2fr_1fr] gap-4 h-12 bg-blue-100 px-4">
             <div className="col-start-1 flex items-center justify-between mr-2 w-28">
                 <Link to="/">
                     <FcReddit size={45} />
