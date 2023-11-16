@@ -117,7 +117,7 @@ func DeleteSession(ctx context.Context, pool *pgxpool.Pool, sessionId string) er
 	return err
 }
 
-func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64, votersId *int64) ([]models.PostWithAuthor, error) {
+func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64, votersId *int64) ([]models.PostResponse, error) {
 	query := `
 		SELECT 
 			p.id, p.author_id, p.title, p.url, p.created_at, p.updated_at,
@@ -133,10 +133,10 @@ func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64, voters
 	}
 	defer rows.Close()
 
-	var posts []models.PostWithAuthor
+	var posts []models.PostResponse
 
 	for rows.Next() {
-		var p models.PostWithAuthor
+		var p models.PostResponse
 		if err := rows.Scan(
 			&p.ID,
 			&p.Author_ID,
@@ -160,6 +160,32 @@ func GetAllPostsByUser(ctx context.Context, pool *pgxpool.Pool, id int64, voters
 		p.UsersVoteStatus, err = utils.UserPostVoteCheck(ctx, pool, p.ID, votersId)
 		if err != nil {
 			return nil, err
+		}
+
+		queryComments := `SELECT * 
+                        FROM comments c
+                        WHERE c.post_id = $1`
+
+		rows, err := pool.Query(ctx, queryComments, p.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		defer rows.Close()
+		for rows.Next() {
+			var c models.CommentResp
+			if err := rows.Scan(
+				&c.ID,
+				&c.Post_ID,
+				&c.Author_ID,
+				&c.Parent_ID,
+				&c.Message,
+				&c.Path,
+				&c.Created_at,
+			); err != nil {
+				return nil, err
+			}
+			p.Comments = append(p.Comments, c)
 		}
 
 		posts = append(posts, p)

@@ -132,7 +132,7 @@ func GetUserIdFromCookie(ctx context.Context, pool *pgxpool.Pool, cookie *http.C
 	return &id, nil
 }
 
-func CalcKarma(posts []models.PostWithAuthor, comments []models.CommentResp) int {
+func CalcKarma(posts []models.PostResponse, comments []models.CommentResp) int {
 	var totalPostVotes int
 	var totalCommentVotes int
 	for _, p := range posts {

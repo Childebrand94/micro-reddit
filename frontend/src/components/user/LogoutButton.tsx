@@ -1,8 +1,10 @@
 import { useAuth } from "../../context/UseAuth";
 import { redirect } from "react-router-dom";
+import { useFilter } from "../../context/UseFilter";
 
 export const LogoutButton = () => {
     const { setLoggedIn } = useAuth();
+    const { setUpdateTrigger } = useFilter();
     const handleClick = async () => {
         const url = "/api/users/logout";
         try {
@@ -16,6 +18,7 @@ export const LogoutButton = () => {
 
             const data = await response.json();
             console.log(data.message);
+            setUpdateTrigger((prev) => prev + 1);
         } catch (error) {
             console.log("There was an error submitting the form", error);
         } finally {
