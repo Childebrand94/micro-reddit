@@ -12,10 +12,7 @@ import (
 
 func main() {
 	// Load in .env file
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	godotenv.Load(".env")
 
 	// Set up database connection
 	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
