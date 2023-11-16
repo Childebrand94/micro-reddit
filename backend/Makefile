@@ -1,9 +1,9 @@
 build:
-	go build -o micro-reddit ./cmd/main.go
+	go build -o micro-reddit ./cmd/main.go && go build -o buildDb ./cmd/buildDb/main.go && go build -o populateDb ./cmd/buildDb/populateDb/main.go 
 migrate:
-	go run ./cmd/buildDb/main.go
+	./buildDb
 seed:
-	go run ./cmd/buildDb/populateDB/main.go
+	./populateDb
 run: 
-	go run ./cmd/main.go
+	./micro-reddit	
 all: migrate seed run
