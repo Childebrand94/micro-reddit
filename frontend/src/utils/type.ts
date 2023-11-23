@@ -56,19 +56,14 @@ export type UserID = {
     posts: Post[];
     comments: Comment[];
 };
-// export type VoteContextType = {
-// points: number;
-// setPoints: React.Dispatch<React.SetStateAction<number>>;
-// handleArrowClick: (path: string) => Promise<void>;
-// };
 
 export type FormDataType = {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     email: string;
     username: string;
     password: string;
-    retypepassword: string;
+    retTypePassword: string;
 };
 export type LoginWindowState =
     | "initial"
