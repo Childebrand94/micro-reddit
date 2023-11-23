@@ -6,7 +6,7 @@ type props = {
 };
 export const CommentList: React.FC<props> = ({ comments, fetchPosts }) => {
     return (
-        <div className="mt-3 w-full flex flex-col felx-start ">
+        <div className="mt-3 w-full flex flex-col flex-start ">
             {comments.map((comment) => {
                 return (
                     <CommentComp

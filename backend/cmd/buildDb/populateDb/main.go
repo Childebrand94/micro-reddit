@@ -197,14 +197,14 @@ func populateDatabaseWithComments(pool *pgxpool.Pool) {
 	}
 
 	var comments []models.Comment
-	commentsMessge := `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed velit dignissim sodales ut eu sem integer vitae. Sed augue lacus viverra vitae congue eu consequat ac felis. Sed ullamcorper morbi tincidunt ornare massa eget. Viverra nam libero justo laoreet sit amet cursus. Sit amet consectetur adipiscing elit duis tristique. Interdum velit laoreet id donec ultrices tincidunt arcu non. Quis vel eros donec ac odio tempor orci dapibus ultrices. Nullam vehicula ipsum a arcu cursus vitae congue mauris rhoncus. Urna et pharetra pharetra massa massa ultricies mi quis hendrerit.`
+	commentsMessage := `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed velit dignissim sodales ut eu sem integer vitae. Sed augue lacus viverra vitae congue eu consequat ac felis. Sed ullamcorper morbi tincidunt ornare massa eget. Viverra nam libero justo laoreet sit amet cursus. Sit amet consectetur adipiscing elit duis tristique. Interdum velit laoreet id donec ultrices tincidunt arcu non. Quis vel eros donec ac odio tempor orci dapibus ultrices. Nullam vehicula ipsum a arcu cursus vitae congue mauris rhoncus. Urna et pharetra pharetra massa massa ultricies mi quis hendrerit.`
 
 	for i, p := range posts {
 		var c models.Comment
 
 		c.Post_ID = p.ID
 		c.Author_ID = users[i%len(users)].ID
-		c.Message = commentsMessge
+		c.Message = commentsMessage
 
 		comments = append(comments, c)
 	}

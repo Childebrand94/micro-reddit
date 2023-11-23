@@ -34,9 +34,3 @@ type UserPoints struct {
 	CommentDownVotes int `db:"comment_down_votes" json:"commentDownVotes"`
 	Karma            int `db:"karma" json:"karma"`
 }
-
-// type UserResp struct {
-// 	User
-// 	Posts    []PostWithAuthor `json:"posts"`
-// 	Comments []Comment        `json:"comments"`
-// }

@@ -10,7 +10,7 @@ type CommentRequest struct {
 	Post_ID   int64  ` json:"postId"`
 	Parent_ID int64  ` json:"parentID"`
 	Message   string ` json:"message"`
-	Path      string `jdon:"path"`
+	Path      string `json:"path"`
 }
 
 type Comment struct {

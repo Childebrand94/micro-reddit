@@ -36,7 +36,7 @@ type PostWithAuthor struct {
 type VoteStatus string
 
 const (
-	Upvote   VoteStatus = "upvote"
-	Downvote VoteStatus = "downvote"
+	UpVote   VoteStatus = "upVote"
+	DownVote VoteStatus = "downVote"
 	NoVote   VoteStatus = "noVote"
 )
