@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 type App struct {
@@ -24,8 +26,11 @@ func New(pool *pgxpool.Pool) *App {
 }
 
 func (a *App) Start(ctx context.Context) error {
+	godotenv.Load(".env")
+	port := os.Getenv("DATABASE_URL")
+
 	server := &http.Server{
-		Addr:    ":3000",
+		Addr:    ":" + port,
 		Handler: a.router,
 	}
 	err := a.DB.Ping(ctx)

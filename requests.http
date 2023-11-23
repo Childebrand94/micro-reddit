@@ -83,7 +83,7 @@ GET http://localhost:3000/users HTTP/1.1
 
 ###
 //get all posts and comments
-GET http://localhost:3000/posts HTTP/1.1
+GET https://micro-reddit-backend.onrender.com/posts HTTP/1.1
 
 ###
 // get all comments on a post 
