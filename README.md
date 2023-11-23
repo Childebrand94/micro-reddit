@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Childebrand94/micro-reddit">
-    <img src="./frontend/public/assets/Reddit-Logo.wine.svg" alt="Logo" width="300" height="200"> 
+    <img src="./frontend/src/assets/Reddit-Logo.wine.svg" alt="Logo" width="300" height="200"> 
   </a>
 <h3 align="center">Micro Reddit</h3>
   <p align="center">
@@ -47,7 +47,7 @@
 <!-- ABOUT THE PROJECT -->
 About The Project
 
-![Alt Text](frontend/public/assets/showcaseGif.gif)
+![Alt Text](frontend/src/assets/showcaseGif.gif)
 
 Micro-reddit is my first full-stack project, a Reddit clone with core functionalities like account creation, posting, commenting, and a voting system. The backend is built with Go, using PostgreSQL and pgx, while the frontend utilizes Vite, React, and Tailwind CSS. The project aims to replicate the classic Reddit experience with a modern touch, featuring a user-friendly interface and robust performance.
 
