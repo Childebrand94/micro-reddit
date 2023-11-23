@@ -4,6 +4,7 @@ export type AuthContextType = {
     loggedIn: boolean;
     setLoggedIn: (value: boolean) => void;
     userId: number | null;
+    fetchSession: () => void;
 };
 
 export type PostFilter = {
