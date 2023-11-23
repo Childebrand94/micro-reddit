@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaFireFlameCurved } from 'react-icons/fa6';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { BsStars, BsPlusCircle } from 'react-icons/bs';
+import { BsStars } from 'react-icons/bs';
 import { Filter } from '../../utils/type';
 import { useFilter } from '../../context/UseFilter';
 import { GiPodiumWinner} from 'react-icons/gi'
