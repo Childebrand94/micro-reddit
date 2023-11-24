@@ -43,7 +43,7 @@ func (a *App) Start(ctx context.Context) error {
 		fmt.Println("Closed PostgreSQL connection", err)
 	}()
 
-	// creating channel
+	// Creating channel
 	ch := make(chan error, 1)
 
 	go func() {

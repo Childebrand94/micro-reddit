@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/UseAuth";
 import { LoginWindowState } from "../../utils/type";
+import { useNavigate } from "react-router-dom";
+import { useFilter } from "../../context/UseFilter";
 
 type props = {
     fn: (arg: LoginWindowState) => void;
 };
 
 const LoginForm: React.FC<props> = ({ fn }) => {
-    const { setLoggedIn } = useAuth();
+    const { setUpdateTrigger } = useFilter();
+    const navigate = useNavigate()
+    const { setLoggedIn, fetchSession } = useAuth();
     const [invalidCredential, setInvalidCredential] = useState(false);
 
     const [formData, setFormData] = useState<Record<string, string>>({
@@ -42,8 +46,10 @@ const LoginForm: React.FC<props> = ({ fn }) => {
             }
             const data = await response.json();
             console.log(data.message);
+            setUpdateTrigger((prev)=> prev + 1)
             setLoggedIn(true);
-            window.location.href = "/";
+            fetchSession()
+            navigate("/") 
         } catch (error) {
             console.log("There was an error submitting the form", error);
         }

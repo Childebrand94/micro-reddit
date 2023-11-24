@@ -209,7 +209,7 @@ func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string, userId *
 	for postRows.Next() {
 
 		var p models.PostResponse
-		var totalvotes int
+		var totalVotes int
 
 		if err := postRows.Scan(
 			&p.ID,
@@ -221,7 +221,7 @@ func GetPostsSort(ctx context.Context, pool *pgxpool.Pool, sort string, userId *
 			&p.Author.FirstName,
 			&p.Author.LastName,
 			&p.Author.UserName,
-			&totalvotes); err != nil {
+			&totalVotes); err != nil {
 			return nil, err
 		}
 		p.Vote, err = utils.GetVoteTotal(pool, p.ID, "post_votes", "post_id")

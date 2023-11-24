@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { Link, redirect } from "react-router-dom";
+import { Link, } from "react-router-dom";
 import { useAuth } from "../../context/UseAuth";
 import {FaRedditSquare} from "react-icons/fa"
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { CgProfile } from 'react-icons/cg';
 import { IoCreateOutline } from 'react-icons/io5';
 import {BiLogOut} from 'react-icons/bi';
-
+import { useNavigate } from "react-router-dom";
+import { useFilter } from "../../context/UseFilter";
 
 export const Profile = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { setLoggedIn, userId } = useAuth();
+    const navigate = useNavigate()
+    const {setUpdateTrigger} = useFilter()
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -32,8 +35,9 @@ export const Profile = () => {
         } catch (error) {
             console.log("There was an error submitting the form", error);
         } finally {
+            setUpdateTrigger((prev) => prev + 1)
+            navigate("/")
             setLoggedIn(false);
-            redirect("/api");
         }
     };
   const icons = {

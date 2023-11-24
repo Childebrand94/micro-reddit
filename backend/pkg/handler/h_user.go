@@ -222,13 +222,13 @@ func (u *User) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	exsits, err := database.EmailExists(ctx, u.DB, payload.Email)
+	exists, err := database.EmailExists(ctx, u.DB, payload.Email)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to validate user's email", err)
 		return
 	}
 
-	if !exsits {
+	if !exists {
 		models.SendError(w, http.StatusUnauthorized, "Email does not exist", err)
 		return
 	}

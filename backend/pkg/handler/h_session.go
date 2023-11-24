@@ -58,5 +58,4 @@ func (s *Session) IsSession(w http.ResponseWriter, r *http.Request) {
 		"userId":   session.User_id,
 	}
 	json.NewEncoder(w).Encode(response)
-	return
 }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm: React.FC = () => {
     const [formData, setFormData] = useState<Record<string, string>>({
@@ -19,6 +20,8 @@ const SignUpForm: React.FC = () => {
             [name]: value,
         }));
     };
+
+    const navigate = useNavigate()
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -45,7 +48,7 @@ const SignUpForm: React.FC = () => {
 
             const data = await response.json();
             console.log(data.message);
-            window.location.href = "/";
+            navigate("/")
         } catch (error) {
             console.log("There was an error submitting the form", error);
         }

@@ -2,6 +2,9 @@ import React from "react";
 import { useFilter } from "../context/UseFilter";
 import { useNavigate } from "react-router-dom";
 import { VoteOptions } from "../utils/type";
+import upArrow from "../assets/arrow-up.png"
+import upArrowFilled from "../assets/arrow-up-filled.png"
+
 
 type ArrowProps = {
     postId: number;
@@ -68,13 +71,13 @@ export const Arrows: React.FC<ArrowProps> = ({
                 {usersVote === "upVote" ? (
                     <img
                         className="h-6 hover:scale-110 transition-transform"
-                        src="/assets/arrow-up-filled.png"
+                        src={`${upArrowFilled}`}
                         alt="Up Arrow"
                     />
                 ) : (
                     <img
                         className="h-6 hover:scale-110 transition-transform"
-                        src="/assets/arrow-up.png"
+                        src={`${upArrow}`}
                         alt="Up Arrow"
                     />
                 )}
@@ -91,13 +94,13 @@ export const Arrows: React.FC<ArrowProps> = ({
                 {usersVote === "downVote" ? (
                     <img
                         className="h-6 rotate-180 hover:scale-110 transition-transform"
-                        src="/assets/arrow-up-filled.png"
+                        src={`${upArrowFilled}`}
                         alt="Down Arrow"
                     />
                 ) : (
                     <img
                         className="h-6 rotate-180 hover:scale-110 transition-transform"
-                        src="/assets/arrow-up.png"
+                        src={`${upArrow}`}
                         alt="Down Arrow"
                     />
                 )}

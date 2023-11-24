@@ -22,6 +22,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (data.loggedIn) {
                 setLoggedIn(true);
                 setUserId(data.userId);
+                
             } else {
                 setLoggedIn(false);
                 console.log("Please login");
@@ -30,13 +31,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.error("Error:", error);
         }
     };
-
     useEffect(() => {
         fetchSession();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ loggedIn, setLoggedIn, userId }}>
+        <AuthContext.Provider value={{ loggedIn, setLoggedIn, userId, fetchSession }}>
             {children}
         </AuthContext.Provider>
     );
