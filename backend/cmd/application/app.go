@@ -35,7 +35,7 @@ func (a *App) Start(ctx context.Context) error {
 	}
 	err := a.DB.Ping(ctx)
 	if err != nil {
-		return fmt.Errorf("Failed to connect to PostgreSQL: %w", err)
+		return fmt.Errorf("failed to connect to PostgreSQL: %w", err)
 	}
 
 	defer func() {
@@ -49,12 +49,23 @@ func (a *App) Start(ctx context.Context) error {
 	go func() {
 		err = server.ListenAndServe()
 		if err != nil {
-			ch <- fmt.Errorf("Failed to start server: %w", err)
+			ch <- fmt.Errorf("failed to start server: %w", err)
 		}
 		close(ch)
 	}()
 
 	fmt.Println("Starting server...")
+
+	// give the server a moment to start
+	time.Sleep(time.Second)
+
+	// check if the database is reachable
+	err = a.DB.Ping(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to ping postgresql: %w", err)
+	}
+
+	fmt.Println("Server is running and connected to PostgreSQL on port", port)
 
 	// setting up receiver for channel
 	select {
