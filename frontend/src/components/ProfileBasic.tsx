@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserPoints, User } from "../utils/type";
 import moment from "moment";
+import { baseUrl } from "../utils/helpers";
 
 export const ProfileBasic = () => {
     const [userData, setUserData] = useState<User | null>(null);
@@ -12,8 +13,8 @@ export const ProfileBasic = () => {
     const fetchPoints = async () => {
         try {
             const [respPoints, respUser] = await Promise.all([
-                fetch(`/api/users/${user_id}/points`, { method: "GET" }),
-                fetch(`/api/users/${user_id}`, { method: "GET" }),
+                fetch(`${baseUrl}/users/${user_id}/points`, { method: "GET" }),
+                fetch(`${baseUrl}/users/${user_id}`, { method: "GET" }),
             ]);
             if (!respPoints.ok || !respUser.ok) {
                 throw new Error("Network response was not ok");

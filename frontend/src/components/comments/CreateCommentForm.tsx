@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { baseUrl } from "../../utils/helpers";
 
 type props = {
     postId: number;
@@ -21,7 +22,7 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
         event.preventDefault();
 
         try {
-            const response = await fetch(`/api/posts/${postId}/comments`, {
+            const response = await fetch(`${baseUrl}/posts/${postId}/comments`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "application/json",

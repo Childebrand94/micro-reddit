@@ -30,7 +30,7 @@ const LoginForm: React.FC<props> = ({ fn }) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const url = `/api/users/login`;
+        const url = `${baseUrl}/users/login`;
         try {
             const response = await fetch(url, {
                 method: "Post",

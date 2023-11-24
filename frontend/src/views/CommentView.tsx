@@ -7,6 +7,7 @@ import { CommentList } from "../components/comments/CommentList.tsx";
 import { useAuth } from "../context/UseAuth.tsx";
 import { useFilter } from "../context/UseFilter.tsx";
 import { CreateCommentForm } from "../components/comments/CreateCommentForm.tsx";
+import { baseUrl } from "../utils/helpers.ts";
 
 type Props = {
     fetchPosts: (value: Filter, str: string | null) => void;
@@ -21,7 +22,7 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
 
     const fetchPostByID = async () => {
         try {
-            const response = await fetch(`api/posts/${post_id}`, {
+            const response = await fetch(`${baseUrl}/posts/${post_id}`, {
                 method: "GET",
             });
             if (!response.ok) {

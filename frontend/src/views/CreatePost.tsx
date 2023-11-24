@@ -1,5 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "../utils/helpers";
 
 type FormData = {
     title: string;
@@ -24,7 +25,7 @@ export const CreatePost = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const url = "/api/posts";
+        const url =`${baseUrl}/posts`;
         try {
             const response = await fetch(url, {
                 method: "Post",

@@ -12,8 +12,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchSession = async () => {
         try {
-            const response = await fetch(`/api/sessions`, {
+            const response = await fetch(`${baseUrl}/sessions`, {
                 method: "GET",
+                credentials: 'include',
             });
             if (!response.ok) {
                 setLoggedIn(false);

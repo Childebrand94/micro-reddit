@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { BiLogoReddit } from "react-icons/bi";
 import { useFilter } from "../../context/UseFilter";
+import { baseUrl } from "../../utils/helpers";
 type FormData = {
     title: string;
     url: string;
@@ -29,7 +30,7 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const url = "/api/posts";
+        const url = `${baseUrl}/posts`;
         try {
             const response = await fetch(url, {
                 method: "Post",

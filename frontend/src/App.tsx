@@ -14,11 +14,10 @@ function App() {
     const [posts, setPosts] = useState<PostType[] | null>([]);
     const { updateTrigger, filter } = useFilter();
 
-    console.log(baseUrl)
 
     const fetchPosts = async (filter: Filter, search: string | null = null) => {
         try {
-            let url = `/api/posts?sort=${filter}`;
+            let url = `${baseUrl}/posts?sort=${filter}`;
             if (search && search.trim() !== "") {
                 url += `&search=${encodeURIComponent(search.trim())}`;
             }

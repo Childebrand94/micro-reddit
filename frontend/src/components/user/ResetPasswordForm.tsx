@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { LoginWindowState } from "../../utils/type";
+import { baseUrl } from "../../utils/helpers";
 
 type Props = {
     fn: (arg: LoginWindowState) => void;
@@ -27,7 +28,7 @@ export const ResetPasswordForm: React.FC<Props> = ({ fn }) => {
             return;
         }
         try {
-            const response = await fetch("/api/users", {
+            const response = await fetch(`${baseUrl}/users`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "applications/json",

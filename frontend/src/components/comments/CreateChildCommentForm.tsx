@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Comment as CommentType } from "../../utils/type.ts";
-
+import { baseUrl } from "../../utils/helpers.ts";
 type props = {
     comment: CommentType;
     fetchPosts: () => void;
@@ -29,7 +29,7 @@ export const CreateChildCommentForm: React.FC<props> = ({
 
         try {
             const response = await fetch(
-                `/api/posts/${comment.postId}/comments`,
+                `${baseUrl}/posts/${comment.postId}/comments`,
                 {
                     method: "Post",
                     headers: {

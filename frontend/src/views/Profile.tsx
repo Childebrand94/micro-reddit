@@ -5,6 +5,7 @@ import { Post, User, Filter } from "../utils/type";
 import { ProfileBasic } from "../components/ProfileBasic";
 import { useParams } from "react-router-dom";
 import { useFilter } from "../context/UseFilter";
+import { baseUrl } from "../utils/helpers";
 
 type Props = {
     fetchPosts: (value: Filter, str: string | null) => void;
@@ -19,7 +20,7 @@ const Profile: React.FC<Props> = ({ fetchPosts }) => {
 
     const fetchUsersPosts = async () => {
         try {
-            const response = await fetch(`/api/users/${user_id}/posts`, {
+            const response = await fetch(`${baseUrl}/users/${user_id}/posts`, {
                 method: "GET",
             });
             if (!response.ok) {
@@ -33,7 +34,7 @@ const Profile: React.FC<Props> = ({ fetchPosts }) => {
     };
     const fetchUser = async () => {
         try {
-            const response = await fetch(`/api/users/${user_id}`, {
+            const response = await fetch(`${baseUrl}/users/${user_id}`, {
                 method: "GET",
             });
             if (!response.ok) {

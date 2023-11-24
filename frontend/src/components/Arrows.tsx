@@ -29,14 +29,15 @@ export const Arrows: React.FC<ArrowProps> = ({
     };
 
     const commentPath = {
-        upVote: `/api/posts/${postId}/comments/${commentId}/up-vote`,
-        downVote: `/api/posts/${postId}/comments/${commentId}/down-vote`,
+        upVote: `${baseUrl}/posts/${postId}/comments/${commentId}/up-vote`,
+        downVote: `${baseUrl}/posts/${postId}/comments/${commentId}/down-vote`,
     };
 
     const handleArrowClick = async (path: string) => {
         try {
             const resp = await fetch(path, {
                 method: "PUT",
+                credentials: "include"
             });
             if (!resp.ok) {
                 //redirect to sign in

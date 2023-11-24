@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { baseUrl } from "../../utils/helpers";
 
 const SignUpForm: React.FC = () => {
     const [formData, setFormData] = useState<Record<string, string>>({
@@ -31,7 +32,7 @@ const SignUpForm: React.FC = () => {
         }
 
         try {
-            const response = await fetch("/api/users", {
+            const response = await fetch(`${baseUrl}/users`, {
                 method: "Post",
                 headers: {
                     "Content-Type": "applications/json",

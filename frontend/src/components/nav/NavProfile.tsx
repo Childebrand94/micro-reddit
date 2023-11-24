@@ -8,6 +8,7 @@ import { IoCreateOutline } from 'react-icons/io5';
 import {BiLogOut} from 'react-icons/bi';
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../../context/UseFilter";
+import { baseUrl } from "../../utils/helpers";
 
 export const Profile = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -20,7 +21,7 @@ export const Profile = () => {
     };
     const handleClick = async () => {
         toggleDropdown();
-        const url = "/api/users/logout";
+        const url = `${baseUrl}/users/logout`;
         try {
             const response = await fetch(url, {
                 method: "Post",
