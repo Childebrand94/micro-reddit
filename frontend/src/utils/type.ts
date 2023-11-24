@@ -76,3 +76,4 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 export type Filter = "hot" | "top" | "new";
 
 export type VoteOptions = "upVote" | "downVote" | "noVote";
+

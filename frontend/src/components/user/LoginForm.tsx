@@ -3,6 +3,7 @@ import { useAuth } from "../../context/UseAuth";
 import { LoginWindowState } from "../../utils/type";
 import { useNavigate } from "react-router-dom";
 import { useFilter } from "../../context/UseFilter";
+import { baseUrl } from "../../utils/helpers";
 
 type props = {
     fn: (arg: LoginWindowState) => void;
@@ -29,7 +30,7 @@ const LoginForm: React.FC<props> = ({ fn }) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const url = "/api/users/login";
+        const url = `/api/users/login`;
         try {
             const response = await fetch(url, {
                 method: "Post",

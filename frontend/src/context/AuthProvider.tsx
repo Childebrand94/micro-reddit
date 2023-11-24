@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { AuthContext } from "./context";
+import { baseUrl } from "../utils/helpers";
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -11,7 +12,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchSession = async () => {
         try {
-            const response = await fetch("/api/sessions", {
+            const response = await fetch(`/api/sessions`, {
                 method: "GET",
             });
             if (!response.ok) {

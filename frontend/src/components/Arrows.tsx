@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { VoteOptions } from "../utils/type";
 import upArrow from "../assets/arrow-up.png"
 import upArrowFilled from "../assets/arrow-up-filled.png"
+import { baseUrl } from "../utils/helpers";
 
 
 type ArrowProps = {
@@ -23,8 +24,8 @@ export const Arrows: React.FC<ArrowProps> = ({
     const navigate = useNavigate();
 
     const postPath = {
-        upVote: `/api/posts/${postId}/up-vote`,
-        downVote: `/api/posts/${postId}/down-vote`,
+        upVote: `${baseUrl}/posts/${postId}/up-vote`,
+        downVote: `${baseUrl}/posts/${postId}/down-vote`,
     };
 
     const commentPath = {

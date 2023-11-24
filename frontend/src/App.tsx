@@ -8,10 +8,13 @@ import { CreatePost } from "./views/CreatePost";
 import { useFilter } from "./context/UseFilter";
 import { useEffect, useState } from "react";
 import { Filter, Post as PostType } from "./utils/type";
+import {baseUrl} from './utils/helpers'
 
 function App() {
     const [posts, setPosts] = useState<PostType[] | null>([]);
     const { updateTrigger, filter } = useFilter();
+
+    console.log(baseUrl)
 
     const fetchPosts = async (filter: Filter, search: string | null = null) => {
         try {

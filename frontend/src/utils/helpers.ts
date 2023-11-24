@@ -1,3 +1,5 @@
+export const baseUrl = import.meta.env.VITE_API_URL
+
 export const shortenUrl: (url: string) => string = (url) => {
     try {
         const parsedUrl = new URL(url);
