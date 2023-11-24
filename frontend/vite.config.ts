@@ -6,6 +6,7 @@ const apiBaseUrl = process.env.VITE_API_URL || 'http://127.0.0.1:3000'
 console.log(process.env.VITE_API_URL)
 
 export default defineConfig({
+  base: '/micro-reddit/',
   plugins: [react()],
   base : '/',
   server: {
