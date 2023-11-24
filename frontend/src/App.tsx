@@ -37,6 +37,7 @@ function App() {
         }
     };
 
+
     useEffect(() => {
         fetchPosts(filter);
     }, [updateTrigger]);
