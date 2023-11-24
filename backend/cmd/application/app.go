@@ -27,10 +27,10 @@ func New(pool *pgxpool.Pool) *App {
 
 func (a *App) Start(ctx context.Context) error {
 	godotenv.Load(".env")
-	port := os.Getenv("DATABASE_URL")
+	port := os.Getenv("PORT")
 
 	server := &http.Server{
-		Addr:    port,
+		Addr:    ":" + port,
 		Handler: a.router,
 	}
 	err := a.DB.Ping(ctx)
@@ -54,7 +54,7 @@ func (a *App) Start(ctx context.Context) error {
 		close(ch)
 	}()
 
-	fmt.Println("Server is running...")
+	fmt.Println("Starting server...")
 
 	// setting up receiver for channel
 	select {
