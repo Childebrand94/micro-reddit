@@ -30,7 +30,7 @@ func (a *App) Start(ctx context.Context) error {
 	port := os.Getenv("DATABASE_URL")
 
 	server := &http.Server{
-		Addr:    ":" + port,
+		Addr:    port,
 		Handler: a.router,
 	}
 	err := a.DB.Ping(ctx)

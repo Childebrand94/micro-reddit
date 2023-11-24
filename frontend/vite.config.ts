@@ -8,7 +8,6 @@ console.log(process.env.VITE_API_URL)
 export default defineConfig({
   base: '/micro-reddit/',
   plugins: [react()],
-  base : '/',
   server: {
     proxy: {
       "/api": {
