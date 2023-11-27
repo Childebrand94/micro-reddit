@@ -16,7 +16,7 @@ func (a *App) loadRoutes() {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowedOrigins:   []string{"https://childebrand94.github.io/micro-reddit"},
+		AllowedOrigins:   []string{"https://childebrand94.github.io/micro-reddit", "https://childebrand94.github.io", "http://localhost:5173"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	})
