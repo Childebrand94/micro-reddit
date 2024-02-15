@@ -9,8 +9,6 @@ import { useFilter } from "./context/UseFilter";
 import { useEffect, useState } from "react";
 import { Filter, Post as PostType } from "./utils/type";
 import { baseUrl } from './utils/helpers'
-import 'react-toastify/dist/ReactToastify.css'
-import { ToastContainer } from "react-toastify";
 
 function App() {
     const [posts, setPosts] = useState<PostType[] | null>([]);
