@@ -9,10 +9,12 @@ import { useFilter } from "./context/UseFilter";
 import { useEffect, useState } from "react";
 import { Filter, Post as PostType } from "./utils/type";
 import { baseUrl } from './utils/helpers'
+import { LoadingScreen } from "./components/LoadingScreen";
 
 function App() {
     const [posts, setPosts] = useState<PostType[] | null>([]);
     const { updateTrigger, filter } = useFilter();
+    const [isLoading, setIsLoading] = useState(true);
 
 
     const fetchPosts = async (filter: Filter, search: string | null = null) => {
@@ -33,6 +35,7 @@ function App() {
             if (data === null) {
                 setPosts(null);
             } else {
+                setIsLoading(true)
                 setPosts(data);
             }
         } catch (error) {
@@ -53,7 +56,10 @@ function App() {
                         <Route
                             path="/"
                             element={
-                                <Home fetchPosts={fetchPosts} posts={posts} />
+                                <>
+                                    <Home fetchPosts={fetchPosts} posts={posts} />
+                                    <LoadingScreen />
+                                </>
                             }
                         />
                         <Route
