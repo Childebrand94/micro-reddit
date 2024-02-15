@@ -21,10 +21,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 throw new Error("Network response was not ok");
             }
             const data = await response.json();
+            console.log(`this is the data: ${data}`)
             if (data.loggedIn) {
                 setLoggedIn(true);
                 setUserId(data.userId);
-                
+
             } else {
                 setLoggedIn(false);
                 console.log("Please login");
