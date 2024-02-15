@@ -34,6 +34,7 @@ const LoginForm: React.FC<props> = ({ fn }) => {
         try {
             const response = await fetch(url, {
                 method: "Post",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -47,10 +48,10 @@ const LoginForm: React.FC<props> = ({ fn }) => {
             }
             const data = await response.json();
             console.log(data.message);
-            setUpdateTrigger((prev)=> prev + 1)
+            setUpdateTrigger((prev) => prev + 1)
             setLoggedIn(true);
             fetchSession()
-            navigate("/") 
+            navigate("/")
         } catch (error) {
             console.log("There was an error submitting the form", error);
         }
