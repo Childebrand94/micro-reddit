@@ -31,11 +31,11 @@ function App() {
                 throw new Error("Network response was not ok");
             }
             const data = await response.json();
+            setIsLoading(false)
 
             if (data === null) {
                 setPosts(null);
             } else {
-                setIsLoading(true)
                 setPosts(data);
             }
         } catch (error) {
@@ -58,7 +58,7 @@ function App() {
                             element={
                                 <>
                                     <Home fetchPosts={fetchPosts} posts={posts} />
-                                    <LoadingScreen />
+                                    {isLoading && <LoadingScreen />}
                                 </>
                             }
                         />
