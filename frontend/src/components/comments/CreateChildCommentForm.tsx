@@ -32,6 +32,7 @@ export const CreateChildCommentForm: React.FC<props> = ({
                 `${baseUrl}/posts/${comment.postId}/comments`,
                 {
                     method: "Post",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },
