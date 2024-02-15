@@ -9,6 +9,12 @@ export type PostProps = {
     index: number | null;
 };
 
+const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const proceed = window.confirm("This link may be auto-generated and may not lead to an actual site. Proceed?")
+    if (!proceed) {
+        e.preventDefault();
+    }
+}
 export const PostComp: React.FC<PostProps> = ({ post, index }) => {
     return (
         <div className="flex h-24 px-2 gap-2 bg-white border border-gray-200 rounded-xl my-1 max-w-lg sm:gap-3 w-full sm:max-h-20">
@@ -26,14 +32,15 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
             />
 
             <div
-                className={`h-12 ${
-                    index ? "col-start-3 " : ""
-                } my-2 flex flex-col`}
+                className={`h-12 ${index ? "col-start-3 " : ""
+                    } my-2 flex flex-col`}
             >
                 <div className="flex">
                     <a
                         href={post.url}
+                        onClick={handleClick}
                         className="font-bold transition duration-200 cursor-pointer break-words"
+
                     >
                         {post.title}
 
@@ -52,7 +59,7 @@ export const PostComp: React.FC<PostProps> = ({ post, index }) => {
                             id={String(post.authorId)}
                         />
                         {post.comments === undefined ||
-                        post.comments === null ? (
+                            post.comments === null ? (
                             <Link
                                 to={`/posts/${post.id}`}
                                 className="bg-gray-200 text-black whitespace-nowrap text-xxs ml-2 px-1  rounded-lg hover:bg-gray-400 transition duration-200 cursor-pointer"
