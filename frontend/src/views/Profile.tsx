@@ -22,6 +22,7 @@ const Profile: React.FC<Props> = ({ fetchPosts }) => {
         try {
             const response = await fetch(`${baseUrl}/users/${user_id}/posts`, {
                 method: "GET",
+                credentials: "include",
             });
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -36,6 +37,7 @@ const Profile: React.FC<Props> = ({ fetchPosts }) => {
         try {
             const response = await fetch(`${baseUrl}/users/${user_id}`, {
                 method: "GET",
+                credentials: "include",
             });
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -65,21 +67,19 @@ const Profile: React.FC<Props> = ({ fetchPosts }) => {
                 </h1>
                 <div className="ml-4 flex">
                     <button
-                        className={`mx-1 px-2 pt-1 ${
-                            toggleView
-                                ? "bg-gray-100"
-                                : "bg-blue-400 text-white"
-                        }`}
+                        className={`mx-1 px-2 pt-1 ${toggleView
+                            ? "bg-gray-100"
+                            : "bg-blue-400 text-white"
+                            }`}
                         onClick={handleSubmittedClick}
                     >
                         Basic
                     </button>
                     <button
-                        className={`mx-1 px-2 pt-1 ${
-                            !toggleView
-                                ? "bg-gray-100"
-                                : "bg-blue-400 text-white"
-                        }`}
+                        className={`mx-1 px-2 pt-1 ${!toggleView
+                            ? "bg-gray-100"
+                            : "bg-blue-400 text-white"
+                            }`}
                         onClick={handleSubmittedClick}
                     >
                         Submitted

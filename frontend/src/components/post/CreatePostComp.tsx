@@ -34,6 +34,7 @@ export const CreatePostComp: React.FC<Props> = ({ toggleExpansion }) => {
         try {
             const response = await fetch(url, {
                 method: "Post",
+                credentials: "include",
                 headers: {
                     "Content-Type": "applications/json",
                 },

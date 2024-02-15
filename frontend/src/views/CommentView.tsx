@@ -24,6 +24,7 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
         try {
             const response = await fetch(`${baseUrl}/posts/${post_id}`, {
                 method: "GET",
+                credentials: "include",
             });
             if (!response.ok) {
                 throw new Error("Network response was not ok");

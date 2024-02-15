@@ -25,10 +25,11 @@ export const CreatePost = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const url =`${baseUrl}/posts`;
+        const url = `${baseUrl}/posts`;
         try {
             const response = await fetch(url, {
                 method: "Post",
+                credentials: "include",
                 headers: {
                     "Content-Type": "applications/json",
                 },

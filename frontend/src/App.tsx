@@ -8,7 +8,7 @@ import { CreatePost } from "./views/CreatePost";
 import { useFilter } from "./context/UseFilter";
 import { useEffect, useState } from "react";
 import { Filter, Post as PostType } from "./utils/type";
-import {baseUrl} from './utils/helpers'
+import { baseUrl } from './utils/helpers'
 
 function App() {
     const [posts, setPosts] = useState<PostType[] | null>([]);
@@ -23,6 +23,7 @@ function App() {
             }
             const response = await fetch(url, {
                 method: "GET",
+                credentials: "include",
             });
             if (!response.ok) {
                 throw new Error("Network response was not ok");
