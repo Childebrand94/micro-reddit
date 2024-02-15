@@ -24,6 +24,7 @@ export const CreateCommentForm: React.FC<props> = ({ fetchPosts, postId }) => {
         try {
             const response = await fetch(`${baseUrl}/posts/${postId}/comments`, {
                 method: "Post",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
