@@ -5,6 +5,8 @@ import { Arrows } from "../Arrows.tsx";
 import { BiComment } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { CreateChildCommentForm } from "./CreateChildCommentForm.tsx";
+import { useAuth } from "../../context/UseAuth";
+import { useNavigate } from "react-router-dom";
 
 type CommentProp = {
     comment: CommentType;
@@ -12,11 +14,19 @@ type CommentProp = {
 };
 
 const CommentComp: React.FC<CommentProp> = ({ comment, fetchPosts }) => {
+    const { loggedIn } = useAuth()
     const [isCommentExpanded, setIsCommentExpanded] = useState<boolean>(false);
     const [childCompIndent, setChildCompIndent] = useState<number>(0);
+    const navigate = useNavigate()
+
 
     const handleClick = () => {
-        setIsCommentExpanded(!isCommentExpanded);
+        if (loggedIn) {
+            setIsCommentExpanded(!isCommentExpanded);
+        } else {
+            navigate("/users")
+        }
+
     };
 
     const handleIndentation = () => {
