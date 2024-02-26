@@ -150,6 +150,8 @@ func (p *Post) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Printf("\n post and its comments %v \n", resp)
+
 	data, err := json.Marshal(resp)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to prepare response", err)

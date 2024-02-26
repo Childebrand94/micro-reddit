@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NavBar from "../components/nav/NavBar.tsx";
 import { PostComp } from "../components/post/PostComp.tsx";
-import { Post as PostType, Filter } from "../utils/type";
+import { Post as PostType, Filter, Comment as CommentType } from "../utils/type";
 import { useParams } from "react-router-dom";
 import { CommentList } from "../components/comments/CommentList.tsx";
 import { useAuth } from "../context/UseAuth.tsx";
@@ -16,6 +16,7 @@ type Props = {
 const CommentView: React.FC<Props> = ({ fetchPosts }) => {
     const { loggedIn } = useAuth();
     const [postData, setPostData] = useState<PostType | null>(null);
+    const [commentData, setCommentData] = useState<CommentType[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { post_id } = useParams();
     const { updateTrigger } = useFilter();
@@ -31,14 +32,36 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
             }
             const data = await response.json();
             setPostData(data);
+            setCommentData(data.comments)
         } catch (error) {
             console.error("Error:", error);
         } finally {
             setIsLoading(false);
         }
     };
+
+    const orderComments = () => {
+        if (!commentData) {
+            return []
+        }
+        const sortedCommentData = [...commentData].sort((a, b) => {
+            const aPathParts = a.path.split('/').map(Number);
+            const bPathParts = b.path.split('/').map(Number);
+
+            for (let i = 0; i < Math.min(aPathParts.length, bPathParts.length); i++) {
+                if (aPathParts[i] !== bPathParts[i]) {
+                    return aPathParts[i] - bPathParts[i];
+                }
+            }
+            return aPathParts.length - bPathParts.length;
+        })
+        setCommentData(sortedCommentData)
+    }
+
+
     useEffect(() => {
         fetchPostByID();
+        orderComments();
     }, [updateTrigger]);
     return (
         <div className="min-h-screen h-full bg-gray-200 flex flex-col">
@@ -59,10 +82,10 @@ const CommentView: React.FC<Props> = ({ fetchPosts }) => {
                                     />
                                 )}
 
-                                {postData.comments ? (
+                                {commentData ? (
                                     <CommentList
                                         fetchPosts={fetchPostByID}
-                                        comments={postData.comments}
+                                        comments={commentData}
                                     />
                                 ) : (
                                     <h1 className="text-xl font-bold tracking-wide">

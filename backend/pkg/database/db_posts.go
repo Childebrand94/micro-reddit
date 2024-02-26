@@ -58,7 +58,7 @@ func GetPostById(ctx context.Context, pool *pgxpool.Pool, post_id int64, userId 
                         LEFT JOIN users AS u ON u.id = c.author_id
                     WHERE 
                         post_id = $1
-                    ORDER BY path`
+                    ORDER BY path ASC`
 
 	var p models.PostResponse
 	row := pool.QueryRow(ctx, queryPosts, post_id)
