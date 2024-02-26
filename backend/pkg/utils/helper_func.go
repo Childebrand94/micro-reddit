@@ -254,3 +254,22 @@ func UserCommentVoteCheck(ctx context.Context, pool *pgxpool.Pool, commentId int
 		return "downVote", nil
 	}
 }
+
+func NestComments(rootComment models.CommentResp, commentMap map[string][]models.CommentResp) models.CommentResp {
+
+	var recursivelyNest func(rc models.CommentResp) models.CommentResp
+
+	recursivelyNest = func(rc models.CommentResp) models.CommentResp {
+
+		rcID := fmt.Sprintf("%d", rc.ID)
+
+		if children, exists := commentMap[rcID]; exists {
+			for _, childComment := range children {
+				rc.Children = append(rc.Children, recursivelyNest(childComment))
+			}
+		}
+		return rc
+	}
+
+	return recursivelyNest(rootComment)
+}

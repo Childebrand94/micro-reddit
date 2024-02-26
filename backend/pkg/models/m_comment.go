@@ -22,6 +22,7 @@ type Comment struct {
 	Vote       int           `                json:"upVotes"`
 	Created_at time.Time     `db:"created_at" json:"createdAt"`
 	Path       string        `db:"path" json:"path"`
+	Children   []CommentResp `json:"childComments"`
 }
 
 type CommentResp struct {

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -44,7 +45,8 @@ func AddComment(ctx context.Context, pool *pgxpool.Pool, postID, authorID int64,
 	return err
 }
 
-func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId *int64) ([]models.CommentResp, error) {
+func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId *int64) (map[string][]models.CommentResp, error) {
+
 	println("Listing Comments...")
 	query := `SELECT c.id, c.post_id, c.author_id, c.parent_id, c.message, 
                         c.created_at, u.first_name, u.last_name, u.username 
@@ -52,7 +54,7 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId 
 						LEFT JOIN 
 						users u ON u.id  = c.author_id 
 						WHERE post_id = $1
-                        ORDER BY path`
+                        ORDER BY c.path ASC`
 
 	rows, err := pool.Query(ctx, query, postID)
 	if err != nil {
@@ -60,7 +62,7 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId 
 	}
 	defer rows.Close()
 
-	var comments []models.CommentResp
+	var comment_map = make(map[string][]models.CommentResp)
 
 	for rows.Next() {
 		var c models.CommentResp
@@ -70,7 +72,6 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId 
 			&c.Author_ID,
 			&c.Parent_ID,
 			&c.Message,
-			&c.Path,
 			&c.Created_at,
 			&c.Author.FirstName,
 			&c.Author.LastName,
@@ -78,8 +79,7 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId 
 		); err != nil {
 			return nil, err
 		}
-
-		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "s", "comment_id")
+		totalVotes, err := utils.GetVoteTotal(pool, c.ID, "comment_votes", "comment_id")
 		if err != nil {
 			return nil, err
 		}
@@ -91,9 +91,27 @@ func ListComments(ctx context.Context, pool *pgxpool.Pool, postID int64, userId 
 			return nil, err
 		}
 
-		comments = append(comments, c)
+		commentID := fmt.Sprintf("%d", c.ID)
+		if _, exists := comment_map[commentID]; !exists {
+			comment_map[commentID] = []models.CommentResp{}
+		}
+
+		if c.Parent_ID.Valid {
+			parentID := fmt.Sprintf("%d", c.Parent_ID.Int64)
+
+			if children, exists := comment_map[parentID]; exists {
+				comment_map[parentID] = append(children, c)
+			} else {
+				fmt.Printf("Parent comment with ID %s was not found.\n", parentID)
+			}
+		} else {
+			if _, exists := comment_map["root"]; !exists {
+				comment_map["root"] = []models.CommentResp{}
+			}
+			comment_map["root"] = append(comment_map["root"], c)
+		}
 	}
-	return comments, nil
+	return comment_map, nil
 }
 
 func AddCommentVotes(

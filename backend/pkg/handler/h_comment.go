@@ -114,16 +114,34 @@ func (c *Comment) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	comments, err := database.ListComments(ctx, c.DB, int64(post_id), user_id)
+	comment_map, err := database.ListComments(ctx, c.DB, int64(post_id), user_id)
 	if err != nil {
 		models.SendError(
 			w,
 			http.StatusInternalServerError,
-			"Failed to get comments form database",
+			"Failed to get comments from database",
 			err,
 		)
 		return
 	}
+
+	for key, comments := range comment_map {
+		fmt.Printf("Key: %s, Comments: [\n", key)
+		for _, comment := range comments {
+			fmt.Printf("\t%+v\n", comment)
+		}
+		fmt.Println("]")
+	}
+	var comments []models.CommentResp
+
+	if rootComments, exists := comment_map["root"]; exists {
+		for _, rc := range rootComments {
+			nestedComment := utils.NestComments(rc, comment_map)
+			comments = append(comments, nestedComment)
+
+		}
+	}
+
 	data, err := json.Marshal(comments)
 	if err != nil {
 		models.SendError(w, http.StatusInternalServerError, "Failed to marshal data", err)
